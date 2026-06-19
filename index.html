@@ -215,24 +215,6 @@
         </div>
 
         <!-- MODALS -->
-        <!-- 1. Password Lock Modal -->
-        <div id="pinModal" class="fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-md hidden flex-col justify-center items-center p-4 fade-in">
-            <div class="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl text-center zoom-in border border-slate-200">
-                <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="ph-fill ph-lock-key text-3xl"></i>
-                </div>
-                <h3 class="font-heading text-xl font-bold text-slate-800 mb-2">ปลดล็อกโหมดเจ้าของร้าน</h3>
-                <p class="text-sm text-slate-500 mb-6">กรุณาใส่รหัสผ่านเพื่อดูต้นทุนและกำไร</p>
-                <input type="password" id="inputPin" class="w-full text-center text-xl font-bold bg-slate-50 border border-slate-200 rounded-xl py-3 focus:outline-none focus:ring-2 focus:ring-amber-500 mb-4" placeholder="••••••••">
-                <div class="flex gap-3">
-                    <button onclick="closePinModal()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-200">ยกเลิก</button>
-                    <button onclick="verifyPassword()" class="flex-1 bg-amber-500 text-white font-bold py-3 rounded-xl shadow-md hover:bg-amber-600 flex justify-center items-center gap-2">
-                        <span id="btnVerifyText">ปลดล็อก</span>
-                    </button>
-                </div>
-                <button onclick="sendPasswordReset()" class="text-sm text-amber-600 hover:text-amber-700 underline mt-6 block mx-auto font-medium">ลืมรหัสผ่าน? ส่งลิงก์ตั้งค่าใหม่</button>
-            </div>
-        </div>
 
         <!-- 2. Input Modal (เพิ่มรายการ) -->
         <div id="modalBackdrop" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-slate-900/80 backdrop-blur-md p-0 sm:p-4 fade-in">
@@ -390,6 +372,7 @@
     </div>
 
     <script>
+        // การตั้งค่า FIREBASE 
         const firebaseConfig = {
             apiKey: "AIzaSyAmQFwL7zniKTnT2INt93iHOlCuT97hc7g",
             authDomain: "myfamilyproject-ecff4.firebaseapp.com",
@@ -401,19 +384,13 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const auth = firebase.auth();
 
         db.enablePersistence().catch(function(err) { console.warn("Firebase Persistence Error:", err); });
 
-        // ----------------------------------------------------------------------
-        // SET YOUR ADMIN EMAIL HERE for password resets
-        // ----------------------------------------------------------------------
-        const ADMIN_EMAIL = "peerapong.luechai@gmail.com"; // <<<< เปลี่ยนอีเมลตรงนี้เป็นอีเมลที่คุณสมัครใน Firebase
-
         const CATEGORIES = {
-            SELL: { id: 'SELL', label: 'รับเงิน (ปล่อยเช่า)', type: 'INCOME', icon: 'ph-trend-up', color: 'text-emerald-600', border: 'border-emerald-500', bg: 'bg-emerald-50' },
-            BUY: { id: 'BUY', label: 'จ่ายเงิน (เช่าเข้า)', type: 'EXPENSE', icon: 'ph-trend-down', color: 'text-rose-600', border: 'border-rose-500', bg: 'bg-rose-50' },
-            CERT: { id: 'CERT', label: 'รับงานออกบัตร', type: 'INCOME', icon: 'ph-medal', color: 'text-blue-600', border: 'border-blue-500', bg: 'bg-blue-50' },
+            SELL: { id: 'SELL', label: 'ปล่อยเช่า (ขาย)', type: 'INCOME', icon: 'ph-trend-up', color: 'text-emerald-600', border: 'border-emerald-500', bg: 'bg-emerald-50' },
+            BUY: { id: 'BUY', label: 'เช่าเข้า (ซื้อ)', type: 'EXPENSE', icon: 'ph-trend-down', color: 'text-rose-600', border: 'border-rose-500', bg: 'bg-rose-50' },
+            CERT: { id: 'CERT', label: 'รับออกบัตร', type: 'INCOME', icon: 'ph-medal', color: 'text-blue-600', border: 'border-blue-500', bg: 'bg-blue-50' },
             OTHER_INCOME: { id: 'OTHER_INCOME', label: 'รายรับอื่น', type: 'INCOME', icon: 'ph-plus-circle', color: 'text-amber-600', border: 'border-amber-500', bg: 'bg-amber-50' },
             OTHER_EXPENSE: { id: 'OTHER_EXPENSE', label: 'รายจ่ายอื่น', type: 'EXPENSE', icon: 'ph-tag', color: 'text-slate-600', border: 'border-slate-500', bg: 'bg-slate-50' }
         };
@@ -425,7 +402,7 @@
         };
 
         let state = {
-            isOwner: false, // Default to staff mode until logged in
+            isOwner: true, // เริ่มต้นที่โหมดเจ้าของร้านเลย
             searchQuery: '',
             transactions: [],
             presets: [],
@@ -462,18 +439,9 @@
         };
 
         function init() {
-            // Check Firebase Auth state
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    state.isOwner = true;
-                    showToast('เข้าสู่ระบบสำเร็จ โหมดเจ้าของร้านทำงาน');
-                } else {
-                    state.isOwner = false;
-                }
-                updateLockUI();
-                updateUI();
-            });
-
+            // ตั้งค่าพื้นฐาน UI ให้เป็นโหมดเจ้าของร้านตาม state
+            updateLockUI();
+            
             els.datePicker.value = state.selectedDate;
             els.datePicker.addEventListener('change', (e) => { state.selectedDate = e.target.value; updateUI(); });
             
@@ -487,7 +455,6 @@
             document.getElementById('sellInventoryForm').addEventListener('submit', handleSellInventorySubmit);
             document.getElementById('inputImage').addEventListener('change', handleImageUpload);
             
-            // Auto-calculate profit in sell modal
             document.getElementById('sellInventoryAmount').addEventListener('input', (e) => {
                 const sellAmt = parseFloat(e.target.value) || 0;
                 const cost = parseFloat(document.getElementById('sellInventoryCostValue').innerText.replace(/[^0-9.-]+/g,"")) || 0;
@@ -506,13 +473,14 @@
 
             renderCategoryButtons();
             renderWalletButtons();
-            updateLockUI();
             
             db.collection("presets").onSnapshot((snapshot) => {
                 const loadedPresets = [];
                 snapshot.forEach((doc) => loadedPresets.push(doc.data()));
                 state.presets = loadedPresets;
                 renderPresets();
+            }, (error) => {
+                console.log("Firebase Read Error", error);
             });
 
             db.collection("transactions").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
@@ -520,6 +488,8 @@
                 snapshot.forEach((doc) => txs.push({ ...doc.data(), id: doc.id }));
                 state.transactions = txs;
                 updateUI();
+            }, (error) => {
+                 console.log("Firebase Read Error", error);
             });
         }
 
@@ -549,73 +519,12 @@
             updateUI();
         }
 
+        // กดปุ่มสลับโหมดทันทีโดยไม่ต้องใส่รหัส (Bypass)
         function toggleLockMode() {
-            if (state.isOwner) {
-                // Sign out from Firebase
-                auth.signOut().then(() => {
-                    state.isOwner = false;
-                    showToast('ออกจากระบบ เข้าสู่ โหมดพนักงาน');
-                    updateLockUI();
-                    updateUI();
-                }).catch(error => {
-                    showToast('เกิดข้อผิดพลาดในการออกจากระบบ', true);
-                });
-            } else {
-                // Prompt Password to sign in
-                document.getElementById('inputPin').value = '';
-                document.getElementById('pinModal').classList.remove('hidden');
-                document.getElementById('pinModal').classList.add('flex');
-                setTimeout(() => document.getElementById('inputPin').focus(), 100);
-            }
-        }
-
-        function closePinModal() {
-            document.getElementById('pinModal').classList.add('hidden');
-            document.getElementById('pinModal').classList.remove('flex');
-            document.getElementById('btnVerifyText').innerHTML = 'ปลดล็อก';
-        }
-
-        function verifyPassword() {
-            const password = document.getElementById('inputPin').value;
-            const btnText = document.getElementById('btnVerifyText');
-            
-            if (!password) {
-                showToast('กรุณาใส่รหัสผ่าน', true);
-                return;
-            }
-
-            btnText.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> กำลังตรวจสอบ...';
-            
-            // Sign in with Firebase Auth using the predefined admin email
-            auth.signInWithEmailAndPassword(ADMIN_EMAIL, password)
-                .then((userCredential) => {
-                    closePinModal();
-                    // State will be updated by onAuthStateChanged observer in init()
-                })
-                .catch((error) => {
-                    btnText.innerHTML = 'ปลดล็อก';
-                    let errorMsg = 'รหัสผ่านไม่ถูกต้อง';
-                    if (error.code === 'auth/user-not-found') errorMsg = 'ไม่พบบัญชีผู้ใช้';
-                    if (error.code === 'auth/too-many-requests') errorMsg = 'ใส่รหัสผิดหลายครั้งเกินไป ลองใหม่ภายหลัง';
-                    showToast(errorMsg, true);
-                    document.getElementById('inputPin').value = '';
-                });
-        }
-
-        function sendPasswordReset() {
-            if (!ADMIN_EMAIL || ADMIN_EMAIL === 'admin@yourshop.com') {
-                showToast('กรุณาตั้งค่าอีเมลแอดมินในโค้ดก่อน', true);
-                return;
-            }
-
-            auth.sendPasswordResetEmail(ADMIN_EMAIL)
-                .then(() => {
-                    closePinModal();
-                    showToast('ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลแล้ว กรุณาตรวจสอบกล่องจดหมาย');
-                })
-                .catch((error) => {
-                    showToast('เกิดข้อผิดพลาด: ' + error.message, true);
-                });
+            state.isOwner = !state.isOwner;
+            showToast(state.isOwner ? 'เข้าสู่ โหมดเจ้าของร้าน' : 'เข้าสู่ โหมดพนักงาน');
+            updateLockUI();
+            updateUI();
         }
 
         function updateLockUI() {
@@ -633,7 +542,6 @@
             els.viewCert.classList.toggle('hidden', tab !== 'cert');
             els.viewInventory.classList.toggle('hidden', tab !== 'inventory');
             
-            // Fix Cannot set properties of undefined
             const iconLedger = document.getElementById('iconLedger');
             const iconCert = document.getElementById('iconCert');
             const iconInventory = document.getElementById('iconInventory');
@@ -665,13 +573,10 @@
                 const isIncome = cat.type === 'INCOME';
                 const amt = tx.amount;
 
-                // All time balance calculation
                 if (tx.walletId === 'CASH') balanceCash += isIncome ? amt : -amt;
                 else balanceTransfer += isIncome ? amt : -amt;
 
-                // Today calculation
                 if (tx.date === state.selectedDate) {
-                    // Filter logic for Daily Ledger
                     if (!searchQ || tx.title.toLowerCase().includes(searchQ) || (tx.itemCode && tx.itemCode.toLowerCase().includes(searchQ))) {
                         todayTxs.push(tx);
                     }
@@ -682,7 +587,6 @@
                 }
             });
 
-            // Update Top Dashboard (Sensitive info respects Staff Mode)
             els.totalBalance.innerHTML = displayMoney(balanceCash + balanceTransfer, true);
             els.balanceCash.innerHTML = displayMoney(balanceCash, true);
             els.balanceTransfer.innerHTML = displayMoney(balanceTransfer, true);
@@ -690,7 +594,6 @@
             els.dailyIncome.innerText = formatMoney(dailyIncome);
             els.dailyExpense.innerText = formatMoney(dailyExpense);
             
-            // Hide profit section entirely if Staff Mode, otherwise show it
             if(!state.isOwner) {
                 els.dailyProfit.innerHTML = '<span class="blur-sensitive opacity-70">*** ฿</span>';
             } else {
@@ -764,7 +667,6 @@
             const listEl = document.getElementById('certList');
             const searchQ = state.searchQuery;
             
-            // Filter all CERT transactions (not just today)
             let certTxs = state.transactions.filter(tx => tx.categoryId === 'CERT');
             if (searchQ) {
                 certTxs = certTxs.filter(tx => tx.title.toLowerCase().includes(searchQ) || (tx.itemCode && tx.itemCode.toLowerCase().includes(searchQ)));
@@ -916,7 +818,6 @@
             btn.disabled = true;
 
             const newTx = {
-                id: 'tx_' + Date.now(),
                 categoryId: state.activeCategory,
                 title: title,
                 itemCode: document.getElementById('inputItemCode').value.trim().toUpperCase(),
@@ -933,11 +834,12 @@
                 newTx.certStatus = 'PENDING';
             }
 
-            db.collection("transactions").doc(newTx.id).set(newTx).then(() => {
+            db.collection("transactions").add(newTx).then(() => {
                 toggleModal(false);
                 showToast('บันทึกข้อมูลสำเร็จ');
             }).catch(e => {
-                showToast('เกิดข้อผิดพลาด ให้ลองเลือกรูปที่เล็กลง', true);
+                showToast('เกิดข้อผิดพลาดในการบันทึก', true);
+                console.error(e);
             }).finally(() => {
                 btn.innerHTML = '<i class="ph-bold ph-check-circle text-2xl text-amber-400"></i> บันทึกรายการ';
                 btn.disabled = false;
@@ -1001,7 +903,6 @@
             if (!originalTx) return;
 
             const newSellTx = {
-                id: 'tx_' + Date.now(),
                 categoryId: 'SELL',
                 title: originalTx.title,
                 itemCode: originalTx.itemCode, 
@@ -1015,7 +916,7 @@
             };
 
             db.collection("transactions").doc(originalTx.id).update({ isSold: true }).then(() => {
-                return db.collection("transactions").doc(newSellTx.id).set(newSellTx);
+                return db.collection("transactions").add(newSellTx);
             }).then(() => {
                 closeSellInventoryModal();
                 switchTab('ledger');
