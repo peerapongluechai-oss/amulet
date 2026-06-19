@@ -1,0 +1,434 @@
+import React, { useState, useEffect, useReducer, useMemo } from 'react';
+import { 
+  Wallet, Landmark, TrendingUp, TrendingDown, Award, 
+  Plus, Calendar, Trash2, Tag, ChevronRight, X, Loader2,
+  PieChart, Activity, CheckCircle2
+} from 'lucide-react';
+
+// ==========================================
+// BACKEND SERVICE LAYER (Mocking a real API/DB)
+// ==========================================
+const STORAGE_KEY = 'amulet_ledger_db_v1';
+
+const dbService = {
+  // Simulate network delay
+  delay: (ms) => new Promise(resolve => setTimeout(resolve, ms)),
+
+  async fetchTransactions() {
+    await this.delay(600); // Network simulation
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  },
+
+  async addTransaction(payload) {
+    await this.delay(500);
+    const existing = await this.fetchTransactions();
+    const newTx = {
+      id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      ...payload
+    };
+    const updated = [newTx, ...existing];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    return newTx;
+  },
+
+  async deleteTransaction(id) {
+    await this.delay(400);
+    const existing = await this.fetchTransactions();
+    const updated = existing.filter(tx => tx.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    return id;
+  }
+};
+
+// ==========================================
+// STATE MANAGEMENT (useReducer for complex state)
+// ==========================================
+const initialState = {
+  data: [],
+  isLoading: true,
+  isSaving: false,
+  error: null,
+};
+
+function appReducer(state, action) {
+  switch (action.type) {
+    case 'FETCH_START': return { ...state, isLoading: true, error: null };
+    case 'FETCH_SUCCESS': return { ...state, isLoading: false, data: action.payload };
+    case 'FETCH_ERROR': return { ...state, isLoading: false, error: action.payload };
+    
+    case 'SAVE_START': return { ...state, isSaving: true, error: null };
+    case 'SAVE_SUCCESS': return { ...state, isSaving: false, data: [action.payload, ...state.data] };
+    case 'SAVE_ERROR': return { ...state, isSaving: false, error: action.payload };
+    
+    case 'DELETE_SUCCESS': return { ...state, data: state.data.filter(tx => tx.id !== action.payload) };
+    default: return state;
+  }
+}
+
+// Configs & Constants
+const CATEGORIES = {
+  SELL: { id: 'SELL', label: 'ปล่อยเช่า (ขาย)', type: 'INCOME', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-100' },
+  BUY: { id: 'BUY', label: 'เช่าเข้า (ซื้อ)', type: 'EXPENSE', icon: TrendingDown, color: 'text-rose-600', bg: 'bg-rose-100' },
+  CERT: { id: 'CERT', label: 'ค่าออกบัตร', type: 'EXPENSE', icon: Award, color: 'text-amber-600', bg: 'bg-amber-100' },
+  OTHER_INCOME: { id: 'OTHER_INCOME', label: 'รายรับอื่น', type: 'INCOME', icon: Plus, color: 'text-blue-600', bg: 'bg-blue-100' },
+  OTHER_EXPENSE: { id: 'OTHER_EXPENSE', label: 'รายจ่ายอื่น', type: 'EXPENSE', icon: Tag, color: 'text-slate-600', bg: 'bg-slate-100' },
+};
+
+export default function AmuletAppPro() {
+  const [state, dispatch] = useReducer(appReducer, initialState);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [notification, setNotification] = useState(null);
+
+  // Initialize App
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    dispatch({ type: 'FETCH_START' });
+    try {
+      const data = await dbService.fetchTransactions();
+      dispatch({ type: 'FETCH_SUCCESS', payload: data });
+    } catch (err) {
+      dispatch({ type: 'FETCH_ERROR', payload: 'ไม่สามารถโหลดข้อมูลได้' });
+    }
+  };
+
+  const showNotification = (msg) => {
+    setNotification(msg);
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  // ==========================================
+  // BUSINESS LOGIC & ANALYTICS (Memoized)
+  // ==========================================
+  const analytics = useMemo(() => {
+    let balanceCash = 0;
+    let balanceTransfer = 0;
+    
+    let dailyIncome = 0;
+    let dailyExpense = 0;
+    let dailyCert = 0;
+
+    const todayTxs = [];
+
+    state.data.forEach(tx => {
+      const cat = CATEGORIES[tx.categoryId];
+      if (!cat) return;
+      
+      const amount = Number(tx.amount);
+      const isIncome = cat.type === 'INCOME';
+      
+      // Calculate All-time Balances
+      if (tx.walletId === 'CASH') {
+        balanceCash += isIncome ? amount : -amount;
+      } else {
+        balanceTransfer += isIncome ? amount : -amount;
+      }
+
+      // Calculate Daily Stats
+      if (tx.date === selectedDate) {
+        todayTxs.push(tx);
+        if (isIncome) dailyIncome += amount;
+        else dailyExpense += amount;
+        
+        if (tx.categoryId === 'CERT') dailyCert += amount;
+      }
+    });
+
+    return { 
+      balanceCash, balanceTransfer, totalBalance: balanceCash + balanceTransfer,
+      dailyIncome, dailyExpense, dailyCert, todayTxs
+    };
+  }, [state.data, selectedDate]);
+
+  // ==========================================
+  // SUB-COMPONENTS
+  // ==========================================
+  const FormatMoney = ({ amount }) => (
+    <span>{new Intl.NumberFormat('th-TH', { minimumFractionDigits: 0 }).format(amount)} ฿</span>
+  );
+
+  // Modal Form Component (Handles its own local state)
+  const AddTransactionModal = ({ onClose }) => {
+    const [formData, setFormData] = useState({ categoryId: 'SELL', title: '', amount: '', walletId: 'TRANSFER' });
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (!formData.title || !formData.amount) return;
+
+      dispatch({ type: 'SAVE_START' });
+      try {
+        await dbService.addTransaction({
+          ...formData,
+          amount: parseFloat(formData.amount),
+          date: selectedDate // Assign to currently viewed date
+        });
+        dispatch({ type: 'SAVE_SUCCESS', payload: { ...formData, id: Date.now(), amount: parseFloat(formData.amount), date: selectedDate, timestamp: new Date().toISOString() } }); // Optimistic update simulation handled by reducer
+        loadData(); // Re-fetch for consistency
+        showNotification('บันทึกข้อมูลสำเร็จ');
+        onClose();
+      } catch (err) {
+        dispatch({ type: 'SAVE_ERROR', payload: 'เกิดข้อผิดพลาดในการบันทึก' });
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
+        <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300">
+          
+          <div className="flex justify-between items-center p-5 border-b border-slate-100">
+            <h2 className="text-xl font-bold text-slate-800">บันทึกรายการใหม่</h2>
+            <button onClick={onClose} className="p-2 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 transition-colors">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-6">
+            {/* Category Selector - Visual & Big */}
+            <div>
+              <label className="text-sm font-semibold text-slate-500 mb-3 block">หมวดหมู่</label>
+              <div className="grid grid-cols-3 gap-3">
+                {Object.values(CATEGORIES).map(cat => {
+                  const isSelected = formData.categoryId === cat.id;
+                  const Icon = cat.icon;
+                  return (
+                    <button
+                      key={cat.id} type="button"
+                      onClick={() => setFormData({...formData, categoryId: cat.id})}
+                      className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all ${
+                        isSelected ? `border-${cat.color.split('-')[1]}-500 ${cat.bg}` : 'border-slate-100 bg-white hover:bg-slate-50'
+                      }`}
+                    >
+                      <Icon className={`w-6 h-6 mb-1 ${isSelected ? cat.color : 'text-slate-400'}`} />
+                      <span className={`text-xs font-medium ${isSelected ? cat.color : 'text-slate-500'}`}>{cat.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Input Details */}
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-semibold text-slate-500 mb-1.5 block">ชื่อรายการ / ชื่อพระ</label>
+                <input 
+                  type="text" required autoFocus
+                  value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})}
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all"
+                  placeholder="เช่น สมเด็จวัดระฆัง, พระสมเด็จ..."
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-slate-500 mb-1.5 block">จำนวนเงิน (บาท)</label>
+                <input 
+                  type="number" required min="0" step="0.01"
+                  value={formData.amount} onChange={e => setFormData({...formData, amount: e.target.value})}
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all text-xl font-bold"
+                  placeholder="0"
+                />
+              </div>
+            </div>
+
+            {/* Wallet Selection */}
+            <div>
+              <label className="text-sm font-semibold text-slate-500 mb-3 block">ชำระผ่าน (กระเป๋าเงิน)</label>
+              <div className="flex gap-3">
+                <button type="button" onClick={() => setFormData({...formData, walletId: 'TRANSFER'})}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 transition-all ${formData.walletId === 'TRANSFER' ? 'border-blue-500 bg-blue-50 text-blue-700 font-bold' : 'border-slate-100 text-slate-500'}`}>
+                  <Landmark className="w-5 h-5" /> เงินโอน (บัญชี)
+                </button>
+                <button type="button" onClick={() => setFormData({...formData, walletId: 'CASH'})}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border-2 transition-all ${formData.walletId === 'CASH' ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-bold' : 'border-slate-100 text-slate-500'}`}>
+                  <Wallet className="w-5 h-5" /> เงินสด
+                </button>
+              </div>
+            </div>
+
+            <button disabled={state.isSaving} type="submit" className="w-full bg-slate-900 text-white font-bold text-lg py-4 rounded-xl shadow-lg hover:bg-slate-800 active:scale-95 transition-all flex justify-center items-center gap-2 disabled:opacity-70 mt-4">
+              {state.isSaving ? <Loader2 className="w-6 h-6 animate-spin" /> : 'บันทึกรายการ'}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 font-sans text-slate-800 flex justify-center">
+      {/* Mobile-first constraints for elegant look on desktop too */}
+      <div className="w-full max-w-md bg-slate-50 min-h-screen relative shadow-2xl flex flex-col">
+        
+        {/* Header Area */}
+        <header className="bg-slate-900 text-white px-6 py-6 pb-24 rounded-b-[40px] shadow-sm relative z-0">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <p className="text-slate-400 text-sm font-medium mb-1">สวัสดี, ร้านพระของคุณ</p>
+              <h1 className="text-2xl font-bold flex items-center gap-2">
+                <Award className="text-amber-400 w-6 h-6" /> บัญชีร้านพระ
+              </h1>
+            </div>
+            {/* Date Picker styled as a pill */}
+            <label className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-full cursor-pointer transition-colors border border-slate-700">
+              <Calendar className="w-4 h-4 text-amber-400" />
+              <input 
+                type="date" value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="bg-transparent text-sm font-medium outline-none [&::-webkit-calendar-picker-indicator]:hidden w-24"
+              />
+            </label>
+          </div>
+        </header>
+
+        {/* Floating Balance Cards */}
+        <div className="px-5 -mt-20 relative z-10 space-y-4">
+          
+          {/* Total Assets Card - Premium Gradient */}
+          <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-6 rounded-3xl shadow-xl text-white">
+            <div className="flex justify-between items-start mb-4">
+              <p className="text-amber-100 font-medium flex items-center gap-2">
+                <Activity className="w-4 h-4" /> ทรัพย์สินรวมสุทธิ
+              </p>
+              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm"><PieChart className="w-5 h-5" /></div>
+            </div>
+            <h2 className="text-4xl font-extrabold tracking-tight mb-6">
+              <FormatMoney amount={analytics.totalBalance} />
+            </h2>
+            
+            {/* Wallet Split */}
+            <div className="grid grid-cols-2 gap-4 border-t border-white/20 pt-4">
+              <div>
+                <p className="text-amber-100 text-xs mb-1 flex items-center gap-1"><Landmark className="w-3 h-3"/> เงินโอน</p>
+                <p className="font-semibold text-lg"><FormatMoney amount={analytics.balanceTransfer} /></p>
+              </div>
+              <div>
+                <p className="text-amber-100 text-xs mb-1 flex items-center gap-1"><Wallet className="w-3 h-3"/> เงินสด</p>
+                <p className="font-semibold text-lg"><FormatMoney amount={analytics.balanceCash} /></p>
+              </div>
+            </div>
+          </div>
+
+          {/* Daily P&L Cards */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
+              <div className="bg-emerald-100 p-3 rounded-full text-emerald-600"><TrendingUp className="w-5 h-5"/></div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">ขายวันนี้</p>
+                <p className="font-bold text-emerald-600 text-lg"><FormatMoney amount={analytics.dailyIncome} /></p>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
+              <div className="bg-rose-100 p-3 rounded-full text-rose-600"><TrendingDown className="w-5 h-5"/></div>
+              <div>
+                <p className="text-xs text-slate-500 font-medium">ซื้อเข้าวันนี้</p>
+                <p className="font-bold text-rose-600 text-lg"><FormatMoney amount={analytics.dailyExpense} /></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Transaction Feed */}
+        <main className="flex-1 px-5 mt-6 pb-28">
+          <div className="flex justify-between items-end mb-4">
+            <h3 className="text-lg font-bold text-slate-800">รายการประจำวัน</h3>
+            <span className="text-xs font-semibold bg-slate-200 text-slate-600 px-2 py-1 rounded-md">
+              {analytics.todayTxs.length} รายการ
+            </span>
+          </div>
+
+          {state.isLoading ? (
+            <div className="flex flex-col items-center justify-center py-10 space-y-3">
+              <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+              <p className="text-slate-400 text-sm">กำลังโหลดข้อมูล...</p>
+            </div>
+          ) : analytics.todayTxs.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-3xl border border-slate-100 border-dashed">
+              <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Activity className="w-8 h-8 text-slate-300" />
+              </div>
+              <p className="text-slate-500 font-medium">ยังไม่มีรายการในวันนี้</p>
+              <p className="text-slate-400 text-sm mt-1">กดปุ่ม + ด้านล่างเพื่อเริ่มบันทึก</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {analytics.todayTxs.map(tx => {
+                const cat = CATEGORIES[tx.categoryId] || CATEGORIES.OTHER_EXPENSE;
+                const Icon = cat.icon;
+                const isIncome = cat.type === 'INCOME';
+                
+                return (
+                  <div key={tx.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between group">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${cat.bg} ${cat.color}`}>
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-800 mb-0.5">{tx.title}</p>
+                        <div className="flex items-center gap-2 text-xs font-medium">
+                          <span className={`${cat.color}`}>{cat.label}</span>
+                          <span className="text-slate-300">•</span>
+                          <span className="text-slate-500 flex items-center gap-1">
+                            {tx.walletId === 'CASH' ? <Wallet className="w-3 h-3"/> : <Landmark className="w-3 h-3"/>}
+                            {tx.walletId === 'CASH' ? 'เงินสด' : 'เงินโอน'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col items-end gap-1">
+                      <p className={`font-bold text-lg ${isIncome ? 'text-emerald-600' : 'text-slate-800'}`}>
+                        {isIncome ? '+' : '-'}<FormatMoney amount={tx.amount} />
+                      </p>
+                      <button 
+                        onClick={async () => {
+                          if(window.confirm('ต้องการลบรายการนี้ใช่หรือไม่?')) {
+                            await dbService.deleteTransaction(tx.id);
+                            loadData();
+                          }
+                        }}
+                        className="text-xs text-slate-300 hover:text-rose-500 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Trash2 className="w-3 h-3" /> ลบ
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </main>
+
+        {/* Floating Action Button (FAB) for adding transaction */}
+        <div className="fixed bottom-6 w-full max-w-md px-6 flex justify-center z-40">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-slate-900 hover:bg-slate-800 text-white rounded-full h-16 w-16 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.3)] active:scale-90 transition-transform group border-4 border-slate-50"
+          >
+            <Plus className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" />
+          </button>
+        </div>
+
+        {/* Bottom Fade Gradient for readability */}
+        <div className="fixed bottom-0 w-full max-w-md h-24 bg-gradient-to-t from-slate-50 to-transparent pointer-events-none z-30" />
+
+        {/* Modals & Overlays */}
+        {isModalOpen && <AddTransactionModal onClose={() => setIsModalOpen(false)} />}
+        
+        {/* Toast Notification */}
+        {notification && (
+          <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top-4 fade-in duration-300">
+            <div className="bg-emerald-600 text-white px-5 py-3 rounded-full shadow-lg font-medium flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5" />
+              {notification}
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
