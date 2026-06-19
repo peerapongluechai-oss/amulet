@@ -778,6 +778,92 @@
             });
         }
 
+        let editPresetData = { type: '', category: '', item: '' };
+
+        function openEditPreset(type, category, item = null) {
+            editPresetData = { type, category, item };
+            els.editPresetTitle.innerHTML = type === 'category' 
+                ? '<i class="ph-bold ph-pencil-simple text-amber-500"></i> แก้ไขหมวดหมู่รุ่นพระ' 
+                : '<i class="ph-bold ph-pencil-simple text-amber-500"></i> แก้ไขชื่อพิมพ์พระ';
+            
+            els.editPresetInput.value = type === 'category' ? category : item;
+            
+            els.editPresetModal.classList.remove('hidden');
+            els.editPresetModal.classList.add('flex');
+            setTimeout(() => els.editPresetInput.focus(), 100);
+        }
+
+        function closeEditPreset() {
+            els.editPresetModal.classList.add('hidden');
+            els.editPresetModal.classList.remove('flex');
+        }
+
+        function saveEditPreset() {
+            const newVal = els.editPresetInput.value.trim();
+            if (!newVal) return els.editPresetInput.focus();
+
+            const { type, category, item } = editPresetData;
+            const catData = state.presets.find(p => p.category === category);
+            if (!catData) return closeEditPreset();
+
+            if (type === 'category') {
+                if (newVal === category) return closeEditPreset(); // ชื่อเดิม ไม่ต้องทำอะไร
+                
+                // เช็คว่าชื่อใหม่ซ้ำกับหมวดหมู่อื่นไหม
+                if (state.presets.find(p => p.category === newVal)) {
+                    showToast('มีหมวดหมู่นี้อยู่แล้ว โปรดใช้ชื่ออื่น', true);
+                    return;
+                }
+
+                // การแก้ชื่อหมวดหมู่ใน Firebase ต้องสร้างอันใหม่ แล้วลบอันเก่า
+                db.collection("presets").doc(newVal).set({
+                    category: newVal,
+                    items: catData.items
+                }).then(() => {
+                    return db.collection("presets").doc(category).delete();
+                }).then(() => {
+                    closeEditPreset();
+                    showToast('เปลี่ยนชื่อหมวดหมู่สำเร็จ');
+                }).catch(err => console.error(err));
+
+            } else if (type === 'item') {
+                if (newVal === item) return closeEditPreset(); // ชื่อเดิม
+
+                const newItems = catData.items.map(i => i === item ? newVal : i);
+                db.collection("presets").doc(category).update({ items: newItems }).then(() => {
+                    closeEditPreset();
+                    showToast('แก้ไขชื่อพระสำเร็จ');
+                });
+            }
+        }
+
+        function deletePreset() {
+            const { type, category, item } = editPresetData;
+            const catData = state.presets.find(p => p.category === category);
+            if (!catData) return closeEditPreset();
+
+            if (type === 'category') {
+                db.collection("presets").doc(category).delete().then(() => {
+                    closeEditPreset();
+                    showToast('ลบหมวดหมู่สำเร็จ');
+                });
+            } else if (type === 'item') {
+                const newItems = catData.items.filter(i => i !== item);
+                if (newItems.length === 0) {
+                    // ถ้าลบพิมพ์พระจนหมดแล้ว ให้ลบหมวดหมู่นั้นทิ้งไปเลย
+                    db.collection("presets").doc(category).delete().then(() => {
+                        closeEditPreset();
+                        showToast('ลบสำเร็จ (ลบหมวดหมู่อัตโนมัติเนื่องจากว่างเปล่า)');
+                    });
+                } else {
+                    db.collection("presets").doc(category).update({ items: newItems }).then(() => {
+                        closeEditPreset();
+                        showToast('ลบรายการพิมพ์พระสำเร็จ');
+                    });
+                }
+            }
+        }
+
         function toggleModal(show) {
             if (show) {
                 els.modalBackdrop.classList.remove('hidden');
