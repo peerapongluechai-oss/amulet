@@ -6,87 +6,113 @@
     <title>บัญชีร้าน ป.ทรัพย์สยาม Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- เพิ่มฟอนต์ Pridi สำหรับหัวข้อ ให้ดูคลาสสิกและเป็นทางการแบบไทย -->
+    <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Sarabun', sans-serif; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --velvet-dark: #4a0808;
+            --velvet-main: #7a1019;
+            --velvet-light: #9b1b25;
+            --gold-light: #fde047;
+            --gold-main: #eab308;
+            --gold-dark: #a16207;
+        }
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            background-color: #fcfaf8; /* พื้นหลังสีครีมอ่อนๆ สบายตา */
+        }
+        .font-heading { font-family: 'Pridi', serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .fade-in { animation: fadeIn 0.2s ease-out forwards; }
-        .zoom-in { animation: zoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        /* Animations */
+        .slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        .zoom-in { animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        /* Safe area for mobile bottoms */
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 24px); }
         
-        /* Image upload hide default input */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 24px); }
         input[type="file"] { display: none; }
+        
+        /* Custom Gradients & Shadows for Theme */
+        .bg-velvet-gradient { background: linear-gradient(135deg, var(--velvet-main) 0%, var(--velvet-dark) 100%); }
+        .text-gold-gradient { 
+            background: linear-gradient(to right, #fef08a, #eab308, #fef08a); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        .border-gold { border-color: rgba(234, 179, 8, 0.3); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
+<body class="text-slate-800 min-h-screen">
 
-    <!-- เปลี่ยนจากจำกัดความกว้าง เป็น w-full เพื่อให้เต็มจอทุกอุปกรณ์ -->
     <div class="w-full min-h-screen relative flex flex-col overflow-x-hidden">
         
-        <!-- Header Section -->
-        <header class="bg-slate-900 text-white px-6 md:px-12 py-8 pb-28 md:pb-36 rounded-b-[40px] md:rounded-b-[80px] shadow-sm relative z-0 transition-all">
-            <div class="flex justify-between items-center mb-6 max-w-7xl mx-auto w-full">
+        <!-- Header Section (ตีมแดงกำมะหยี่ ขอบทอง) -->
+        <header class="bg-velvet-gradient px-6 md:px-12 py-8 pb-28 md:pb-36 rounded-b-[40px] md:rounded-b-[60px] shadow-2xl relative z-0 border-b-[3px] border-amber-500/40 overflow-hidden">
+            <!-- ลายพื้นหลังจางๆ สไตล์สิริมงคล -->
+            <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+            <i class="ph-fill ph-intersect absolute -right-16 -top-16 text-[250px] text-amber-500/10 rotate-45 pointer-events-none"></i>
+            
+            <div class="flex justify-between items-center mb-6 max-w-7xl mx-auto w-full relative z-10">
                 <div>
-                    <p class="text-slate-400 text-sm font-medium mb-1">ยินดีต้อนรับ</p>
-                    <h1 class="text-2xl md:text-3xl font-bold flex items-center gap-2">
-                        <i class="ph-fill ph-storefront text-amber-400 text-3xl md:text-4xl"></i> ป.ทรัพย์สยาม
+                    <p class="text-amber-200/70 text-sm font-medium mb-1">ยินดีต้อนรับ</p>
+                    <h1 class="font-heading text-3xl md:text-4xl font-bold flex items-center gap-2 text-gold-gradient drop-shadow-sm">
+                        <i class="ph-fill ph-diamond text-amber-400 drop-shadow-md"></i> ป.ทรัพย์สยาม
                     </h1>
                 </div>
-                <label class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-4 py-2.5 md:px-6 md:py-3 rounded-full cursor-pointer transition-colors border border-slate-700 shadow-inner">
+                <label class="flex items-center gap-2 bg-black/20 hover:bg-black/30 px-4 py-2.5 md:px-6 md:py-3 rounded-2xl cursor-pointer transition-colors border border-amber-500/30 backdrop-blur-sm shadow-inner text-amber-100">
                     <i class="ph ph-calendar-blank text-amber-400 md:text-xl"></i>
-                    <input type="date" id="datePicker" class="bg-transparent text-sm md:text-base font-medium outline-none [&::-webkit-calendar-picker-indicator]:hidden w-24 md:w-32 text-white">
+                    <input type="date" id="datePicker" class="bg-transparent text-sm md:text-base font-heading font-medium outline-none [&::-webkit-calendar-picker-indicator]:hidden w-24 md:w-32 text-amber-50">
                 </label>
             </div>
         </header>
 
-        <!-- Floating Summary Cards (ขยายเป็น Grid บน Desktop) -->
+        <!-- Floating Summary Cards -->
         <div class="px-5 md:px-12 -mt-20 md:-mt-24 relative z-10 max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-4 md:gap-6">
             
-            <!-- Total Assets -->
-            <div class="flex-1 bg-gradient-to-br from-amber-500 to-orange-600 p-6 md:p-8 rounded-3xl shadow-xl text-white relative overflow-hidden transition-all hover:shadow-2xl">
-                <div class="absolute top-0 right-0 p-6 md:p-10 opacity-10 pointer-events-none transition-transform hover:scale-110">
-                    <i class="ph-fill ph-chart-pie-slice text-8xl md:text-9xl"></i>
+            <!-- Total Assets (กล่องกำมะหยี่ใส่พระ) -->
+            <div class="flex-1 bg-gradient-to-br from-[#8a1c1c] via-[#6b1111] to-[#4a0808] border border-amber-500/30 p-6 md:p-8 rounded-3xl shadow-[0_15px_40px_-10px_rgba(107,17,17,0.6)] text-white relative overflow-hidden transition-all hover:shadow-[0_20px_50px_-10px_rgba(107,17,17,0.8)]">
+                <div class="absolute top-0 right-0 p-6 md:p-10 opacity-[0.07] pointer-events-none transition-transform hover:scale-110">
+                    <i class="ph-fill ph-chart-pie-slice text-8xl md:text-9xl text-amber-400"></i>
                 </div>
                 <div class="flex justify-between items-start mb-4 relative z-10">
-                    <p class="text-amber-100 font-medium flex items-center gap-2 md:text-lg">
-                        <i class="ph ph-activity"></i> ทรัพย์สินรวมสุทธิ (หักลบแล้ว)
+                    <p class="text-amber-200/90 font-medium flex items-center gap-2 md:text-lg">
+                        <i class="ph-fill ph-bank"></i> ทรัพย์สินรวมสุทธิ
                     </p>
                 </div>
-                <h2 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 md:mb-10 relative z-10" id="totalBalance">0 ฿</h2>
+                <h2 class="font-heading text-4xl md:text-6xl font-bold tracking-tight mb-6 md:mb-10 relative z-10 text-gold-gradient drop-shadow-md" id="totalBalance">0 ฿</h2>
                 
-                <div class="grid grid-cols-2 gap-4 border-t border-white/20 pt-4 md:pt-6 relative z-10">
+                <div class="grid grid-cols-2 gap-4 border-t border-amber-500/20 pt-4 md:pt-6 relative z-10">
                     <div>
-                        <p class="text-amber-100 text-xs md:text-sm mb-1 flex items-center gap-1"><i class="ph ph-bank"></i> เงินโอน</p>
-                        <p class="font-semibold text-lg md:text-2xl" id="balanceTransfer">0 ฿</p>
+                        <p class="text-amber-200/70 text-xs md:text-sm mb-1 flex items-center gap-1.5"><i class="ph-fill ph-device-mobile"></i> เงินโอน</p>
+                        <p class="font-heading font-semibold text-xl md:text-2xl text-amber-50" id="balanceTransfer">0 ฿</p>
                     </div>
                     <div>
-                        <p class="text-amber-100 text-xs md:text-sm mb-1 flex items-center gap-1"><i class="ph ph-wallet"></i> เงินสด</p>
-                        <p class="font-semibold text-lg md:text-2xl" id="balanceCash">0 ฿</p>
+                        <p class="text-amber-200/70 text-xs md:text-sm mb-1 flex items-center gap-1.5"><i class="ph-fill ph-wallet"></i> เงินสด</p>
+                        <p class="font-heading font-semibold text-xl md:text-2xl text-amber-50" id="balanceCash">0 ฿</p>
                     </div>
                 </div>
             </div>
 
             <!-- Daily Stats -->
             <div class="lg:w-80 xl:w-96 grid grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6 shrink-0">
-                <div class="bg-white p-4 md:p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-3 md:gap-4 transition-all hover:shadow-md">
-                    <div class="bg-emerald-100 p-3 md:p-4 rounded-full text-emerald-600 shrink-0"><i class="ph ph-trend-up text-xl md:text-3xl"></i></div>
+                <div class="bg-white p-4 md:p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex items-center gap-3 md:gap-4 transition-all hover:shadow-md hover:border-amber-200 group">
+                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 p-3 md:p-4 rounded-2xl text-emerald-600 shrink-0 group-hover:scale-110 transition-transform shadow-inner"><i class="ph-bold ph-trend-up text-xl md:text-3xl"></i></div>
                     <div class="min-w-0">
-                        <p class="text-xs md:text-sm text-slate-500 font-medium whitespace-nowrap">รายรับวันนี้</p>
-                        <p class="font-bold text-emerald-600 text-lg md:text-2xl truncate" id="dailyIncome">0 ฿</p>
+                        <p class="text-xs md:text-sm text-slate-500 font-medium whitespace-nowrap mb-0.5">รายรับวันนี้</p>
+                        <p class="font-heading font-bold text-emerald-600 text-xl md:text-3xl truncate" id="dailyIncome">0 ฿</p>
                     </div>
                 </div>
-                <div class="bg-white p-4 md:p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-3 md:gap-4 transition-all hover:shadow-md">
-                    <div class="bg-rose-100 p-3 md:p-4 rounded-full text-rose-600 shrink-0"><i class="ph ph-trend-down text-xl md:text-3xl"></i></div>
+                <div class="bg-white p-4 md:p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex items-center gap-3 md:gap-4 transition-all hover:shadow-md hover:border-amber-200 group">
+                    <div class="bg-gradient-to-br from-rose-50 to-rose-100 p-3 md:p-4 rounded-2xl text-rose-600 shrink-0 group-hover:scale-110 transition-transform shadow-inner"><i class="ph-bold ph-trend-down text-xl md:text-3xl"></i></div>
                     <div class="min-w-0">
-                        <p class="text-xs md:text-sm text-slate-500 font-medium whitespace-nowrap">รายจ่ายวันนี้</p>
-                        <p class="font-bold text-rose-600 text-lg md:text-2xl truncate" id="dailyExpense">0 ฿</p>
+                        <p class="text-xs md:text-sm text-slate-500 font-medium whitespace-nowrap mb-0.5">รายจ่ายวันนี้</p>
+                        <p class="font-heading font-bold text-rose-600 text-xl md:text-3xl truncate" id="dailyExpense">0 ฿</p>
                     </div>
                 </div>
             </div>
@@ -95,15 +121,14 @@
         <!-- ========================================== -->
         <!-- VIEW 1: LEDGER (บัญชีรายวัน) -->
         <!-- ========================================== -->
-        <main id="viewLedger" class="flex-1 px-5 md:px-12 mt-8 md:mt-12 pb-32 block fade-in max-w-7xl mx-auto w-full">
-            <div class="flex justify-between items-end mb-6">
-                <h3 class="text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2">
-                    <i class="ph-fill ph-receipt text-amber-500"></i> รายการประจำวัน
+        <main id="viewLedger" class="flex-1 px-5 md:px-12 mt-10 md:mt-14 pb-32 block fade-in max-w-7xl mx-auto w-full">
+            <div class="flex justify-between items-end mb-6 border-b border-slate-200/70 pb-4">
+                <h3 class="font-heading text-2xl md:text-3xl font-bold text-slate-800 flex items-center gap-2">
+                    <i class="ph-fill ph-book-open-text text-[#8a1c1c]"></i> รายการประจำวัน
                 </h3>
-                <span class="text-sm font-semibold bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg shadow-inner" id="dailyCount">0 รายการ</span>
+                <span class="text-sm font-semibold bg-[#8a1c1c]/10 text-[#8a1c1c] px-4 py-1.5 rounded-full border border-[#8a1c1c]/20" id="dailyCount">0 รายการ</span>
             </div>
             
-            <!-- ใช้ Grid เพื่อรองรับการแสดงผลหน้าจอใหญ่ -->
             <div id="transactionList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 <!-- Transactions rendered by JS -->
             </div>
@@ -112,28 +137,28 @@
         <!-- ========================================== -->
         <!-- VIEW 2: INVENTORY (สต็อกพระ) -->
         <!-- ========================================== -->
-        <main id="viewInventory" class="flex-1 px-5 md:px-12 mt-8 md:mt-12 pb-32 hidden fade-in max-w-7xl mx-auto w-full">
-            <!-- Inventory Dashboard Card -->
-            <div class="bg-gradient-to-r from-slate-800 to-slate-900 rounded-3xl p-6 md:p-10 text-white mb-8 shadow-xl relative overflow-hidden transition-all hover:shadow-2xl">
-                <i class="ph-fill ph-package text-8xl md:text-[180px] absolute -right-4 -bottom-4 md:-right-10 md:-bottom-10 text-white/5 transition-transform hover:scale-105"></i>
+        <main id="viewInventory" class="flex-1 px-5 md:px-12 mt-10 md:mt-14 pb-32 hidden fade-in max-w-7xl mx-auto w-full">
+            <!-- Inventory Dashboard Card (ตู้เซฟ/กล่องเก็บพระ) -->
+            <div class="bg-gradient-to-r from-slate-800 via-slate-900 to-black rounded-3xl p-6 md:p-10 text-white mb-10 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden transition-all hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] border border-slate-700/50">
+                <i class="ph-fill ph-vault text-8xl md:text-[180px] absolute -right-4 -bottom-4 md:-right-10 md:-bottom-10 text-amber-500/10 transition-transform hover:scale-105"></i>
                 <div class="relative z-10">
-                    <p class="text-slate-300 text-sm md:text-base font-medium mb-2 flex items-center gap-2">
-                        <i class="ph ph-archive-box"></i> ต้นทุนสต็อกพระที่อยู่ในร้าน
+                    <p class="text-amber-200/70 text-sm md:text-base font-medium mb-2 flex items-center gap-2">
+                        <i class="ph-fill ph-package"></i> ต้นทุนสต็อกพระที่อยู่ในร้าน
                     </p>
-                    <h3 class="text-4xl md:text-6xl font-extrabold tracking-tight mt-2" id="inventoryTotal">0 ฿</h3>
-                    <div class="mt-6 inline-block bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium border border-white/10 shadow-inner" id="inventoryCount">
+                    <h3 class="font-heading text-4xl md:text-6xl font-bold tracking-tight mt-2 text-gold-gradient drop-shadow-lg" id="inventoryTotal">0 ฿</h3>
+                    <div class="mt-6 inline-block bg-black/40 backdrop-blur-sm px-5 py-2.5 rounded-full text-sm font-bold text-amber-100 border border-amber-500/20 shadow-inner" id="inventoryCount">
                         0 รายการ
                     </div>
                 </div>
             </div>
 
-            <div class="flex justify-between items-end mb-6">
-                <h3 class="text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2">
-                    <i class="ph-fill ph-books text-amber-500"></i> รายการพระในร้าน
+            <div class="flex justify-between items-end mb-6 border-b border-slate-200/70 pb-4">
+                <h3 class="font-heading text-2xl md:text-3xl font-bold text-slate-800 flex items-center gap-2">
+                    <i class="ph-fill ph-books text-[#8a1c1c]"></i> ทำเนียบพระในร้าน
                 </h3>
             </div>
 
-            <div id="inventoryList" class="space-y-6 md:space-y-8">
+            <div id="inventoryList" class="space-y-8 md:space-y-10">
                 <!-- Rendered by JS using Grid -->
             </div>
         </main>
@@ -142,103 +167,103 @@
         <!-- BOTTOM NAVIGATION -->
         <!-- ========================================== -->
         <div class="fixed bottom-0 w-full flex justify-center pointer-events-none z-40">
-            <!-- Container รองรับหน้าจอใหญ่ -->
-            <nav class="w-full bg-white border-t border-slate-200 flex justify-between px-4 md:px-10 pt-2 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pointer-events-auto transition-all">
+            <nav class="w-full bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-between px-4 md:px-10 pt-2 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.06)] pointer-events-auto transition-all">
                 
-                <button onclick="switchTab('ledger')" id="tabLedger" class="flex flex-col items-center justify-center flex-1 text-amber-600 transition-colors py-3 md:py-4 hover:bg-slate-50 rounded-2xl">
-                    <i id="iconLedger" class="ph-fill ph-receipt text-2xl md:text-3xl mb-1"></i>
-                    <span class="text-[11px] md:text-sm font-bold">บัญชีรายวัน</span>
+                <button onclick="switchTab('ledger')" id="tabLedger" class="flex flex-col items-center justify-center flex-1 text-[#8a1c1c] transition-colors py-3 md:py-4 hover:bg-red-50/50 rounded-2xl group">
+                    <i id="iconLedger" class="ph-fill ph-book-open-text text-2xl md:text-3xl mb-1 group-hover:-translate-y-1 transition-transform"></i>
+                    <span class="text-[11px] md:text-sm font-bold font-heading">บัญชีรายวัน</span>
                 </button>
                 
-                <!-- Center FAB -->
+                <!-- Center FAB (ปุ่มบันทึก) -->
                 <div class="w-24 md:w-32 relative flex justify-center">
                     <div class="absolute -top-8 md:-top-12">
-                        <button onclick="toggleModal(true)" class="bg-slate-900 hover:bg-slate-800 text-white rounded-full h-[64px] w-[64px] md:h-[80px] md:w-[80px] flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.3)] active:scale-90 transition-all hover:scale-105 group border-[4px] border-white">
-                            <i class="ph ph-plus text-3xl md:text-4xl group-hover:rotate-90 transition-transform duration-300"></i>
+                        <button onclick="toggleModal(true)" class="bg-velvet-gradient hover:brightness-110 text-white rounded-full h-[64px] w-[64px] md:h-[80px] md:w-[80px] flex items-center justify-center shadow-[0_10px_30px_rgba(138,28,28,0.5)] active:scale-90 transition-all hover:scale-105 group border-[4px] border-[#fcfaf8] relative overflow-hidden">
+                            <div class="absolute inset-0 bg-[url('data:image/svg+xml,...')] opacity-10"></div>
+                            <i class="ph-bold ph-plus text-3xl md:text-4xl text-amber-200 group-hover:rotate-90 transition-transform duration-300 relative z-10 drop-shadow-md"></i>
                         </button>
                     </div>
                 </div>
 
-                <button onclick="switchTab('inventory')" id="tabInventory" class="flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-slate-600 transition-colors py-3 md:py-4 hover:bg-slate-50 rounded-2xl">
-                    <i id="iconInventory" class="ph ph-package text-2xl md:text-3xl mb-1"></i>
-                    <span class="text-[11px] md:text-sm font-bold">สต็อกพระ</span>
+                <button onclick="switchTab('inventory')" id="tabInventory" class="flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-[#8a1c1c] transition-colors py-3 md:py-4 hover:bg-red-50/50 rounded-2xl group">
+                    <i id="iconInventory" class="ph ph-vault text-2xl md:text-3xl mb-1 group-hover:-translate-y-1 transition-transform"></i>
+                    <span class="text-[11px] md:text-sm font-bold font-heading">สต็อกพระ</span>
                 </button>
 
             </nav>
         </div>
 
         <!-- ========================================== -->
-        <!-- MODALS (ปรับขนาดให้กว้างขึ้นบน Desktop) -->
+        <!-- MODALS -->
         <!-- ========================================== -->
 
         <!-- 1. Input Modal (เพิ่มรายการใหม่) -->
-        <div id="modalBackdrop" class="fixed inset-0 z-50 items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm p-0 sm:p-4 hidden fade-in">
-            <div class="bg-white w-full max-w-2xl rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] slide-up">
+        <div id="modalBackdrop" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-slate-900/80 backdrop-blur-md p-0 sm:p-4 fade-in">
+            <div class="bg-[#fcfaf8] w-full max-w-2xl rounded-t-[32px] sm:rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[95vh] slide-up border border-slate-200/50">
                 
-                <div class="flex justify-between items-center p-5 md:p-6 border-b border-slate-100 bg-slate-50/50">
-                    <h2 class="text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2">
-                        <i class="ph-fill ph-pencil-simple-line text-amber-500"></i> บันทึกรายการใหม่
+                <div class="flex justify-between items-center p-5 md:p-6 border-b border-amber-200/50 bg-gradient-to-r from-red-50 to-amber-50">
+                    <h2 class="font-heading text-xl md:text-2xl font-bold text-[#8a1c1c] flex items-center gap-2">
+                        <i class="ph-fill ph-pencil-simple-line text-amber-500 drop-shadow-sm"></i> บันทึกรายการใหม่
                     </h2>
-                    <button type="button" onclick="toggleModal(false)" class="p-2 bg-white text-slate-500 rounded-full hover:bg-slate-200 transition-colors border border-slate-200 shadow-sm">
-                        <i class="ph ph-x text-lg"></i>
+                    <button type="button" onclick="toggleModal(false)" class="p-2 bg-white text-slate-400 rounded-full hover:bg-rose-50 hover:text-rose-500 transition-colors border border-slate-200 shadow-sm">
+                        <i class="ph-bold ph-x text-lg"></i>
                     </button>
                 </div>
 
                 <form id="transactionForm" class="p-5 md:p-8 overflow-y-auto no-scrollbar space-y-6 md:space-y-8">
                     <!-- Category Selection -->
                     <div>
-                        <label class="text-sm md:text-base font-semibold text-slate-500 mb-3 block">เลือกหมวดหมู่</label>
+                        <label class="font-heading text-sm md:text-base font-bold text-slate-700 mb-3 block">หมวดหมู่รายการ</label>
                         <div class="grid grid-cols-3 gap-2 md:gap-4" id="categoryContainer"></div>
                     </div>
 
                     <!-- Input Fields -->
-                    <div class="space-y-5 bg-slate-50 p-5 md:p-6 rounded-3xl border border-slate-100 shadow-inner">
+                    <div class="space-y-5 bg-white p-5 md:p-7 rounded-3xl border border-slate-200 shadow-sm">
                         <div>
                             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-2 gap-2">
-                                <label class="text-sm md:text-base font-semibold text-slate-500 block">ชื่อรายการ / ชื่อพระ</label>
-                                <button type="button" onclick="togglePresetModal(true)" class="text-xs md:text-sm text-amber-600 font-bold hover:text-amber-700 flex items-center gap-1.5 bg-amber-100 px-3 py-1.5 rounded-lg transition-colors border border-amber-200 shadow-sm hover:shadow-md">
-                                    <i class="ph-bold ph-books text-base"></i> เลือกจากทำเนียบ
+                                <label class="font-heading text-sm md:text-base font-bold text-slate-700 block">ชื่อรายการ / ชื่อพระ</label>
+                                <button type="button" onclick="togglePresetModal(true)" class="text-xs md:text-sm text-[#8a1c1c] font-bold hover:text-white flex items-center gap-1.5 bg-red-50 hover:bg-[#8a1c1c] px-3 py-1.5 rounded-lg transition-colors border border-red-200 shadow-sm group">
+                                    <i class="ph-bold ph-books text-base text-amber-500 group-hover:text-amber-200"></i> เลือกจากทำเนียบ
                                 </button>
                             </div>
                             <input type="text" id="inputTitle" required
-                                class="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-3 md:py-4 md:text-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all shadow-sm"
-                                placeholder="พิมพ์ชื่อพระ หรือกดปุ่มเลือกจากทำเนียบ">
+                                class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3.5 md:py-4 md:text-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all shadow-inner font-medium"
+                                placeholder="พิมพ์ชื่อ หรือเลือกจากทำเนียบ">
                         </div>
 
                         <!-- Item Code & Amount in a row -->
                         <div class="flex flex-col sm:flex-row gap-4">
                             <div class="sm:w-2/5">
-                                <label class="text-sm md:text-base font-semibold text-slate-500 mb-2 block">รหัสพระ <span class="text-[11px] md:text-xs text-slate-400 font-normal">(ถ้ามี)</span></label>
+                                <label class="font-heading text-sm md:text-base font-bold text-slate-700 mb-2 block">รหัสพระ <span class="text-[11px] md:text-xs text-slate-400 font-normal font-sans">(ถ้ามี)</span></label>
                                 <input type="text" id="inputItemCode"
-                                    class="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-3 md:py-4 md:text-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all shadow-sm uppercase font-medium placeholder:normal-case"
+                                    class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3.5 md:py-4 md:text-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all shadow-inner uppercase font-bold placeholder:font-normal placeholder:normal-case placeholder:text-slate-400"
                                     placeholder="เช่น A01">
                             </div>
                             <div class="sm:w-3/5">
-                                <label class="text-sm md:text-base font-semibold text-slate-500 mb-2 block">จำนวนเงิน (บาท)</label>
+                                <label class="font-heading text-sm md:text-base font-bold text-slate-700 mb-2 block">จำนวนเงิน (บาท)</label>
                                 <input type="number" id="inputAmount" required min="0" step="0.01"
-                                    class="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-xl md:text-2xl font-bold shadow-sm text-right"
+                                    class="w-full bg-slate-50 border border-slate-200 text-[#8a1c1c] rounded-xl px-4 py-3.5 md:py-4 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all text-xl md:text-2xl font-bold shadow-inner text-right"
                                     placeholder="0">
                             </div>
                         </div>
 
                         <!-- Image Upload -->
                         <div>
-                            <label class="text-sm md:text-base font-semibold text-slate-500 mb-2 block">รูปภาพประกอบ <span class="text-[11px] md:text-xs text-slate-400 font-normal">(ดูในสต็อกง่ายขึ้น)</span></label>
+                            <label class="font-heading text-sm md:text-base font-bold text-slate-700 mb-2 block">รูปภาพประกอบ <span class="text-[11px] md:text-xs text-slate-400 font-normal font-sans">(ช่วยจำในสต็อก)</span></label>
                             <div class="flex items-center gap-4">
-                                <label for="inputImage" class="shrink-0 bg-white border border-slate-200 hover:bg-amber-50 hover:border-amber-400 text-amber-600 rounded-2xl h-24 w-24 md:h-28 md:w-28 flex flex-col items-center justify-center cursor-pointer transition-all shadow-sm hover:shadow-md">
-                                    <i class="ph ph-camera-plus text-3xl md:text-4xl mb-1"></i>
+                                <label for="inputImage" class="shrink-0 bg-slate-50 border-2 border-dashed border-slate-300 hover:bg-amber-50 hover:border-amber-400 hover:text-amber-600 text-slate-400 rounded-2xl h-24 w-24 md:h-28 md:w-28 flex flex-col items-center justify-center cursor-pointer transition-all">
+                                    <i class="ph-bold ph-camera-plus text-3xl md:text-4xl mb-1"></i>
                                     <span class="text-[11px] md:text-xs font-bold">เพิ่มรูป</span>
                                 </label>
                                 <input type="file" id="inputImage" accept="image/*">
                                 
-                                <div id="imagePreviewContainer" class="hidden relative h-24 w-24 md:h-28 md:w-28 rounded-2xl border border-slate-200 overflow-hidden shadow-sm bg-white">
-                                    <img id="imagePreview" src="" alt="Preview" class="w-full h-full object-cover">
-                                    <button type="button" onclick="clearImageSelection()" class="absolute top-1.5 right-1.5 bg-red-500/90 text-white rounded-full p-1.5 hover:bg-red-600 backdrop-blur-sm shadow-md transition-transform hover:scale-110">
+                                <div id="imagePreviewContainer" class="hidden relative h-24 w-24 md:h-28 md:w-28 rounded-2xl border-2 border-amber-400 overflow-hidden shadow-md bg-black">
+                                    <img id="imagePreview" src="" alt="Preview" class="w-full h-full object-cover opacity-90">
+                                    <button type="button" onclick="clearImageSelection()" class="absolute top-1.5 right-1.5 bg-rose-500 text-white rounded-full p-1.5 hover:bg-rose-600 shadow-md transition-transform hover:scale-110">
                                         <i class="ph-bold ph-x text-xs"></i>
                                     </button>
                                 </div>
-                                <div id="imageHint" class="text-xs md:text-sm text-slate-400 leading-relaxed bg-slate-100/50 p-3 rounded-xl border border-slate-100">
-                                    <i class="ph-fill ph-info text-slate-400 mr-1"></i> รองรับรูปภาพ 1 รูป<br>ระบบจะปรับขนาดให้อัตโนมัติเพื่อประหยัดพื้นที่เครื่อง
+                                <div id="imageHint" class="text-xs md:text-sm text-slate-500 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100 flex-1">
+                                    <i class="ph-fill ph-info text-amber-500 mr-1"></i> รองรับภาพ 1 รูป<br>ระบบจะปรับขนาดภาพให้อัตโนมัติ เพื่อประหยัดพื้นที่ความจำ
                                 </div>
                             </div>
                         </div>
@@ -246,63 +271,62 @@
 
                     <!-- Wallet Selection -->
                     <div>
-                        <label class="text-sm md:text-base font-semibold text-slate-500 mb-3 block">ชำระผ่าน (กระเป๋าเงิน)</label>
+                        <label class="font-heading text-sm md:text-base font-bold text-slate-700 mb-3 block">ชำระผ่าน (กระเป๋าเงิน)</label>
                         <div class="flex gap-3 md:gap-4" id="walletContainer"></div>
                     </div>
 
-                    <button type="submit" id="btnSubmit" class="w-full bg-slate-900 text-white font-bold text-lg md:text-xl py-4 md:py-5 rounded-2xl shadow-xl hover:bg-slate-800 active:scale-[0.98] transition-all flex justify-center items-center gap-2 mt-4 hover:shadow-2xl">
-                        <i class="ph-bold ph-floppy-disk text-2xl"></i> บันทึกรายการ
+                    <button type="submit" id="btnSubmit" class="w-full bg-velvet-gradient text-white font-heading font-bold text-xl md:text-2xl py-4 md:py-5 rounded-2xl shadow-[0_10px_20px_rgba(138,28,28,0.4)] hover:shadow-[0_15px_25px_rgba(138,28,28,0.5)] hover:brightness-110 active:scale-[0.98] transition-all flex justify-center items-center gap-2 mt-4 border border-red-900/50">
+                        <i class="ph-bold ph-check-circle text-2xl text-amber-400"></i> บันทึกรายการ
                     </button>
                 </form>
             </div>
         </div>
 
         <!-- 2. Preset Modal (ทำเนียบพระ) -->
-        <div id="presetModal" class="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm hidden flex-col justify-end sm:items-center sm:justify-center fade-in">
-            <div class="bg-white w-full max-w-2xl rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] slide-up">
+        <div id="presetModal" class="fixed inset-0 z-[60] bg-slate-900/80 backdrop-blur-md hidden flex-col justify-end sm:items-center sm:justify-center fade-in">
+            <div class="bg-[#fcfaf8] w-full max-w-3xl rounded-t-[32px] sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] slide-up border border-slate-200/50">
                 
-                <div class="flex justify-between items-center p-5 md:p-6 border-b border-slate-100 bg-amber-50/30">
+                <div class="flex justify-between items-center p-5 md:p-6 border-b border-amber-200/50 bg-gradient-to-r from-[#8a1c1c] to-[#6b1111] text-white">
                     <div>
-                        <h2 class="text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2">
-                            <i class="ph-fill ph-books text-amber-600"></i> ทำเนียบพระ
+                        <h2 class="font-heading text-xl md:text-2xl font-bold flex items-center gap-2 text-amber-100">
+                            <i class="ph-fill ph-books text-amber-400"></i> ทำเนียบพระ
                         </h2>
-                        <p class="text-xs md:text-sm text-slate-500 mt-1">เลือกรายการเพื่อบันทึกได้รวดเร็วขึ้น</p>
+                        <p class="text-xs md:text-sm text-red-200 mt-1 opacity-80">เลือกรายการเพื่อบันทึกอย่างรวดเร็ว</p>
                     </div>
-                    <button type="button" onclick="togglePresetModal(false)" class="p-2 bg-white text-slate-500 rounded-full hover:bg-slate-200 transition-colors border border-slate-200 shadow-sm">
-                        <i class="ph ph-x text-lg"></i>
+                    <button type="button" onclick="togglePresetModal(false)" class="p-2 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors border border-white/20">
+                        <i class="ph-bold ph-x text-lg"></i>
                     </button>
                 </div>
 
-                <!-- Grid view for presets on desktop -->
                 <div class="flex-1 overflow-y-auto p-5 md:p-8 no-scrollbar bg-slate-50/50" id="presetListContainer">
                     <!-- Rendered by JS -->
                 </div>
 
-                <div class="p-5 md:p-6 border-t border-slate-100 bg-white shadow-[0_-10px_20px_rgba(0,0,0,0.02)]">
-                    <button type="button" id="btnShowAddPreset" onclick="toggleAddPresetForm(true)" class="w-full py-4 border-2 border-dashed border-amber-300 text-amber-700 bg-amber-50/50 font-semibold md:text-lg rounded-2xl flex justify-center items-center gap-2 hover:bg-amber-100 transition-colors hover:border-amber-400 shadow-sm">
-                        <i class="ph ph-plus-circle text-xl"></i> เพิ่มหมวดหมู่ / รุ่นพระใหม่
+                <div class="p-5 md:p-6 border-t border-slate-200 bg-white shadow-[0_-10px_20px_rgba(0,0,0,0.02)] relative z-10">
+                    <button type="button" id="btnShowAddPreset" onclick="toggleAddPresetForm(true)" class="w-full py-4 border-2 border-dashed border-amber-400 text-amber-700 bg-amber-50 font-heading font-bold md:text-lg rounded-2xl flex justify-center items-center gap-2 hover:bg-amber-100 transition-colors hover:border-amber-500 shadow-sm">
+                        <i class="ph-bold ph-plus-circle text-xl"></i> เพิ่มหมวดหมู่ / รุ่นพระใหม่
                     </button>
                     
-                    <div id="addPresetFormContainer" class="hidden flex-col gap-4 zoom-in bg-slate-50 p-5 rounded-2xl border border-slate-100 shadow-inner">
-                        <h3 class="text-sm md:text-base font-bold text-slate-700 border-b border-slate-200 pb-2">เพิ่มรายการพระใหม่เข้าทำเนียบ</h3>
+                    <div id="addPresetFormContainer" class="hidden flex-col gap-4 zoom-in bg-white p-5 rounded-2xl border border-amber-200 shadow-[0_5px_15px_rgba(234,179,8,0.15)]">
+                        <h3 class="font-heading text-base md:text-lg font-bold text-[#8a1c1c] border-b border-red-100 pb-2">เพิ่มรายการพระใหม่เข้าทำเนียบ</h3>
                         
                         <div class="flex flex-col md:flex-row gap-4">
                             <div class="flex-1">
-                                <label class="text-xs font-bold text-slate-500 mb-1 block">หมวดหมู่</label>
-                                <input type="text" id="newPresetCategory" placeholder="เช่น 108 ปี พ.ศ. 2523" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm md:text-base focus:ring-2 focus:ring-amber-500 outline-none shadow-sm" list="categoryDatalist">
+                                <label class="text-xs font-bold text-slate-500 mb-1 block">ชื่อหมวดหมู่ / รุ่น</label>
+                                <input type="text" id="newPresetCategory" placeholder="เช่น 108 ปี พ.ศ. 2523" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm md:text-base focus:ring-2 focus:ring-amber-500 outline-none shadow-inner font-medium" list="categoryDatalist">
                                 <datalist id="categoryDatalist"></datalist>
                             </div>
                             <div class="flex-1">
                                 <label class="text-xs font-bold text-slate-500 mb-1 block">ชื่อพิมพ์พระ</label>
-                                <input type="text" id="newPresetName" placeholder="เช่น พิมพ์ A ลึก" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm md:text-base focus:ring-2 focus:ring-amber-500 outline-none shadow-sm">
+                                <input type="text" id="newPresetName" placeholder="เช่น พิมพ์ A ลึก" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm md:text-base focus:ring-2 focus:ring-amber-500 outline-none shadow-inner font-medium">
                             </div>
                         </div>
                         
                         <div class="flex gap-3 mt-2">
-                            <button type="button" onclick="saveNewPreset()" class="flex-1 bg-amber-600 text-white font-bold py-3 md:py-4 rounded-xl hover:bg-amber-700 transition-colors shadow-md text-sm md:text-base flex justify-center items-center gap-2">
-                                <i class="ph-bold ph-check"></i> บันทึก
+                            <button type="button" onclick="saveNewPreset()" class="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-heading font-bold py-3.5 md:py-4 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all shadow-md text-sm md:text-base flex justify-center items-center gap-2 border border-amber-600">
+                                <i class="ph-bold ph-check"></i> บันทึกเข้าทำเนียบ
                             </button>
-                            <button type="button" onclick="toggleAddPresetForm(false)" class="flex-1 bg-white border border-slate-200 text-slate-700 font-bold py-3 md:py-4 rounded-xl hover:bg-slate-100 transition-colors shadow-sm text-sm md:text-base">
+                            <button type="button" onclick="toggleAddPresetForm(false)" class="flex-1 bg-white border-2 border-slate-200 text-slate-600 font-bold py-3.5 md:py-4 rounded-xl hover:bg-slate-50 transition-colors text-sm md:text-base">
                                 ยกเลิก
                             </button>
                         </div>
@@ -312,78 +336,78 @@
         </div>
 
         <!-- 3. Sell from Inventory Modal -->
-        <div id="sellInventoryModal" class="fixed inset-0 z-[60] hidden items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm p-0 sm:p-4 fade-in">
-            <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col slide-up p-6 md:p-8">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2">
+        <div id="sellInventoryModal" class="fixed inset-0 z-[60] hidden items-end sm:items-center justify-center bg-slate-900/80 backdrop-blur-md p-0 sm:p-4 fade-in">
+            <div class="bg-white w-full max-w-lg rounded-t-[32px] sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col slide-up p-6 md:p-8 border border-emerald-100">
+                <div class="flex justify-between items-center mb-5">
+                    <h2 class="font-heading text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2">
                         <i class="ph-fill ph-hand-coins text-emerald-500"></i> บันทึกการปล่อยเช่า
                     </h2>
                     <button type="button" onclick="closeSellInventoryModal()" class="p-2 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 transition-colors">
-                        <i class="ph ph-x text-sm md:text-base"></i>
+                        <i class="ph-bold ph-x text-sm md:text-base"></i>
                     </button>
                 </div>
                 
-                <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100 bg-slate-50 -mx-6 md:-mx-8 px-6 md:px-8 pt-4 shadow-inner">
-                    <div id="sellInventoryImageContainer" class="hidden shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-white">
+                <div class="flex items-center gap-4 mb-6 pb-6 border-b border-slate-100 bg-slate-50 -mx-6 md:-mx-8 px-6 md:px-8 pt-5 shadow-inner">
+                    <div id="sellInventoryImageContainer" class="hidden shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden border-2 border-emerald-400 shadow-md bg-black">
                         <img id="sellInventoryImage" src="" class="w-full h-full object-cover">
                     </div>
                     <div class="min-w-0">
-                        <p id="sellInventoryItemName" class="text-amber-700 font-bold text-base md:text-lg line-clamp-2 leading-tight"></p>
-                        <p id="sellInventoryItemCode" class="text-xs md:text-sm text-slate-500 font-medium mt-1.5 hidden bg-white inline-block px-2 py-0.5 rounded border border-slate-200 shadow-sm">รหัส: <span class="uppercase font-bold"></span></p>
+                        <p id="sellInventoryItemName" class="font-heading text-[#8a1c1c] font-bold text-lg md:text-xl line-clamp-2 leading-tight drop-shadow-sm"></p>
+                        <p id="sellInventoryItemCode" class="text-xs md:text-sm text-amber-700 font-bold mt-2 hidden bg-amber-50 inline-block px-2.5 py-1 rounded-md border border-amber-200 shadow-sm">รหัส: <span class="uppercase"></span></p>
                     </div>
                 </div>
                 
                 <form id="sellInventoryForm" class="space-y-6">
                     <div>
-                        <label class="text-sm md:text-base font-semibold text-slate-500 mb-2 block">ราคาที่ปล่อยเช่าได้ (บาท)</label>
+                        <label class="font-heading text-sm md:text-base font-bold text-slate-700 mb-2 block">ราคาที่ปล่อยเช่าได้ (บาท)</label>
                         <input type="number" id="sellInventoryAmount" required min="0" step="0.01"
-                            class="w-full bg-emerald-50/50 border border-emerald-200 text-emerald-800 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-3xl font-bold text-center shadow-inner"
+                            class="w-full bg-emerald-50 border-2 border-emerald-200 text-emerald-800 rounded-2xl px-4 py-4 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all text-3xl font-bold text-center shadow-inner"
                             placeholder="0">
                     </div>
                     <div>
-                        <label class="text-sm md:text-base font-semibold text-slate-500 mb-3 block">รับเงินทาง (กระเป๋าเงิน)</label>
+                        <label class="font-heading text-sm md:text-base font-bold text-slate-700 mb-3 block">รับเงินทาง (กระเป๋าเงิน)</label>
                         <div class="flex gap-3 md:gap-4">
                             <button type="button" onclick="setSellInventoryWallet('TRANSFER')" id="sellWalletTransfer"
                                 class="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold transition-all text-sm md:text-base shadow-sm">
-                                <i class="ph ph-bank text-xl md:text-2xl"></i> เงินโอน
+                                <i class="ph-fill ph-device-mobile text-xl md:text-2xl"></i> เงินโอน
                             </button>
                             <button type="button" onclick="setSellInventoryWallet('CASH')" id="sellWalletCash"
-                                class="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-slate-100 text-slate-500 transition-all text-sm md:text-base shadow-sm hover:bg-slate-50">
-                                <i class="ph ph-wallet text-xl md:text-2xl"></i> เงินสด
+                                class="flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-slate-200 text-slate-500 transition-all text-sm md:text-base shadow-sm hover:bg-slate-50">
+                                <i class="ph-fill ph-wallet text-xl md:text-2xl"></i> เงินสด
                             </button>
                         </div>
                     </div>
-                    <button type="submit" class="w-full bg-emerald-600 text-white font-bold text-lg md:text-xl py-5 rounded-2xl hover:bg-emerald-700 shadow-xl shadow-emerald-600/30 transition-all active:scale-[0.98] mt-6 flex items-center justify-center gap-2">
-                        <i class="ph-bold ph-check-circle text-2xl"></i> บันทึกรับเงิน และ ตัดสต็อก
+                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-heading font-bold text-xl md:text-2xl py-5 rounded-2xl hover:from-emerald-600 hover:to-emerald-700 shadow-[0_10px_20px_rgba(16,185,129,0.3)] transition-all active:scale-[0.98] mt-6 flex items-center justify-center gap-2 border border-emerald-700">
+                        <i class="ph-bold ph-check-circle text-2xl text-emerald-100"></i> บันทึกรับเงิน & ตัดสต็อก
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- 4. Image Viewer Modal (ดูรูปขยายใหญ่) -->
-        <div id="imageViewerModal" class="fixed inset-0 z-[80] bg-slate-900/95 backdrop-blur-sm hidden items-center justify-center fade-in" onclick="closeImageViewer()">
-            <button class="absolute top-6 right-6 text-white p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-md">
-                <i class="ph ph-x text-2xl"></i>
+        <!-- 4. Image Viewer Modal -->
+        <div id="imageViewerModal" class="fixed inset-0 z-[80] bg-black/95 backdrop-blur-md hidden items-center justify-center fade-in" onclick="closeImageViewer()">
+            <button class="absolute top-6 right-6 text-white p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-md border border-white/20">
+                <i class="ph-bold ph-x text-2xl"></i>
             </button>
-            <img id="enlargedImage" src="" class="max-w-[95vw] max-h-[85vh] object-contain zoom-in rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
-            <div id="enlargedImageTitle" class="absolute bottom-10 max-w-[90vw] text-center text-white bg-black/60 px-6 py-3 rounded-full text-sm md:text-base font-medium backdrop-blur-md shadow-lg border border-white/10"></div>
+            <img id="enlargedImage" src="" class="max-w-[95vw] max-h-[85vh] object-contain zoom-in rounded-xl shadow-2xl border border-white/10" onclick="event.stopPropagation()">
+            <div id="enlargedImageTitle" class="absolute bottom-10 max-w-[90vw] text-center text-amber-100 bg-black/70 px-6 py-3 rounded-full font-heading text-sm md:text-base font-bold backdrop-blur-md shadow-lg border border-amber-500/30"></div>
         </div>
 
-        <!-- Toast Notification -->
+        <!-- Custom Toast Notification -->
         <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 z-[100] hidden zoom-in pointer-events-none">
-            <div class="bg-emerald-600 text-white px-6 py-4 rounded-full shadow-2xl font-medium flex items-center gap-3 border border-emerald-500/50 backdrop-blur-md">
-                <i class="ph-fill ph-check-circle text-2xl"></i>
-                <span id="toastMsg" class="md:text-lg">บันทึกสำเร็จ</span>
+            <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-6 py-4 rounded-full shadow-2xl font-bold flex items-center gap-3 border border-emerald-400 backdrop-blur-md">
+                <i class="ph-fill ph-check-circle text-2xl text-emerald-200"></i>
+                <span id="toastMsg" class="md:text-lg font-heading tracking-wide">บันทึกสำเร็จ</span>
             </div>
         </div>
 
     </div>
 
     <script>
-        const STORAGE_KEY = 'amulet_ledger_vanilla_v5'; // เปลี่ยนเวอร์ชันป้องกันข้อมูลชน
-        const PRESET_STORAGE_KEY = 'amulet_presets_v5';
+        const STORAGE_KEY = 'amulet_ledger_pro_v8'; // เปลี่ยน Key ป้องกันชนของเก่า
+        const PRESET_STORAGE_KEY = 'amulet_presets_pro_v8';
         
-        // หมวดหมู่เริ่มต้น
+        // ฐานข้อมูลทำเนียบพระเริ่มต้น
         const DEFAULT_PRESETS = [
             {
                 category: "รุ่น 100 ปี พ.ศ. 2515",
@@ -405,16 +429,16 @@
             }
         ];
 
-        // ประเภทของรายการบัญชี (ปรับ CERT เป็นรายรับรับออกบัตร)
+        // หมวดหมู่ (ตั้งค่าออกบัตร เป็น INCOME)
         const CATEGORIES = {
-            SELL: { id: 'SELL', label: 'ปล่อยเช่า', type: 'INCOME', icon: 'ph-trend-up', color: 'text-emerald-600', border: 'border-emerald-500', bg: 'bg-emerald-100' },
-            BUY: { id: 'BUY', label: 'เช่าเข้า', type: 'EXPENSE', icon: 'ph-trend-down', color: 'text-rose-600', border: 'border-rose-500', bg: 'bg-rose-100' },
-            CERT: { id: 'CERT', label: 'รับออกบัตร', type: 'INCOME', icon: 'ph-medal', color: 'text-amber-600', border: 'border-amber-500', bg: 'bg-amber-100' },
-            OTHER_INCOME: { id: 'OTHER_INCOME', label: 'รายรับอื่น', type: 'INCOME', icon: 'ph-plus-circle', color: 'text-blue-600', border: 'border-blue-500', bg: 'bg-blue-100' },
-            OTHER_EXPENSE: { id: 'OTHER_EXPENSE', label: 'รายจ่ายอื่น', type: 'EXPENSE', icon: 'ph-tag', color: 'text-slate-600', border: 'border-slate-500', bg: 'bg-slate-100' }
+            SELL: { id: 'SELL', label: 'ปล่อยเช่า', type: 'INCOME', icon: 'ph-trend-up', color: 'text-emerald-600', border: 'border-emerald-500', bg: 'bg-emerald-50' },
+            BUY: { id: 'BUY', label: 'เช่าเข้า (สต็อก)', type: 'EXPENSE', icon: 'ph-trend-down', color: 'text-rose-600', border: 'border-rose-500', bg: 'bg-rose-50' },
+            CERT: { id: 'CERT', label: 'รับออกบัตร', type: 'INCOME', icon: 'ph-medal', color: 'text-amber-600', border: 'border-amber-500', bg: 'bg-amber-50' },
+            OTHER_INCOME: { id: 'OTHER_INCOME', label: 'รายรับอื่น', type: 'INCOME', icon: 'ph-plus-circle', color: 'text-blue-600', border: 'border-blue-500', bg: 'bg-blue-50' },
+            OTHER_EXPENSE: { id: 'OTHER_EXPENSE', label: 'รายจ่ายอื่น', type: 'EXPENSE', icon: 'ph-tag', color: 'text-slate-600', border: 'border-slate-500', bg: 'bg-slate-50' }
         };
 
-        // ตัวแปรเก็บสถานะการทำงาน
+        // State Management
         let state = {
             transactions: JSON.parse(localStorage.getItem(STORAGE_KEY)) || [],
             presets: JSON.parse(localStorage.getItem(PRESET_STORAGE_KEY)) || DEFAULT_PRESETS,
@@ -429,7 +453,7 @@
             currentImageBase64: null 
         };
 
-        // เชื่อมต่อ HTML Elements
+        // DOM Elements
         const els = {
             datePicker: document.getElementById('datePicker'),
             totalBalance: document.getElementById('totalBalance'),
@@ -492,39 +516,33 @@
             enlargedImageTitle: document.getElementById('enlargedImageTitle')
         };
 
-        // เริ่มต้นแอป
         function init() {
             els.datePicker.value = state.selectedDate;
-            
-            els.datePicker.addEventListener('change', (e) => {
-                state.selectedDate = e.target.value;
-                updateUI();
-            });
+            els.datePicker.addEventListener('change', (e) => { state.selectedDate = e.target.value; updateUI(); });
             els.transactionForm.addEventListener('submit', handleFormSubmit);
             els.sellInventoryForm.addEventListener('submit', handleSellInventorySubmit);
             els.inputImage.addEventListener('change', handleImageUpload);
-
+            
             renderCategoryButtons();
             renderWalletButtons();
             updateUI();
         }
 
-        // จัดการฟอร์แมตเงิน
         function formatMoney(amount) {
             return new Intl.NumberFormat('th-TH', { minimumFractionDigits: 0 }).format(amount) + ' ฿';
         }
 
-        // แจ้งเตือน Toast ไร้ Alert()
         function showToast(msg, isError = false) {
             els.toastMsg.innerText = msg;
             const icon = els.toast.querySelector('i');
+            const box = els.toast.children[0];
             
             if(isError) {
-                els.toast.children[0].className = "bg-rose-600 text-white px-6 py-4 rounded-full shadow-2xl font-medium flex items-center gap-3 border border-rose-500/50 backdrop-blur-md";
-                icon.className = "ph-fill ph-warning-circle text-2xl";
+                box.className = "bg-gradient-to-r from-rose-600 to-rose-700 text-white px-6 py-4 rounded-full shadow-2xl font-bold flex items-center gap-3 border border-rose-400 backdrop-blur-md";
+                icon.className = "ph-fill ph-warning-circle text-2xl text-rose-200";
             } else {
-                els.toast.children[0].className = "bg-emerald-600 text-white px-6 py-4 rounded-full shadow-2xl font-medium flex items-center gap-3 border border-emerald-500/50 backdrop-blur-md";
-                icon.className = "ph-fill ph-check-circle text-2xl";
+                box.className = "bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-6 py-4 rounded-full shadow-2xl font-bold flex items-center gap-3 border border-emerald-400 backdrop-blur-md";
+                icon.className = "ph-fill ph-check-circle text-2xl text-emerald-200";
             }
 
             els.toast.classList.remove('hidden');
@@ -540,7 +558,7 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 600; // เพิ่มขนาดความละเอียดขึ้นนิดหน่อยเพื่อจอใหญ่
+                    const MAX_WIDTH = 600;
                     const MAX_HEIGHT = 600;
                     let width = img.width;
                     let height = img.height;
@@ -598,18 +616,18 @@
                 els.viewLedger.classList.remove('hidden');
                 els.viewInventory.classList.add('hidden');
                 
-                els.tabLedger.className = "flex flex-col items-center justify-center flex-1 text-amber-600 transition-colors py-3 md:py-4 hover:bg-slate-50 rounded-2xl";
-                els.iconLedger.className = "ph-fill ph-receipt text-2xl md:text-3xl mb-1";
-                els.tabInventory.className = "flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-slate-600 transition-colors py-3 md:py-4 hover:bg-slate-50 rounded-2xl";
-                els.iconInventory.className = "ph ph-package text-2xl md:text-3xl mb-1";
+                els.tabLedger.className = "flex flex-col items-center justify-center flex-1 text-[#8a1c1c] transition-colors py-3 md:py-4 hover:bg-red-50/50 rounded-2xl group";
+                els.iconLedger.className = "ph-fill ph-book-open-text text-2xl md:text-3xl mb-1 group-hover:-translate-y-1 transition-transform";
+                els.tabInventory.className = "flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-[#8a1c1c] transition-colors py-3 md:py-4 hover:bg-red-50/50 rounded-2xl group";
+                els.iconInventory.className = "ph ph-vault text-2xl md:text-3xl mb-1 group-hover:-translate-y-1 transition-transform";
             } else {
                 els.viewLedger.classList.add('hidden');
                 els.viewInventory.classList.remove('hidden');
                 
-                els.tabInventory.className = "flex flex-col items-center justify-center flex-1 text-amber-600 transition-colors py-3 md:py-4 hover:bg-slate-50 rounded-2xl";
-                els.iconInventory.className = "ph-fill ph-package text-2xl md:text-3xl mb-1";
-                els.tabLedger.className = "flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-slate-600 transition-colors py-3 md:py-4 hover:bg-slate-50 rounded-2xl";
-                els.iconLedger.className = "ph ph-receipt text-2xl md:text-3xl mb-1";
+                els.tabInventory.className = "flex flex-col items-center justify-center flex-1 text-[#8a1c1c] transition-colors py-3 md:py-4 hover:bg-red-50/50 rounded-2xl group";
+                els.iconInventory.className = "ph-fill ph-vault text-2xl md:text-3xl mb-1 group-hover:-translate-y-1 transition-transform";
+                els.tabLedger.className = "flex flex-col items-center justify-center flex-1 text-slate-400 hover:text-[#8a1c1c] transition-colors py-3 md:py-4 hover:bg-red-50/50 rounded-2xl group";
+                els.iconLedger.className = "ph ph-book-open-text text-2xl md:text-3xl mb-1 group-hover:-translate-y-1 transition-transform";
             }
         }
 
@@ -626,20 +644,17 @@
         }
 
         function renderPresets() {
-            let html = '';
+            let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">';
             let datalistHtml = '';
-            
-            // ใช้ Grid เพื่อให้ดูดีบนคอมพิวเตอร์
-            html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
             
             state.presets.forEach((group) => {
                 datalistHtml += `<option value="${group.category}">`;
                 html += `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <h3 class="text-base font-bold text-slate-700 mb-3 pl-2 border-l-4 border-amber-500 leading-none py-1">${group.category}</h3>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-amber-100">
+                        <h3 class="font-heading text-base font-bold text-[#8a1c1c] mb-3 pl-3 border-l-4 border-amber-500 leading-none py-1">${group.category}</h3>
                         <div class="space-y-2">
                             ${group.items.map(item => `
-                                <button type="button" onclick="selectPreset('${item}', '${group.category}')" class="w-full text-left px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl hover:bg-amber-50 hover:border-amber-300 hover:text-amber-800 transition-all text-slate-700 text-sm font-medium flex items-center justify-between group shadow-sm">
+                                <button type="button" onclick="selectPreset('${item}', '${group.category}')" class="w-full text-left px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl hover:bg-amber-50 hover:border-amber-300 hover:text-[#8a1c1c] transition-all text-slate-700 text-sm font-medium flex items-center justify-between group shadow-sm">
                                     <span class="truncate pr-2">${item}</span>
                                     <i class="ph-fill ph-check-circle text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 text-lg"></i>
                                 </button>
@@ -648,10 +663,9 @@
                     </div>
                 `;
             });
-            
-            html += `</div>`;
+            html += '</div>';
 
-            els.presetListContainer.innerHTML = state.presets.length > 0 ? html : '<div class="text-center text-slate-400 py-16 w-full"><i class="ph ph-books text-4xl mb-2 opacity-50"></i><p>ยังไม่มีข้อมูลในทำเนียบ</p></div>';
+            els.presetListContainer.innerHTML = state.presets.length > 0 ? html : '<div class="text-center text-slate-400 py-16 w-full"><i class="ph ph-books text-5xl mb-3 opacity-30"></i><p class="font-heading font-medium">ยังไม่มีข้อมูลในทำเนียบ</p></div>';
             els.categoryDatalist.innerHTML = datalistHtml;
         }
 
@@ -736,7 +750,7 @@
                     <button type="button" onclick="setCategory('${cat.id}')"
                         class="flex flex-col items-center justify-center p-3 md:p-4 rounded-2xl border-2 transition-all shadow-sm ${isSelected ? `${cat.border} ${cat.bg} scale-105 shadow-md` : 'border-slate-100 bg-white hover:bg-slate-50 hover:border-slate-300'}">
                         <i class="${cat.icon} text-2xl md:text-3xl mb-1.5 ${isSelected ? cat.color : 'text-slate-400'}"></i>
-                        <span class="text-[11px] md:text-xs font-bold ${isSelected ? cat.color : 'text-slate-500'} truncate px-1 w-full text-center">${cat.label}</span>
+                        <span class="text-[11px] md:text-xs font-bold font-heading ${isSelected ? cat.color : 'text-slate-500'} truncate px-1 w-full text-center">${cat.label}</span>
                     </button>
                 `;
             });
@@ -750,11 +764,11 @@
             els.walletContainer.innerHTML = `
                 <button type="button" onclick="setWallet('TRANSFER')"
                     class="flex-1 flex items-center justify-center gap-2 py-3.5 md:py-4 rounded-xl border-2 transition-all shadow-sm ${isTransfer ? 'border-blue-500 bg-blue-50 text-blue-700 font-bold' : 'border-slate-200 text-slate-500 bg-white hover:bg-slate-50'}">
-                    <i class="ph ph-bank text-xl md:text-2xl"></i> เงินโอน
+                    <i class="ph-fill ph-device-mobile text-xl md:text-2xl"></i> เงินโอน
                 </button>
                 <button type="button" onclick="setWallet('CASH')"
                     class="flex-1 flex items-center justify-center gap-2 py-3.5 md:py-4 rounded-xl border-2 transition-all shadow-sm ${isCash ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-bold' : 'border-slate-200 text-slate-500 bg-white hover:bg-slate-50'}">
-                    <i class="ph ph-wallet text-xl md:text-2xl"></i> เงินสด
+                    <i class="ph-fill ph-wallet text-xl md:text-2xl"></i> เงินสด
                 </button>
             `;
         }
@@ -767,7 +781,7 @@
 
             if (!title || isNaN(amount)) return;
             
-            els.btnSubmit.innerHTML = '<i class="ph ph-spinner animate-spin text-2xl"></i> กำลังบันทึก...';
+            els.btnSubmit.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-2xl text-amber-400"></i> กำลังบันทึก...';
             els.btnSubmit.disabled = true;
 
             setTimeout(() => {
@@ -793,11 +807,10 @@
                     updateUI();
                     showToast('บันทึกข้อมูลสำเร็จ');
                 } catch (error) {
-                    // เปลี่ยนจากการใช้ alert เป็น showToast แสดงข้อผิดพลาด
                     showToast('หน่วยความจำภาพเต็ม! กรุณาลบรายการเก่า', true);
                     console.error("Storage Error:", error);
                 } finally {
-                    els.btnSubmit.innerHTML = '<i class="ph-bold ph-floppy-disk text-2xl"></i> บันทึกรายการ';
+                    els.btnSubmit.innerHTML = '<i class="ph-bold ph-check-circle text-2xl text-amber-400"></i> บันทึกรายการ';
                     els.btnSubmit.disabled = false;
                 }
             }, 100);
@@ -858,10 +871,10 @@
             state.sellInventoryWallet = walletId;
             if (walletId === 'TRANSFER') {
                 els.sellWalletTransfer.className = "flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-blue-500 bg-blue-50 text-blue-700 font-bold transition-all text-sm md:text-base shadow-sm";
-                els.sellWalletCash.className = "flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-slate-100 text-slate-500 transition-all text-sm md:text-base hover:bg-slate-50";
+                els.sellWalletCash.className = "flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-slate-200 text-slate-500 transition-all text-sm md:text-base hover:bg-slate-50";
             } else {
                 els.sellWalletCash.className = "flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 font-bold transition-all text-sm md:text-base shadow-sm";
-                els.sellWalletTransfer.className = "flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-slate-100 text-slate-500 transition-all text-sm md:text-base hover:bg-slate-50";
+                els.sellWalletTransfer.className = "flex-1 flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-slate-200 text-slate-500 transition-all text-sm md:text-base hover:bg-slate-50";
             }
         }
 
@@ -874,7 +887,6 @@
             if (originalTxIndex === -1) return;
             
             const originalTx = state.transactions[originalTxIndex];
-            
             state.transactions[originalTxIndex] = { ...originalTx, isSold: true };
 
             const newSellTx = {
@@ -897,7 +909,7 @@
             updateUI();
             
             switchTab('ledger');
-            showToast('ตัดสต็อกสำเร็จ และเพิ่มเป็นรายรับแล้ว!');
+            showToast('ตัดสต็อก และเพิ่มเป็นรายรับแล้ว!');
         }
 
         function updateUI() {
@@ -934,13 +946,12 @@
 
             // Render Ledger List
             if (todayTxs.length === 0) {
-                // แจ้งเตือนไม่มีรายการ (ให้ครอบคลุมพื้นที่ Grid เต็ม)
                 els.transactionList.innerHTML = `
-                    <div class="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 text-center py-20 bg-white rounded-3xl border border-slate-200 border-dashed shadow-sm">
-                        <div class="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="ph ph-activity text-4xl text-slate-300"></i>
+                    <div class="col-span-full text-center py-20 bg-white rounded-3xl border border-slate-200 border-dashed shadow-sm">
+                        <div class="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                            <i class="ph-fill ph-book-open-text text-5xl text-slate-300"></i>
                         </div>
-                        <p class="text-slate-500 font-medium md:text-lg">ยังไม่มีรายการในวันนี้</p>
+                        <p class="font-heading font-bold text-slate-500 md:text-lg">ยังไม่มีรายการในวันนี้</p>
                     </div>
                 `;
             } else {
@@ -955,20 +966,20 @@
                         actionHtml = `
                             <div class="flex items-center gap-1.5 zoom-in mt-2 justify-end">
                                 <button onclick="cancelDelete()" class="text-[11px] md:text-xs font-bold text-slate-500 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors">ยกเลิก</button>
-                                <button onclick="confirmDelete('${tx.id}')" class="text-[11px] md:text-xs font-bold bg-rose-500 text-white hover:bg-rose-600 px-3 py-1.5 rounded-lg transition-colors shadow-sm">ยืนยันลบ!</button>
+                                <button onclick="confirmDelete('${tx.id}')" class="text-[11px] md:text-xs font-bold bg-rose-600 text-white hover:bg-rose-700 px-3 py-1.5 rounded-lg transition-colors shadow-sm">ยืนยันลบ!</button>
                             </div>
                         `;
                     } else {
                         if (tx.categoryId === 'BUY' && tx.isSold) {
                             actionHtml = `
-                                <span class="mt-2 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md flex items-center gap-1 border border-emerald-200 shadow-sm self-end">
+                                <span class="mt-2 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-md flex items-center gap-1 border border-emerald-200 shadow-sm self-end">
                                     <i class="ph-fill ph-check-circle"></i> ปล่อยแล้ว
                                 </span>
                             `;
                         } else {
                             actionHtml = `
-                                <button onclick="promptDelete('${tx.id}')" class="mt-2 text-xs font-medium text-slate-300 hover:text-rose-500 hover:bg-rose-50 px-2 py-1 rounded transition-colors flex items-center gap-1 self-end">
-                                    <i class="ph ph-trash"></i> ลบ
+                                <button onclick="promptDelete('${tx.id}')" class="mt-2 text-xs font-bold text-slate-300 hover:text-rose-500 hover:bg-rose-50 px-2 py-1 rounded transition-colors flex items-center gap-1 self-end">
+                                    <i class="ph-bold ph-trash"></i> ลบ
                                 </button>
                             `;
                         }
@@ -976,36 +987,35 @@
 
                     let mediaHtml = '';
                     if (tx.imageBase64) {
-                        mediaHtml = `<div class="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-xl overflow-hidden border border-slate-200 shadow-sm cursor-pointer hover:opacity-80 transition-opacity" onclick="openImageViewer('${tx.imageBase64}', '${tx.title.replace(/'/g, "\\'")}', '${tx.itemCode || ''}')"><img src="${tx.imageBase64}" class="w-full h-full object-cover"></div>`;
+                        mediaHtml = `<div class="shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-xl overflow-hidden border-2 border-amber-200 shadow-sm cursor-pointer hover:scale-105 transition-transform bg-black" onclick="openImageViewer('${tx.imageBase64}', '${tx.title.replace(/'/g, "\\'")}', '${tx.itemCode || ''}')"><img src="${tx.imageBase64}" class="w-full h-full object-cover"></div>`;
                     } else {
-                        mediaHtml = `<div class="w-14 h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center shrink-0 ${cat.bg} ${cat.color}"><i class="${cat.icon} text-2xl md:text-3xl"></i></div>`;
+                        mediaHtml = `<div class="w-14 h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center shrink-0 ${cat.bg} ${cat.color} border border-slate-100 shadow-sm"><i class="${cat.icon} text-2xl md:text-3xl"></i></div>`;
                     }
 
-                    let codeHtml = tx.itemCode ? `<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold text-[10px] uppercase border border-amber-300 shadow-sm mr-1.5 tracking-wider inline-block mb-1">${tx.itemCode}</span>` : '';
+                    let codeHtml = tx.itemCode ? `<span class="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold text-[10px] uppercase border border-amber-300 shadow-sm mr-1.5 tracking-wider inline-block mb-1.5">${tx.itemCode}</span>` : '';
 
-                    // จัดสไตล์ให้สวยงามเมื่ออยู่ใน Grid Cell
                     listHtml += `
-                        <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between group hover:shadow-md transition-shadow relative overflow-hidden h-full">
+                        <div class="bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between group hover:shadow-md hover:border-amber-200 transition-all relative overflow-hidden h-full">
                             <div class="flex items-start gap-4">
                                 ${mediaHtml}
                                 <div class="min-w-0 pr-1 w-full">
                                     <div class="flex flex-col items-start">
                                         ${codeHtml}
-                                        <p class="font-bold text-slate-800 text-sm md:text-base mb-1 truncate w-full leading-tight" title="${tx.title}">${tx.title}</p>
+                                        <p class="font-heading font-bold text-slate-800 text-sm md:text-base mb-1 truncate w-full leading-tight" title="${tx.title}">${tx.title}</p>
                                     </div>
-                                    <div class="flex items-center flex-wrap gap-1.5 text-[10px] md:text-xs font-semibold mt-1.5">
-                                        <span class="${cat.color} ${cat.bg} px-2 py-0.5 rounded">${cat.label}</span>
-                                        <span class="text-slate-500 bg-slate-100 px-2 py-0.5 rounded flex items-center gap-1">
-                                            <i class="${tx.walletId === 'CASH' ? 'ph-fill ph-wallet text-emerald-500' : 'ph-fill ph-bank text-blue-500'}"></i>
+                                    <div class="flex items-center flex-wrap gap-1.5 text-[10px] md:text-xs font-bold mt-1">
+                                        <span class="${cat.color} ${cat.bg} border ${cat.border} px-2 py-0.5 rounded">${cat.label}</span>
+                                        <span class="text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded flex items-center gap-1">
+                                            <i class="${tx.walletId === 'CASH' ? 'ph-fill ph-wallet text-slate-600' : 'ph-fill ph-device-mobile text-blue-600'}"></i>
                                             ${tx.walletId === 'CASH' ? 'เงินสด' : 'โอน'}
                                         </span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="flex items-end justify-between w-full mt-4 pt-3 border-t border-slate-50">
+                            <div class="flex items-end justify-between w-full mt-4 pt-3 border-t border-slate-100/80">
                                 ${actionHtml}
-                                <p class="font-bold text-lg md:text-xl ${isIncome ? 'text-emerald-600' : 'text-slate-800'} tracking-tight bg-slate-50/50 px-2 py-0.5 rounded-lg border border-slate-100">
+                                <p class="font-heading font-bold text-lg md:text-xl ${isIncome ? 'text-emerald-600' : 'text-rose-700'} tracking-tight bg-slate-50 px-2.5 py-0.5 rounded-lg border border-slate-200/50">
                                     ${isIncome ? '+' : '-'}${formatMoney(tx.amount)}
                                 </p>
                             </div>
@@ -1020,7 +1030,6 @@
 
         function renderInventory() {
             const inventoryItems = state.transactions.filter(tx => tx.categoryId === 'BUY' && !tx.isSold);
-            
             let totalCost = 0;
             const grouped = {};
 
@@ -1036,59 +1045,60 @@
 
             if (inventoryItems.length === 0) {
                 els.inventoryList.innerHTML = `
-                    <div class="text-center py-20 bg-white rounded-3xl border border-slate-200 border-dashed shadow-sm">
-                        <div class="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="ph ph-archive-box text-4xl text-slate-300"></i>
+                    <div class="text-center py-24 bg-white rounded-3xl border border-slate-200 border-dashed shadow-sm">
+                        <div class="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                            <i class="ph-fill ph-vault text-5xl text-slate-300"></i>
                         </div>
-                        <p class="text-slate-500 font-medium md:text-lg">ไม่มีรายการพระในสต็อก</p>
+                        <p class="font-heading font-bold text-slate-500 md:text-lg">ไม่มีรายการพระในสต็อก</p>
                     </div>
                 `;
                 return;
             }
 
             let html = '';
-            // จัดหมวดหมู่และเรียงใส่ Grid (เฉพาะตอนดูใน Desktop)
             for (const [category, items] of Object.entries(grouped)) {
-                
                 let itemsHtml = items.map(item => {
                     let mediaHtml = '';
                     if (item.imageBase64) {
-                        mediaHtml = `<div class="shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden border border-slate-200 shadow-sm cursor-pointer hover:opacity-80 transition-opacity" onclick="openImageViewer('${item.imageBase64}', '${item.title.replace(/'/g, "\\'")}', '${item.itemCode || ''}')"><img src="${item.imageBase64}" class="w-full h-full object-cover"></div>`;
+                        mediaHtml = `<div class="w-full aspect-square rounded-t-xl overflow-hidden border-b border-slate-100 bg-black cursor-pointer hover:opacity-90 transition-opacity relative group/img" onclick="openImageViewer('${item.imageBase64}', '${item.title.replace(/'/g, "\\'")}', '${item.itemCode || ''}')">
+                                        <img src="${item.imageBase64}" class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity"><i class="ph-bold ph-magnifying-glass-plus text-3xl text-white"></i></div>
+                                     </div>`;
                     } else {
-                        mediaHtml = `<div class="w-16 h-16 md:w-20 md:h-20 rounded-xl flex items-center justify-center shrink-0 bg-slate-100 border border-slate-200 text-slate-300"><i class="ph-fill ph-image text-3xl"></i></div>`;
+                        mediaHtml = `<div class="w-full aspect-square rounded-t-xl flex items-center justify-center bg-slate-50 border-b border-slate-100 text-slate-300"><i class="ph-fill ph-image text-5xl"></i></div>`;
                     }
 
-                    let codeHtml = item.itemCode ? `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold text-[10px] md:text-xs uppercase border border-amber-300 mr-2 shadow-sm inline-block mb-1.5">${item.itemCode}</span>` : '';
+                    let codeHtml = item.itemCode ? `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold text-[10px] md:text-xs uppercase border border-amber-300 shadow-sm inline-block mb-2">${item.itemCode}</span>` : '';
 
-                    // ปรับโครงสร้าง Item ให้เป็นกล่อง (Card) ที่สวยงามเมื่ออยู่ใน Grid
                     return `
-                    <div class="flex flex-col justify-between p-4 border border-slate-100 rounded-2xl group bg-white shadow-sm hover:shadow-md hover:border-amber-200 transition-all">
-                        <div class="flex items-start gap-4 mb-4">
-                            ${mediaHtml}
-                            <div class="min-w-0 pr-1 flex-1">
+                    <div class="flex flex-col border border-slate-200 rounded-2xl bg-white shadow-sm hover:shadow-md hover:border-amber-300 transition-all overflow-hidden group">
+                        ${mediaHtml}
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
                                 ${codeHtml}
-                                <p class="font-bold text-slate-800 text-sm md:text-base line-clamp-2 leading-tight mb-2" title="${item.title}">${item.title}</p>
-                                <p class="text-xs md:text-sm text-rose-600 font-bold flex items-center gap-1.5 bg-rose-50 inline-block px-2 py-1 rounded-md border border-rose-100">
-                                    <i class="ph-fill ph-coin"></i> ทุน ${formatMoney(item.amount)}
+                                <p class="font-heading font-bold text-slate-800 text-sm md:text-base line-clamp-2 leading-snug mb-2" title="${item.title}">${item.title}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs md:text-sm text-[#8a1c1c] font-bold flex items-center gap-1.5 bg-red-50 inline-block px-2.5 py-1 rounded-md border border-red-100 mb-3">
+                                    <i class="ph-fill ph-coins"></i> ทุน ${formatMoney(item.amount)}
                                 </p>
+                                <button onclick="promptSellInventory('${item.id}', '${item.title.replace(/'/g, "\\'")}', '${item.itemCode || ''}', '${item.imageBase64 || ''}')" class="w-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-600 hover:text-white py-2.5 rounded-xl text-sm font-bold font-heading transition-colors flex items-center justify-center gap-2 shadow-sm">
+                                    <i class="ph-bold ph-hand-coins text-lg"></i> ปล่อยแล้ว
+                                </button>
                             </div>
                         </div>
-                        <button onclick="promptSellInventory('${item.id}', '${item.title.replace(/'/g, "\\'")}', '${item.itemCode || ''}', '${item.imageBase64 || ''}')" class="w-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-600 hover:text-white py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 shadow-sm">
-                            <i class="ph-bold ph-hand-coins text-lg"></i> ปล่อยแล้ว
-                        </button>
                     </div>
                 `}).join('');
 
-                // สร้างบล็อกหมวดหมู่ที่มี Grid ซ้อนอยู่ด้านใน
                 html += `
-                    <div class="bg-slate-50/80 rounded-3xl p-5 md:p-6 border border-slate-200 mb-6 slide-up shadow-sm">
-                        <div class="flex justify-between items-center mb-5 border-b border-slate-200/60 pb-3">
-                            <h4 class="font-bold text-slate-800 text-base md:text-lg flex items-center gap-2 border-l-4 border-amber-500 pl-3">
+                    <div class="bg-white/60 backdrop-blur-sm rounded-3xl p-5 md:p-7 border border-slate-200/60 mb-6 slide-up shadow-sm">
+                        <div class="flex justify-between items-center mb-5 border-b border-amber-500/20 pb-3">
+                            <h4 class="font-heading font-bold text-[#8a1c1c] text-base md:text-lg flex items-center gap-2 border-l-[5px] border-amber-500 pl-3">
                                 ${category}
                             </h4>
-                            <span class="text-xs font-bold text-slate-500 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-200">${items.length} องค์</span>
+                            <span class="text-xs font-bold text-[#8a1c1c] bg-amber-100 px-3 py-1.5 rounded-full shadow-sm border border-amber-200">${items.length} องค์</span>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
                             ${itemsHtml}
                         </div>
                     </div>
@@ -1098,7 +1108,7 @@
             els.inventoryList.innerHTML = html;
         }
 
-        // เริ่มแอปพลิเคชัน
+        // Initialize App
         init();
     </script>
 </body>
