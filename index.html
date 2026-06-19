@@ -6,6 +6,9 @@
     <title>บัญชีร้าน ป.ทรัพย์สยาม Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Firebase SDK (v10 compat เพื่อให้ทำงานแบบไฟล์เดียวได้ง่ายสุด) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <!-- เพิ่มฟอนต์ Pridi สำหรับหัวข้อ ให้ดูคลาสสิกและเป็นทางการแบบไทย -->
     <link href="https://fonts.googleapis.com/css2?family=Pridi:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -61,14 +64,19 @@
             <div class="flex justify-between items-center mb-6 max-w-7xl mx-auto w-full relative z-10">
                 <div>
                     <p class="text-amber-200/70 text-sm font-medium mb-1">ยินดีต้อนรับ</p>
+            <div class="flex justify-between items-center mb-6 w-full relative z-10">
+                <div>
+                    <p class="text-amber-200/70 text-sm font-medium mb-1">ยินดีต้อนรับ</p>
                     <h1 class="font-heading text-3xl md:text-4xl font-bold flex items-center gap-2 text-gold-gradient drop-shadow-sm">
                         <i class="ph-fill ph-diamond text-amber-400 drop-shadow-md"></i> ป.ทรัพย์สยาม
                     </h1>
                 </div>
-                <label class="flex items-center gap-2 bg-black/20 hover:bg-black/30 px-4 py-2.5 md:px-6 md:py-3 rounded-2xl cursor-pointer transition-colors border border-amber-500/30 backdrop-blur-sm shadow-inner text-amber-100">
-                    <i class="ph ph-calendar-blank text-amber-400 md:text-xl"></i>
-                    <input type="date" id="datePicker" class="bg-transparent text-sm md:text-base font-heading font-medium outline-none [&::-webkit-calendar-picker-indicator]:hidden w-24 md:w-32 text-amber-50">
-                </label>
+                <div class="flex items-center gap-2 md:gap-3">
+                    <label class="flex items-center gap-2 bg-black/20 hover:bg-black/30 px-4 py-2.5 md:px-6 md:py-3 rounded-2xl cursor-pointer transition-colors border border-amber-500/30 backdrop-blur-sm shadow-inner text-amber-100">
+                        <i class="ph ph-calendar-blank text-amber-400 md:text-xl"></i>
+                        <input type="date" id="datePicker" class="bg-transparent text-sm md:text-base font-heading font-medium outline-none [&::-webkit-calendar-picker-indicator]:hidden w-24 md:w-32 text-amber-50">
+                    </label>
+                </div>
             </div>
         </header>
 
@@ -404,9 +412,27 @@
     </div>
 
     <script>
-        const STORAGE_KEY = 'amulet_ledger_pro_v8'; // เปลี่ยน Key ป้องกันชนของเก่า
-        const PRESET_STORAGE_KEY = 'amulet_presets_pro_v8';
-        
+        // ==========================================
+        // การตั้งค่า FIREBASE (นำ Config จากโปรเจกต์ของคุณมาใส่ที่นี่)
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAmQFwL7zniKTnT2INt93iHOlCuT97hc7g",
+            authDomain: "myfamilyproject-ecff4.firebaseapp.com",
+            projectId: "myfamilyproject-ecff4",
+            storageBucket: "myfamilyproject-ecff4.firebasestorage.app",
+            messagingSenderId: "714527535272",
+            appId: "1:714527535272:web:0154b4e5fdd41e0352529d"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // เปิดใช้งาน Offline Persistence (ถ้าเน็ตหลุด ก็ยังบันทึกได้ พอกลับมาออนไลน์จะซิงค์ให้อัตโนมัติ)
+        db.enablePersistence().catch(function(err) {
+            console.warn("Firebase Persistence Error:", err);
+        });
+
         // ฐานข้อมูลทำเนียบพระเริ่มต้น
         const DEFAULT_PRESETS = [
             {
@@ -440,8 +466,8 @@
 
         // State Management
         let state = {
-            transactions: JSON.parse(localStorage.getItem(STORAGE_KEY)) || [],
-            presets: JSON.parse(localStorage.getItem(PRESET_STORAGE_KEY)) || DEFAULT_PRESETS,
+            transactions: [], // จะถูกโหลดจาก Firebase อัตโนมัติ
+            presets: [],      // จะถูกโหลดจาก Firebase อัตโนมัติ
             selectedDate: new Date().toLocaleDateString('en-CA'),
             activeCategory: 'SELL',
             activeWallet: 'TRANSFER',
@@ -525,7 +551,34 @@
             
             renderCategoryButtons();
             renderWalletButtons();
-            updateUI();
+            
+            // ดึงข้อมูล ทำเนียบพระ (Presets) จาก Firebase แบบ Real-time
+            db.collection("presets").onSnapshot((snapshot) => {
+                if (snapshot.empty) {
+                    // ถ้ายังไม่มีข้อมูลเลย ให้สร้างจากค่าเริ่มต้นเพื่อตั้งไข่
+                    state.presets = DEFAULT_PRESETS;
+                    DEFAULT_PRESETS.forEach(p => {
+                        db.collection("presets").doc(p.category).set(p);
+                    });
+                } else {
+                    const loadedPresets = [];
+                    snapshot.forEach((doc) => {
+                        loadedPresets.push(doc.data());
+                    });
+                    state.presets = loadedPresets;
+                }
+                renderPresets();
+            });
+
+            // ดึงข้อมูล บัญชีรายวันและสต็อก (Transactions) จาก Firebase แบบ Real-time
+            db.collection("transactions").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                const txs = [];
+                snapshot.forEach((doc) => {
+                    txs.push({ ...doc.data(), id: doc.id });
+                });
+                state.transactions = txs;
+                updateUI();
+            });
         }
 
         function formatMoney(amount) {
@@ -703,16 +756,26 @@
             if (!itemName) return els.newPresetName.focus();
 
             const existingCat = state.presets.find(p => p.category === catName);
+            let updatedItems = [];
+
             if (existingCat) {
-                if (!existingCat.items.includes(itemName)) existingCat.items.push(itemName);
+                updatedItems = [...existingCat.items];
+                if (!updatedItems.includes(itemName)) updatedItems.push(itemName);
             } else {
-                state.presets.push({ category: catName, items: [itemName] });
+                updatedItems = [itemName];
             }
 
-            localStorage.setItem(PRESET_STORAGE_KEY, JSON.stringify(state.presets));
-            toggleAddPresetForm(false);
-            renderPresets();
-            showToast('เพิ่มเข้าทำเนียบสำเร็จ');
+            // บันทึกขึ้น Firebase
+            db.collection("presets").doc(catName).set({
+                category: catName,
+                items: updatedItems
+            }).then(() => {
+                toggleAddPresetForm(false);
+                showToast('เพิ่มเข้าทำเนียบและซิงค์ข้อมูลสำเร็จ');
+            }).catch(error => {
+                showToast('เกิดข้อผิดพลาดในการบันทึก', true);
+                console.error(error);
+            });
         }
 
         function toggleModal(show) {
@@ -784,36 +847,31 @@
             els.btnSubmit.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-2xl text-amber-400"></i> กำลังบันทึก...';
             els.btnSubmit.disabled = true;
 
-            setTimeout(() => {
-                try {
-                    const newTx = {
-                        id: 'tx_' + Date.now(),
-                        categoryId: state.activeCategory,
-                        title: title,
-                        itemCode: itemCode,
-                        imageBase64: state.currentImageBase64,
-                        amount: amount,
-                        walletId: state.activeWallet,
-                        date: state.selectedDate,
-                        timestamp: new Date().toISOString(),
-                        presetCat: state.currentPresetCategory || 'รายการทั่วไป',
-                        isSold: false 
-                    };
+            const newTx = {
+                id: 'tx_' + Date.now(),
+                categoryId: state.activeCategory,
+                title: title,
+                itemCode: itemCode,
+                imageBase64: state.currentImageBase64,
+                amount: amount,
+                walletId: state.activeWallet,
+                date: state.selectedDate,
+                timestamp: new Date().toISOString(),
+                presetCat: state.currentPresetCategory || 'รายการทั่วไป',
+                isSold: false 
+            };
 
-                    state.transactions.unshift(newTx);
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.transactions));
-                    
-                    toggleModal(false);
-                    updateUI();
-                    showToast('บันทึกข้อมูลสำเร็จ');
-                } catch (error) {
-                    showToast('หน่วยความจำภาพเต็ม! กรุณาลบรายการเก่า', true);
-                    console.error("Storage Error:", error);
-                } finally {
-                    els.btnSubmit.innerHTML = '<i class="ph-bold ph-check-circle text-2xl text-amber-400"></i> บันทึกรายการ';
-                    els.btnSubmit.disabled = false;
-                }
-            }, 100);
+            // บันทึกขึ้น Cloud Firestore (Firebase)
+            db.collection("transactions").doc(newTx.id).set(newTx).then(() => {
+                toggleModal(false);
+                showToast('บันทึกข้อมูลสำเร็จ');
+            }).catch((error) => {
+                showToast('เกิดข้อผิดพลาด: ขนาดภาพอาจใหญ่เกินไป', true);
+                console.error("Firebase Storage Error:", error);
+            }).finally(() => {
+                els.btnSubmit.innerHTML = '<i class="ph-bold ph-check-circle text-2xl text-amber-400"></i> บันทึกรายการ';
+                els.btnSubmit.disabled = false;
+            });
         }
 
         function promptDelete(id) {
@@ -827,11 +885,14 @@
         }
 
         function confirmDelete(id) {
-            state.transactions = state.transactions.filter(tx => tx.id !== id);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state.transactions));
-            state.deleteConfirmId = null;
-            updateUI();
-            showToast('ลบรายการสำเร็จ');
+            // ลบจาก Firebase (การอัปเดตหน้าจอจะทำโดยอัตโนมัติผ่าน onSnapshot)
+            db.collection("transactions").doc(id).delete().then(() => {
+                state.deleteConfirmId = null;
+                showToast('ลบรายการสำเร็จ');
+            }).catch(error => {
+                showToast('เกิดข้อผิดพลาดในการลบ', true);
+                console.error(error);
+            });
         }
 
         function promptSellInventory(id, title, code, imageBase64) {
@@ -887,7 +948,6 @@
             if (originalTxIndex === -1) return;
             
             const originalTx = state.transactions[originalTxIndex];
-            state.transactions[originalTxIndex] = { ...originalTx, isSold: true };
 
             const newSellTx = {
                 id: 'tx_' + Date.now(),
@@ -902,14 +962,19 @@
                 presetCat: originalTx.presetCat 
             };
 
-            state.transactions.unshift(newSellTx);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state.transactions));
-
-            closeSellInventoryModal();
-            updateUI();
-            
-            switchTab('ledger');
-            showToast('ตัดสต็อก และเพิ่มเป็นรายรับแล้ว!');
+            // ดำเนินการ 2 ขั้นตอนใน Firebase
+            // 1. อัปเดตรายการเดิมว่าถูกขายออกไปแล้ว
+            db.collection("transactions").doc(originalTx.id).update({ isSold: true }).then(() => {
+                // 2. สร้างรายการรายรับใหม่ลงบัญชีวันนี้
+                return db.collection("transactions").doc(newSellTx.id).set(newSellTx);
+            }).then(() => {
+                closeSellInventoryModal();
+                switchTab('ledger');
+                showToast('ตัดสต็อก และเพิ่มเป็นรายรับแล้ว!');
+            }).catch(error => {
+                showToast('เกิดข้อผิดพลาดในการตัดสต็อก', true);
+                console.error(error);
+            });
         }
 
         function updateUI() {
