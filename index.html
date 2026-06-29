@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>บัญชีร้าน ป.ทรัพย์สยาม Pro</title>
     
     <!-- Tailwind CSS -->
@@ -50,216 +50,216 @@
         }
         /* Custom scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
         ::-webkit-scrollbar-thumb {
             background: #c5a880;
-            border-radius: 3px;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body class="bg-amber-50/10 min-h-screen pb-24 text-slate-800">
 
     <!-- TOP HEADER -->
-    <header class="bg-gradient-to-b from-velvet-dark to-velvet-main text-white px-4 pt-6 pb-28 rounded-b-[32px] shadow-lg relative">
-        <div class="max-w-md mx-auto flex justify-between items-center">
+    <header class="bg-gradient-to-b from-velvet-dark to-velvet-main text-white px-4 md:px-8 pt-6 pb-28 rounded-b-[32px] md:rounded-b-[48px] shadow-lg relative">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
             <div>
-                <p class="text-xs text-amber-200/80 font-medium">ยินดีต้อนรับ</p>
-                <h1 class="text-2xl font-bold heading-font text-yellow-400">ป.ทรัพย์สยาม</h1>
+                <p class="text-xs md:text-sm text-amber-200/80 font-medium">ยินดีต้อนรับ</p>
+                <h1 class="text-2xl md:text-4xl font-bold heading-font text-yellow-400">ป.ทรัพย์สยาม</h1>
             </div>
             
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 md:gap-4">
                 <!-- Lock / Role Status Button -->
-                <button id="btnLockStatus" onclick="openPinModal()" class="flex items-center gap-1.5 bg-velvet-dark/60 border border-gold-main/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-amber-200 hover:bg-velvet-light transition-all">
-                    <span id="roleIcon"><i class="ph-bold ph-lock-key"></i></span>
+                <button id="btnLockStatus" onclick="openPinModal()" class="flex items-center gap-1.5 bg-velvet-dark/60 border border-gold-main/30 px-3.5 md:px-5 py-1.5 md:py-2.5 rounded-full text-xs md:text-sm font-semibold text-amber-200 hover:bg-velvet-light transition-all">
+                    <span id="roleIcon" class="md:text-lg"><i class="ph-bold ph-lock-key"></i></span>
                     <span id="roleText">โหมดพนักงาน</span>
                 </button>
                 
                 <!-- Date Indicator -->
-                <div class="bg-velvet-dark/40 px-3 py-1.5 rounded-full text-xs font-medium text-amber-100 border border-amber-500/20">
-                    <i class="ph ph-calendar-blank mr-1"></i> <span id="currentDateText">29/06/2026</span>
+                <div class="bg-velvet-dark/40 px-3 md:px-5 py-1.5 md:py-2.5 rounded-full text-xs md:text-sm font-medium text-amber-100 border border-amber-500/20 flex items-center">
+                    <i class="ph ph-calendar-blank mr-1.5 md:text-lg"></i> <span id="currentDateText">29/06/2026</span>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- MAIN CONTENT CARD -->
-    <main class="max-w-md mx-auto px-4 -mt-20 relative z-10 space-y-4">
+    <main class="max-w-5xl mx-auto px-4 md:px-8 -mt-20 relative z-10 space-y-4 md:space-y-6">
         
         <!-- Total Asset Card -->
-        <div class="bg-gradient-to-br from-velvet-main to-velvet-dark p-6 rounded-3xl shadow-xl text-white border border-gold-main/20 relative overflow-hidden">
-            <div class="absolute -right-4 -bottom-4 opacity-10">
-                <i class="ph ph-bank text-9xl"></i>
+        <div class="bg-gradient-to-br from-velvet-main to-velvet-dark p-6 md:p-10 rounded-3xl md:rounded-[2rem] shadow-xl text-white border border-gold-main/20 relative overflow-hidden">
+            <div class="absolute -right-4 -bottom-4 md:right-4 md:-bottom-8 opacity-10 md:opacity-5 text-9xl md:text-[14rem]">
+                <i class="ph ph-bank"></i>
             </div>
-            <div class="flex justify-between items-start mb-3">
-                <p class="text-amber-200/90 text-sm font-medium flex items-center gap-1.5">
-                    <i class="ph-bold ph-chart-pie-slice"></i> ทรัพย์สินรวมสุทธิ
+            <div class="flex justify-between items-start mb-3 md:mb-5 relative z-10">
+                <p class="text-amber-200/90 text-sm md:text-lg font-medium flex items-center gap-1.5 md:gap-2">
+                    <i class="ph-bold ph-chart-pie-slice md:text-xl"></i> ทรัพย์สินรวมสุทธิ
                 </p>
-                <span id="badgeRole" class="text-[10px] font-bold bg-amber-500/20 text-yellow-400 px-2 py-0.5 rounded border border-yellow-500/30">โหมดพนักงาน</span>
+                <span id="badgeRole" class="text-[10px] md:text-xs font-bold bg-amber-500/20 text-yellow-400 px-2.5 py-1 rounded border border-yellow-500/30">โหมดพนักงาน</span>
             </div>
-            <h2 id="totalAssetValue" class="text-3xl font-bold heading-font tracking-tight text-white mb-5">
+            <h2 id="totalAssetValue" class="text-3xl md:text-6xl font-bold heading-font tracking-tight text-white mb-5 md:mb-10 relative z-10">
                 *** ฿
             </h2>
             
-            <div class="grid grid-cols-2 gap-4 border-t border-white/10 pt-4 text-xs">
+            <div class="grid grid-cols-2 gap-4 md:gap-8 border-t border-white/10 pt-4 md:pt-6 text-xs md:text-base relative z-10">
                 <div>
-                    <p class="text-amber-200/75 mb-1 flex items-center gap-1"><i class="ph ph-credit-card"></i> โอน</p>
-                    <p id="totalTransferValue" class="font-bold text-base text-white">*** ฿</p>
+                    <p class="text-amber-200/75 mb-1 flex items-center gap-1.5"><i class="ph ph-credit-card md:text-lg"></i> โอน</p>
+                    <p id="totalTransferValue" class="font-bold text-base md:text-2xl text-white">*** ฿</p>
                 </div>
                 <div>
-                    <p class="text-amber-200/75 mb-1 flex items-center gap-1"><i class="ph ph-coins"></i> เงินสด</p>
-                    <p id="totalCashValue" class="font-bold text-base text-white">*** ฿</p>
+                    <p class="text-amber-200/75 mb-1 flex items-center gap-1.5"><i class="ph ph-coins md:text-lg"></i> เงินสด</p>
+                    <p id="totalCashValue" class="font-bold text-base md:text-2xl text-white">*** ฿</p>
                 </div>
             </div>
         </div>
 
         <!-- Daily Stats Grid -->
-        <div class="grid grid-cols-2 gap-3">
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
-                <div class="bg-emerald-50 w-10 h-10 rounded-full flex items-center justify-center text-emerald-600 shrink-0">
-                    <i class="ph-bold ph-trend-up text-lg"></i>
+        <div class="grid grid-cols-2 gap-3 md:gap-6">
+            <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-3 md:gap-5">
+                <div class="bg-emerald-50 w-10 h-10 md:w-16 md:h-16 rounded-full flex items-center justify-center text-emerald-600 shrink-0">
+                    <i class="ph-bold ph-trend-up text-lg md:text-3xl"></i>
                 </div>
                 <div>
-                    <p class="text-[11px] text-slate-500 font-medium">รายรับวันนี้</p>
-                    <p id="dailyIncomeText" class="font-bold text-emerald-600 text-base">0 ฿</p>
+                    <p class="text-[11px] md:text-sm text-slate-500 font-medium">รายรับวันนี้</p>
+                    <p id="dailyIncomeText" class="font-bold text-emerald-600 text-base md:text-2xl">0 ฿</p>
                 </div>
             </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
-                <div class="bg-rose-50 w-10 h-10 rounded-full flex items-center justify-center text-rose-600 shrink-0">
-                    <i class="ph-bold ph-trend-down text-lg"></i>
+            <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-3 md:gap-5">
+                <div class="bg-rose-50 w-10 h-10 md:w-16 md:h-16 rounded-full flex items-center justify-center text-rose-600 shrink-0">
+                    <i class="ph-bold ph-trend-down text-lg md:text-3xl"></i>
                 </div>
                 <div>
-                    <p class="text-[11px] text-slate-500 font-medium">รายจ่ายวันนี้</p>
-                    <p id="dailyExpenseText" class="font-bold text-rose-600 text-base">0 ฿</p>
+                    <p class="text-[11px] md:text-sm text-slate-500 font-medium">รายจ่ายวันนี้</p>
+                    <p id="dailyExpenseText" class="font-bold text-rose-600 text-base md:text-2xl">0 ฿</p>
                 </div>
             </div>
         </div>
 
         <!-- Profit Card (Visible to Owner only) -->
-        <div class="bg-amber-50/50 border border-amber-200/60 p-4 rounded-2xl flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <div class="bg-amber-100 w-9 h-9 rounded-xl flex items-center justify-center text-amber-700">
-                    <i class="ph-bold ph-hand-coins text-lg"></i>
+        <div class="bg-amber-50/50 border border-amber-200/60 p-4 md:p-6 rounded-2xl md:rounded-3xl flex items-center justify-between">
+            <div class="flex items-center gap-2.5 md:gap-4">
+                <div class="bg-amber-100 w-9 h-9 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-amber-700">
+                    <i class="ph-bold ph-hand-coins text-lg md:text-2xl"></i>
                 </div>
                 <div>
-                    <p class="text-xs text-amber-950/70 font-medium">กำไรจากการปล่อยเช่า</p>
-                    <p id="profitText" class="font-bold text-amber-900 text-base">*** ฿</p>
+                    <p class="text-xs md:text-sm text-amber-950/70 font-medium">กำไรจากการปล่อยเช่า</p>
+                    <p id="profitText" class="font-bold text-amber-900 text-base md:text-xl">*** ฿</p>
                 </div>
             </div>
-            <i class="ph ph-info text-slate-400 text-sm cursor-pointer" title="คำนวณจาก รายรับ (ลบ) ราคาทุน"></i>
+            <i class="ph ph-info text-slate-400 text-sm md:text-xl cursor-pointer" title="คำนวณจาก รายรับ (ลบ) ราคาทุน"></i>
         </div>
 
-        <!-- PREMIUM SEARCH BAR (วงกลมสีแดง ที่ปรับให้เด่นชัดขึ้น) -->
-        <div class="space-y-1.5 pt-1">
-            <div class="flex items-center gap-1.5 px-1">
-                <div class="w-2 h-2 rounded-full bg-gold-main animate-pulse"></div>
-                <p class="text-[11px] font-semibold text-gold-dark bg-yellow-100/70 border border-yellow-200 px-2 py-0.5 rounded-full shadow-sm">
+        <!-- PREMIUM SEARCH BAR -->
+        <div class="space-y-1.5 md:space-y-3 pt-1 md:pt-3">
+            <div class="flex items-center gap-1.5 px-1 md:px-2">
+                <div class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-gold-main animate-pulse"></div>
+                <p class="text-[11px] md:text-sm font-semibold text-gold-dark bg-yellow-100/70 border border-yellow-200 px-2 md:px-3 py-0.5 md:py-1 rounded-full shadow-sm">
                     ระบบค้นหาพระเครื่องในร้าน
                 </p>
             </div>
             <div class="relative flex items-center">
-                <div class="absolute left-4 text-gold-main flex items-center">
-                    <i class="ph-bold ph-magnifying-glass text-lg"></i>
+                <div class="absolute left-4 md:left-6 text-gold-main flex items-center">
+                    <i class="ph-bold ph-magnifying-glass text-lg md:text-2xl"></i>
                 </div>
                 <input 
                     type="text" 
                     id="searchInput"
                     oninput="handleSearch(this.value)"
                     placeholder="พิมพ์ชื่อพระ, รหัสพระ (เช่น A01, B03) หรือพิมพ์หมวดหมู่..."
-                    class="w-full bg-white border-2 border-gold-main/60 focus:border-gold-dark text-slate-800 rounded-2xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-4 focus:ring-yellow-400/20 shadow-[0_4px_12px_rgba(234,179,8,0.1)] transition-all font-medium placeholder-slate-400"
+                    class="w-full bg-white border-2 border-gold-main/60 focus:border-gold-dark text-slate-800 rounded-2xl md:rounded-3xl pl-11 md:pl-16 pr-4 md:pr-6 py-3 md:py-5 text-sm md:text-lg focus:outline-none focus:ring-4 focus:ring-yellow-400/20 shadow-[0_4px_12px_rgba(234,179,8,0.1)] transition-all font-medium placeholder-slate-400"
                 />
             </div>
         </div>
 
         <!-- TRANSACTION LIST TITLE -->
-        <div class="flex justify-between items-center pt-2">
-            <h3 class="font-bold heading-font text-slate-800 flex items-center gap-2 text-base">
+        <div class="flex justify-between items-center pt-2 md:pt-4">
+            <h3 class="font-bold heading-font text-slate-800 flex items-center gap-2 text-base md:text-2xl">
                 <i class="ph-bold ph-book-open text-velvet-main"></i> รายการบัญชีวันนี้
             </h3>
-            <span id="txCountBadge" class="text-xs bg-slate-200/70 text-slate-600 px-2.5 py-0.5 rounded-full font-semibold">0 รายการ</span>
+            <span id="txCountBadge" class="text-xs md:text-sm bg-slate-200/70 text-slate-600 px-2.5 md:px-4 py-0.5 md:py-1 rounded-full font-semibold">0 รายการ</span>
         </div>
 
         <!-- TRANSACTIONS CONTAINER -->
-        <div id="txContainer" class="space-y-3 min-h-[150px]">
+        <div id="txContainer" class="space-y-3 md:space-y-4 min-h-[150px] md:min-h-[300px]">
             <!-- Dynamic transactions will load here -->
-            <div class="text-center py-12 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                <i class="ph ph-database-slash text-4xl text-slate-300 mb-2"></i>
-                <p class="text-slate-400 text-xs">กำลังเชื่อมต่อข้อมูลจากระบบคลาวด์...</p>
+            <div class="text-center py-12 md:py-24 bg-white rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm">
+                <i class="ph ph-database-slash text-4xl md:text-6xl text-slate-300 mb-2 md:mb-4"></i>
+                <p class="text-slate-400 text-xs md:text-base">กำลังเชื่อมต่อข้อมูลจากระบบคลาวด์...</p>
             </div>
         </div>
 
     </main>
 
-    <!-- BOTTOM NAV TAB BAR (รวมปุ่มทำเนียบพระด้านล่างขวาสุด) -->
+    <!-- BOTTOM NAV TAB BAR -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] z-40">
-        <div class="max-w-md mx-auto grid grid-cols-5 h-16 relative">
+        <div class="max-w-5xl mx-auto grid grid-cols-5 h-16 md:h-20 relative px-2">
             
             <!-- Tab 1: Ledger -->
             <button onclick="switchTab('ledger')" class="flex flex-col items-center justify-center text-slate-400 hover:text-velvet-main transition-colors select-none">
-                <i class="ph-bold ph-book-open text-xl mb-0.5"></i>
-                <span class="text-[9px] font-semibold">บัญชีรายรับ</span>
+                <i class="ph-bold ph-book-open text-xl md:text-3xl mb-0.5 md:mb-1"></i>
+                <span class="text-[9px] md:text-xs font-semibold">บัญชีรายรับ</span>
             </button>
             
             <!-- Tab 2: Certificate Work -->
             <button onclick="switchTab('certs')" class="flex flex-col items-center justify-center text-slate-400 hover:text-velvet-main transition-colors select-none">
-                <i class="ph-bold ph-certificate text-xl mb-0.5"></i>
-                <span class="text-[9px] font-semibold">งานออกบัตร</span>
+                <i class="ph-bold ph-certificate text-xl md:text-3xl mb-0.5 md:mb-1"></i>
+                <span class="text-[9px] md:text-xs font-semibold">งานออกบัตร</span>
             </button>
             
-            <!-- Center Button: ADD TRANSACTION (ปุ่ม + สีแดงกำมะหยี่ขอบทอง) -->
-            <div class="flex justify-center items-center relative -top-3">
-                <button onclick="openAddModal()" class="w-14 h-14 bg-gradient-to-br from-velvet-light to-velvet-main text-white rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(122,16,25,0.4)] border-4 border-white hover:scale-105 active:scale-95 transition-all">
-                    <i class="ph-bold ph-plus text-2xl"></i>
+            <!-- Center Button: ADD TRANSACTION -->
+            <div class="flex justify-center items-center relative -top-3 md:-top-5">
+                <button onclick="openAddModal()" class="w-14 h-14 md:w-20 md:h-20 bg-gradient-to-br from-velvet-light to-velvet-main text-white rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(122,16,25,0.4)] border-4 border-white hover:scale-105 active:scale-95 transition-all">
+                    <i class="ph-bold ph-plus text-2xl md:text-4xl"></i>
                 </button>
             </div>
             
             <!-- Tab 3: Catalog -->
             <button onclick="switchTab('catalog')" class="flex flex-col items-center justify-center text-slate-400 hover:text-velvet-main transition-colors select-none">
-                <i class="ph-bold ph-grid-four text-xl mb-0.5"></i>
-                <span class="text-[9px] font-semibold">ตู้พระ/สต็อก</span>
+                <i class="ph-bold ph-grid-four text-xl md:text-3xl mb-0.5 md:mb-1"></i>
+                <span class="text-[9px] md:text-xs font-semibold">ตู้พระ/สต็อก</span>
             </button>
             
-            <!-- Tab 4: ทำเนียบพระ (วงกลมสีเขียวดั้งเดิม) -->
+            <!-- Tab 4: ทำเนียบพระ -->
             <button id="tabDirectory" onclick="openDirectoryModal()" class="flex flex-col items-center justify-center text-slate-400 hover:text-velvet-main transition-colors select-none">
-                <i class="ph-bold ph-books text-xl mb-0.5 text-slate-500"></i>
-                <span class="text-[9px] font-bold text-slate-600">ทำเนียบ</span>
+                <i class="ph-bold ph-books text-xl md:text-3xl mb-0.5 md:mb-1 text-slate-500"></i>
+                <span class="text-[9px] md:text-xs font-bold text-slate-600">ทำเนียบ</span>
             </button>
 
         </div>
     </nav>
 
-    <!-- PIN LOGIN MODAL (สำหรับเจ้าของร้านหลายคน) -->
+    <!-- PIN LOGIN MODAL -->
     <div id="pinModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in duration-200">
-        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 relative overflow-hidden animate-in zoom-in-95 duration-200">
-            <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 p-1.5 rounded-full">
-                <i class="ph ph-x"></i>
+        <div class="bg-white w-full max-w-sm md:max-w-md rounded-3xl shadow-2xl p-6 md:p-8 relative overflow-hidden animate-in zoom-in-95 duration-200">
+            <button onclick="closePinModal()" class="absolute top-4 right-4 md:top-6 md:right-6 text-slate-400 hover:text-slate-600 bg-slate-100 p-1.5 md:p-2 rounded-full">
+                <i class="ph ph-x md:text-lg"></i>
             </button>
             
-            <div class="text-center mb-5">
-                <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <i class="ph-bold ph-lock-key-open text-xl"></i>
+            <div class="text-center mb-5 md:mb-8">
+                <div class="w-12 h-12 md:w-16 md:h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-4">
+                    <i class="ph-bold ph-lock-key-open text-xl md:text-3xl"></i>
                 </div>
-                <h3 class="text-lg font-bold heading-font text-slate-800">ปลดล็อกโหมดเจ้าของร้าน</h3>
-                <p class="text-xs text-slate-500 mt-1">กรุณาเลือกชื่อผู้ใช้และใส่รหัสผ่านเพื่อสลับโหมดควบคุม</p>
+                <h3 class="text-lg md:text-2xl font-bold heading-font text-slate-800">ปลดล็อกโหมดเจ้าของร้าน</h3>
+                <p class="text-xs md:text-sm text-slate-500 mt-1 md:mt-2">กรุณาเลือกชื่อผู้ใช้และใส่รหัสผ่านเพื่อสลับโหมดควบคุม</p>
             </div>
             
-            <div class="space-y-4">
-                <!-- Dropdown เลือกชื่อเจ้าของร้าน -->
+            <div class="space-y-4 md:space-y-6">
+                <!-- Dropdown -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">เลือกผู้ใช้งาน</label>
-                    <select id="ownerSelect" class="w-full border-2 border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-velvet-main">
+                    <label class="block text-xs md:text-sm font-bold text-slate-500 mb-1.5 md:mb-2">เลือกผู้ใช้งาน</label>
+                    <select id="ownerSelect" class="w-full border-2 border-slate-200 rounded-xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base focus:outline-none focus:border-velvet-main">
                         <option value="peerapong.luechai@gmail.com">คุณพี (Admin)</option>
                         <option value="partner2@p-supsiam.com">หุ้นส่วนร้านท่านที่ 2</option>
                         <option value="partner3@p-supsiam.com">หุ้นส่วนร้านท่านที่ 3</option>
                     </select>
                 </div>
 
-                <!-- ช่องกรอกรหัส PIN (ตัวเลข 6 หลัก) -->
+                <!-- PIN Input -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">รหัสผ่าน (PIN 6 หลัก)</label>
+                    <label class="block text-xs md:text-sm font-bold text-slate-500 mb-1.5 md:mb-2">รหัสผ่าน (PIN 6 หลัก)</label>
                     <input 
                         type="password" 
                         id="pinInput" 
@@ -267,23 +267,22 @@
                         pattern="[0-9]*"
                         inputmode="numeric"
                         placeholder="••••••" 
-                        class="w-full border-2 border-slate-200 tracking-widest text-center text-lg font-bold rounded-xl px-3 py-2 focus:outline-none focus:border-velvet-main"
+                        class="w-full border-2 border-slate-200 tracking-widest text-center text-lg md:text-2xl font-bold rounded-xl px-3 py-2 md:py-4 focus:outline-none focus:border-velvet-main"
                     />
                 </div>
 
-                <!-- กล่องแจ้งเตือนอัจฉริยะ (Smart Error Banner) -->
-                <div id="pinError" class="text-xs text-red-600 bg-red-50 border border-red-100 p-2.5 rounded-xl hidden flex items-start gap-1.5">
-                    <i class="ph-bold ph-warning-circle shrink-0 mt-0.5"></i>
+                <!-- Error Banner -->
+                <div id="pinError" class="text-xs md:text-sm text-red-600 bg-red-50 border border-red-100 p-2.5 md:p-4 rounded-xl hidden flex items-start gap-1.5 md:gap-2">
+                    <i class="ph-bold ph-warning-circle shrink-0 mt-0.5 md:mt-1 md:text-lg"></i>
                     <span id="pinErrorText"></span>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 pt-2">
-                    <button onclick="closePinModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl text-sm transition-all">
+                <div class="grid grid-cols-2 gap-3 md:gap-4 pt-2 md:pt-4">
+                    <button onclick="closePinModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 md:py-3.5 rounded-xl text-sm md:text-base transition-all">
                         ยกเลิก
                     </button>
-                    <!-- ปุ่มตกลงสีแดงกำมะหยี่ดั้งเดิม เด้งสว่างชัดเจนแล้ว! -->
-                    <button id="btnVerify" onclick="verifyPin()" class="w-full bg-velvet-main hover:bg-velvet-dark text-white font-bold py-2.5 rounded-xl text-sm shadow-md flex items-center justify-center gap-1.5 transition-all">
-                        <i class="ph-bold ph-key"></i> ปลดล็อก
+                    <button id="btnVerify" onclick="verifyPin()" class="w-full bg-velvet-main hover:bg-velvet-dark text-white font-bold py-2.5 md:py-3.5 rounded-xl text-sm md:text-base shadow-md flex items-center justify-center gap-1.5 md:gap-2 transition-all">
+                        <i class="ph-bold ph-key md:text-lg"></i> ปลดล็อก
                     </button>
                 </div>
             </div>
@@ -292,26 +291,26 @@
 
     <!-- ADD TRANSACTION MODAL -->
     <div id="addModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in duration-200">
-        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-5 relative overflow-y-auto max-h-[90vh]">
-            <button onclick="closeAddModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 p-1.5 rounded-full">
-                <i class="ph ph-x"></i>
+        <div class="bg-white w-full max-w-sm md:max-w-lg rounded-3xl shadow-2xl p-5 md:p-8 relative overflow-y-auto max-h-[90vh]">
+            <button onclick="closeAddModal()" class="absolute top-4 right-4 md:top-6 md:right-6 text-slate-400 hover:text-slate-600 bg-slate-100 p-1.5 md:p-2 rounded-full">
+                <i class="ph ph-x md:text-lg"></i>
             </button>
             
-            <h3 class="text-base font-bold heading-font text-slate-800 mb-4 flex items-center gap-1.5">
-                <i class="ph-bold ph-plus-circle text-velvet-main text-lg"></i> บันทึกรายการพระเครื่องใหม่
+            <h3 class="text-base md:text-xl font-bold heading-font text-slate-800 mb-4 md:mb-6 flex items-center gap-1.5 md:gap-2">
+                <i class="ph-bold ph-plus-circle text-velvet-main text-lg md:text-2xl"></i> บันทึกรายการพระเครื่องใหม่
             </h3>
             
-            <form id="txForm" onsubmit="handleFormSubmit(event)" class="space-y-4 text-xs">
+            <form id="txForm" onsubmit="handleFormSubmit(event)" class="space-y-4 md:space-y-6 text-xs md:text-sm">
                 <!-- รายการ / ชื่อพระ -->
                 <div>
-                    <label class="block font-bold text-slate-500 mb-1">รายการ / ชื่อพระเครื่อง</label>
-                    <input type="text" id="formDesc" required placeholder="เช่น สมเด็จวัดระฆัง 100 ปี พิมพ์ใหญ่" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-velvet-main">
+                    <label class="block font-bold text-slate-500 mb-1.5">รายการ / ชื่อพระเครื่อง</label>
+                    <input type="text" id="formDesc" required placeholder="เช่น สมเด็จวัดระฆัง 100 ปี พิมพ์ใหญ่" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 md:px-4 md:py-3 text-xs md:text-base focus:outline-none focus:border-velvet-main">
                 </div>
 
                 <!-- หมวดหมู่ดั้งเดิม -->
                 <div>
-                    <label class="block font-bold text-slate-500 mb-1">ประเภทรายการ</label>
-                    <select id="formCategory" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-velvet-main">
+                    <label class="block font-bold text-slate-500 mb-1.5">ประเภทรายการ</label>
+                    <select id="formCategory" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 md:px-4 md:py-3 text-xs md:text-base focus:outline-none focus:border-velvet-main">
                         <option value="SELL">ปล่อยเช่า (ขายพระ)</option>
                         <option value="BUY">เช่าเข้า (ซื้อพระ)</option>
                         <option value="CERT">ค่าส่งออกบัตรรับรอง</option>
@@ -320,33 +319,33 @@
                     </select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-3 md:gap-5">
                     <!-- จำนวนเงิน -->
                     <div>
-                        <label class="block font-bold text-slate-500 mb-1">จำนวนเงิน (บาท)</label>
-                        <input type="number" id="formAmount" required min="0" placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-velvet-main font-semibold">
+                        <label class="block font-bold text-slate-500 mb-1.5">จำนวนเงิน (บาท)</label>
+                        <input type="number" id="formAmount" required min="0" placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 md:px-4 md:py-3 text-xs md:text-base focus:outline-none focus:border-velvet-main font-semibold">
                     </div>
                     <!-- ราคาทุนดั้งเดิม -->
                     <div>
-                        <label class="block font-bold text-slate-500 mb-1">ราคาทุน (บาท)</label>
-                        <input type="number" id="formCost" required min="0" placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-velvet-main font-semibold">
+                        <label class="block font-bold text-slate-500 mb-1.5">ราคาทุน (บาท)</label>
+                        <input type="number" id="formCost" required min="0" placeholder="0.00" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 md:px-4 md:py-3 text-xs md:text-base focus:outline-none focus:border-velvet-main font-semibold">
                     </div>
                 </div>
 
                 <!-- ช่องทางกระเป๋าเงินดั้งเดิม -->
                 <div>
-                    <label class="block font-bold text-slate-500 mb-1">ชำระผ่านช่องทาง</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" id="btnWalletTransfer" onclick="selectWallet('TRANSFER')" class="py-2 rounded-xl border border-blue-200 text-blue-700 bg-blue-50 font-bold flex items-center justify-center gap-1">
+                    <label class="block font-bold text-slate-500 mb-1.5">ชำระผ่านช่องทาง</label>
+                    <div class="grid grid-cols-2 gap-2 md:gap-4">
+                        <button type="button" id="btnWalletTransfer" onclick="selectWallet('TRANSFER')" class="py-2.5 md:py-3.5 rounded-xl border border-blue-200 text-blue-700 bg-blue-50 font-bold flex items-center justify-center gap-1.5 md:text-base">
                             <i class="ph ph-credit-card"></i> เงินโอน
                         </button>
-                        <button type="button" id="btnWalletCash" onclick="selectWallet('CASH')" class="py-2 rounded-xl border border-slate-200 text-slate-500 bg-white flex items-center justify-center gap-1">
+                        <button type="button" id="btnWalletCash" onclick="selectWallet('CASH')" class="py-2.5 md:py-3.5 rounded-xl border border-slate-200 text-slate-500 bg-white flex items-center justify-center gap-1.5 md:text-base">
                             <i class="ph ph-coins"></i> เงินสด
                         </button>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-velvet-main hover:bg-velvet-dark text-white font-bold py-3 rounded-xl shadow-md transition-all">
+                <button type="submit" class="w-full bg-velvet-main hover:bg-velvet-dark text-white font-bold py-3.5 md:py-4 rounded-xl shadow-md transition-all md:text-base mt-2">
                     บันทึกข้อมูล
                 </button>
             </form>
@@ -355,9 +354,6 @@
 
     <!-- SCRIPTS CONFIGURATION -->
     <script>
-        // ==========================================
-        // 1. FIREBASE INITIALIZATION (หั่น API Key ต่อกันอย่างปลอดภัย 100%)
-        // ==========================================
         const keyPartA = "AIzaSy";
         const keyPartB = "AmQFwL7zniKTnT2INt93iHOlCuT97hC7g";
         
@@ -371,7 +367,6 @@
             measurementId: "G-ER8CCHN958"
         };
 
-        // เริ่มต้นการใช้งาน Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -379,31 +374,22 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // ==========================================
-        // 2. STATE MANAGEMENT (สถานะแอปแบบดั้งเดิม)
-        // ==========================================
-        let allTransactions = []; // เก็บรายการทั้งหมด
-        let currentWallet = 'TRANSFER'; // สถานะเลือกกระเป๋าในฟอร์ม
-        let isOwner = false; // สถานะสิทธิ์เข้าถึง (ถ้าปลดล็อกจะเป็น True)
-        let selectedDate = new Date().toISOString().split('T')[0]; // วันที่ปัจจุบัน
-        let searchQuery = ""; // คำค้นหา
+        let allTransactions = [];
+        let currentWallet = 'TRANSFER';
+        let isOwner = false;
+        let selectedDate = new Date().toISOString().split('T')[0];
+        let searchQuery = "";
 
-        // กำหนดข้อมูลเจ้าของร้านและอีเมล
         const ownersList = {
             'peerapong.luechai@gmail.com': 'คุณพี (Admin)',
             'partner2@p-supsiam.com': 'หุ้นส่วนร้านท่านที่ 2',
             'partner3@p-supsiam.com': 'หุ้นส่วนร้านท่านที่ 3'
         };
 
-        // แสดงผลวันที่ปัจจุบันที่หน้าหัวแอป
         const d = new Date();
         document.getElementById('currentDateText').innerText = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
 
-        // ==========================================
-        // 3. REALTIME DATA LISTENER FROM FIRESTORE
-        // ==========================================
         function initRealtimeDatabase() {
-            // ดึงข้อมูล Realtime ด้วยโครงสร้างข้อมูลฟิลด์ดั้งเดิม!
             db.collection("transactions")
               .orderBy("timestamp", "desc")
               .onSnapshot((snapshot) => {
@@ -412,7 +398,6 @@
                       const data = doc.data();
                       allTransactions.push({
                           id: doc.id,
-                          // เรียกข้อมูลตามฟิลด์เดิมทุกประการ ป้องกันข้อมูลหายเป็น 0
                           description: data.description || data.title || "ไม่ระบุชื่อพระ",
                           category: data.category || data.categoryId || "OTHER_EXPENSE",
                           amount: Number(data.amount || 0),
@@ -422,23 +407,18 @@
                           timestamp: data.timestamp || ""
                       });
                   });
-                  
-                  // รีเรนเดอร์ข้อมูลทั้งหมดลงจอทันทีเมื่อข้อมูลอัปเดต
                   renderAll();
               }, (error) => {
                   console.error("Firestore loading error:", error);
                   document.getElementById('txContainer').innerHTML = `
                       <div class="text-center py-8 text-red-600 bg-red-50 rounded-2xl border border-red-100">
                           <i class="ph ph-warning-circle text-3xl mb-1"></i>
-                          <p class="text-xs font-semibold">ไม่สามารถเชื่อมข้อมูลได้: ${error.message}</p>
+                          <p class="text-xs md:text-sm font-semibold">ไม่สามารถเชื่อมข้อมูลได้: ${error.message}</p>
                       </div>
                   `;
               });
         }
 
-        // ==========================================
-        // 4. AUTHENTICATION LOGIC (ระบบตรวจสอบข้อผิดพลาดอัจฉริยะ)
-        // ==========================================
         function verifyPin() {
             const email = document.getElementById('ownerSelect').value;
             const pin = document.getElementById('pinInput').value;
@@ -455,34 +435,28 @@
             btn.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> ตรวจสอบ...';
             btn.disabled = true;
 
-            // ตรวจสอบกับ Firebase Authentication
             auth.signInWithEmailAndPassword(email, pin)
                 .then((userCredential) => {
                     isOwner = true;
                     closePinModal();
                     updateUIRole();
-                    renderAll(); // อัปเดตข้อมูลราคาทุนและกำไรให้แสดงทันที
+                    renderAll();
                 })
                 .catch((error) => {
-                    console.error("Auth Error Code:", error.code);
                     errorDiv.classList.remove('hidden');
-                    
-                    // วิเคราะห์สาเหตุความผิดพลาดและเฉลยคำตอบให้อ่านเข้าใจง่าย
                     if (error.code === 'auth/api-key-not-valid') {
-                        errorText.innerHTML = "❌ <b>กุญแจ API Key โดน Google แบนแล้ว</b><br>โปรดนำกุญแจอันใหม่ล่าสุดใน Firebase Console มาหั่นแก้ไขใส่แอปครับ";
+                        errorText.innerHTML = "❌ <b>กุญแจ API Key โดน Google แบนแล้ว</b><br>โปรดนำกุญแจอันใหม่ล่าสุดมาใส่แอปครับ";
                     } else if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
                         errorText.innerText = "❌ รหัสผ่าน PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง";
                     } else if (error.code === 'auth/user-not-found') {
-                        errorText.innerText = "❌ ไม่พบบัญชีผู้ใช้งานนี้ในระบบ Firebase กรุณาสร้าง User ใหม่ด้วยอีเมลนี้";
-                    } else if (error.code === 'auth/network-request-failed') {
-                        errorText.innerText = "❌ เชื่อมต่ออินเทอร์เน็ตล้มเหลว กรุณาตรวจสอบสัญญาณเน็ต";
+                        errorText.innerText = "❌ ไม่พบบัญชีผู้ใช้งานนี้ในระบบ Firebase";
                     } else {
                         errorText.innerText = `❌ เกิดข้อผิดพลาด: ${error.message}`;
                     }
                     document.getElementById('pinInput').value = '';
                 })
                 .finally(() => {
-                    btn.innerHTML = '<i class="ph-bold ph-key"></i> ปลดล็อก';
+                    btn.innerHTML = '<i class="ph-bold ph-key md:text-lg"></i> ปลดล็อก';
                     btn.disabled = false;
                 });
         }
@@ -500,15 +474,14 @@
                 roleIcon.innerHTML = '<i class="ph-bold ph-seal-check text-yellow-300"></i>';
                 roleText.innerText = `สิทธิ์: ${ownerName.split(' ')[0]}`;
                 badgeRole.innerText = "โหมดเจ้าของร้าน";
-                badgeRole.className = "text-[10px] font-bold bg-amber-500/30 text-yellow-300 px-2 py-0.5 rounded border border-yellow-400";
+                badgeRole.className = "text-[10px] md:text-xs font-bold bg-amber-500/30 text-yellow-300 px-2.5 py-1 rounded border border-yellow-400";
                 
-                // เปลี่ยนเป็นปุ่มสำหรับกดล็อกเอาต์สลับเป็นโหมดพนักงาน
                 btnLockStatus.onclick = logoutRole;
             } else {
                 roleIcon.innerHTML = '<i class="ph-bold ph-lock-key"></i>';
                 roleText.innerText = "โหมดพนักงาน";
                 badgeRole.innerText = "โหมดพนักงาน";
-                badgeRole.className = "text-[10px] font-bold bg-amber-500/10 text-yellow-400/80 px-2 py-0.5 rounded border border-yellow-500/20";
+                badgeRole.className = "text-[10px] md:text-xs font-bold bg-amber-500/10 text-yellow-400/80 px-2.5 py-1 rounded border border-yellow-500/20";
                 
                 btnLockStatus.onclick = openPinModal;
             }
@@ -522,9 +495,6 @@
             });
         }
 
-        // ==========================================
-        // 5. CALCULATIONS & UI RENDERING
-        // ==========================================
         function renderAll() {
             renderTotals();
             renderTransactions();
@@ -539,19 +509,12 @@
 
             allTransactions.forEach(tx => {
                 const isInc = ['SELL', 'OTHER_INCOME'].includes(tx.category);
-                
-                // คำนวณทรัพย์สินรวมทั้งหมดตลอดเวลา
-                if (tx.wallet === 'CASH') {
-                    totalCash += isInc ? tx.amount : -tx.amount;
-                } else {
-                    totalTransfer += isInc ? tx.amount : -tx.amount;
-                }
+                if (tx.wallet === 'CASH') totalCash += isInc ? tx.amount : -tx.amount;
+                else totalTransfer += isInc ? tx.amount : -tx.amount;
 
-                // สรุปยอดขายประจำวัน
                 if (tx.date === selectedDate) {
                     if (isInc) {
                         dailyIncome += tx.amount;
-                        // คำนวณกำไร: รายรับ - ราคาทุน
                         dailyProfit += (tx.amount - tx.cost);
                     } else {
                         dailyExpense += tx.amount;
@@ -561,7 +524,6 @@
 
             const totalSum = totalCash + totalTransfer;
 
-            // แสดงยอดทรัพย์สินแบบหลบตาคนนอก (ซ่อนหากอยู่ในโหมดพนักงาน)
             if (isOwner) {
                 document.getElementById('totalAssetValue').innerText = `${totalSum.toLocaleString('th-TH')} ฿`;
                 document.getElementById('totalTransferValue').innerText = `${totalTransfer.toLocaleString('th-TH')} ฿`;
@@ -580,7 +542,6 @@
 
         function renderTransactions() {
             const container = document.getElementById('txContainer');
-            // กรองหาเฉพาะรายการวันนี้ และกรองตามคำค้นหาที่กรอก
             const filtered = allTransactions.filter(tx => {
                 const matchesDate = tx.date === selectedDate;
                 const matchesSearch = tx.description.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -592,9 +553,9 @@
 
             if (filtered.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-10 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                        <i class="ph ph-note-blank text-3xl text-slate-300 mb-1"></i>
-                        <p class="text-slate-400 text-xs">ไม่มีรายการธุรกรรมในวันนี้</p>
+                    <div class="text-center py-12 md:py-20 bg-white rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm">
+                        <i class="ph ph-note-blank text-4xl md:text-5xl text-slate-300 mb-2"></i>
+                        <p class="text-slate-400 text-sm md:text-base">ไม่มีรายการธุรกรรมในวันนี้</p>
                     </div>
                 `;
                 return;
@@ -611,33 +572,33 @@
                     'OTHER_EXPENSE': 'รายจ่ายอื่นๆ'
                 };
                 
-                const cardColor = isInc ? 'border-l-4 border-emerald-500' : 'border-l-4 border-rose-500';
+                const cardColor = isInc ? 'border-l-[5px] border-emerald-500' : 'border-l-[5px] border-rose-500';
                 
                 html += `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between ${cardColor}">
-                        <div class="space-y-1">
-                            <h4 class="font-bold text-slate-800 text-sm leading-snug">${tx.description}</h4>
-                            <div class="flex flex-wrap items-center gap-2 text-[10px]">
-                                <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">
+                    <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between ${cardColor} transition-all hover:shadow-md">
+                        <div class="space-y-1.5 md:space-y-2">
+                            <h4 class="font-bold text-slate-800 text-sm md:text-lg leading-snug">${tx.description}</h4>
+                            <div class="flex flex-wrap items-center gap-2 md:gap-3 text-[10px] md:text-sm">
+                                <span class="bg-slate-100 text-slate-600 px-2 md:px-3 py-0.5 md:py-1 rounded-md font-medium">
                                     ${categoryNames[tx.category] || 'ทั่วไป'}
                                 </span>
-                                <span class="text-slate-400 flex items-center gap-0.5">
-                                    ${tx.wallet === 'CASH' ? '<i class="ph ph-coins"></i> เงินสด' : '<i class="ph ph-credit-card"></i> เงินโอน'}
+                                <span class="text-slate-400 flex items-center gap-1">
+                                    ${tx.wallet === 'CASH' ? '<i class="ph ph-coins md:text-base"></i> เงินสด' : '<i class="ph ph-credit-card md:text-base"></i> เงินโอน'}
                                 </span>
                                 ${isOwner && !isInc ? `
-                                    <span class="text-amber-700 bg-amber-50 px-1.5 rounded font-semibold border border-amber-100">
+                                    <span class="text-amber-700 bg-amber-50 px-2 py-0.5 md:py-1 rounded-md font-semibold border border-amber-100">
                                         ราคาทุน: ${tx.cost.toLocaleString('th-TH')} ฿
                                     </span>
                                 ` : ''}
                             </div>
                         </div>
                         <div class="text-right shrink-0">
-                            <p class="font-bold text-sm ${isInc ? 'text-emerald-600' : 'text-slate-800'}">
+                            <p class="font-bold text-base md:text-xl ${isInc ? 'text-emerald-600' : 'text-slate-800'}">
                                 ${isInc ? '+' : '-'}${tx.amount.toLocaleString('th-TH')} ฿
                             </p>
                             ${isOwner ? `
-                                <button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 transition-colors pt-1.5">
-                                    <i class="ph ph-trash text-sm"></i>
+                                <button onclick="deleteTransaction('${tx.id}')" class="text-slate-300 hover:text-red-500 transition-colors pt-1.5 md:pt-2">
+                                    <i class="ph ph-trash text-base md:text-xl"></i>
                                 </button>
                             ` : ''}
                         </div>
@@ -648,9 +609,6 @@
             container.innerHTML = html;
         }
 
-        // ==========================================
-        // 6. FORM & SEARCH ACTIONS
-        // ==========================================
         function handleSearch(val) {
             searchQuery = val;
             renderTransactions();
@@ -662,11 +620,11 @@
             const btnCash = document.getElementById('btnWalletCash');
             
             if (walletType === 'TRANSFER') {
-                btnTransfer.className = "py-2 rounded-xl border border-blue-200 text-blue-700 bg-blue-50 font-bold flex items-center justify-center gap-1";
-                btnCash.className = "py-2 rounded-xl border border-slate-200 text-slate-500 bg-white flex items-center justify-center gap-1";
+                btnTransfer.className = "py-2.5 md:py-3.5 rounded-xl border border-blue-200 text-blue-700 bg-blue-50 font-bold flex items-center justify-center gap-1.5 md:text-base";
+                btnCash.className = "py-2.5 md:py-3.5 rounded-xl border border-slate-200 text-slate-500 bg-white flex items-center justify-center gap-1.5 md:text-base";
             } else {
-                btnCash.className = "py-2 rounded-xl border border-emerald-200 text-emerald-700 bg-emerald-50 font-bold flex items-center justify-center gap-1";
-                btnTransfer.className = "py-2 rounded-xl border border-slate-200 text-slate-500 bg-white flex items-center justify-center gap-1";
+                btnCash.className = "py-2.5 md:py-3.5 rounded-xl border border-emerald-200 text-emerald-700 bg-emerald-50 font-bold flex items-center justify-center gap-1.5 md:text-base";
+                btnTransfer.className = "py-2.5 md:py-3.5 rounded-xl border border-slate-200 text-slate-500 bg-white flex items-center justify-center gap-1.5 md:text-base";
             }
         }
 
@@ -705,12 +663,8 @@
             }
         }
 
-        // ==========================================
-        // 7. NAVIGATION & WINDOWS (MODALS)
-        // ==========================================
         function switchTab(tabId) {
             if (tabId === 'ledger') {
-                // อยู่หน้าทำรายการบัญชีหลัก
                 document.getElementById('txContainer').scrollIntoView({ behavior: 'smooth' });
             } else if (tabId === 'certs') {
                 alert("เมนูงานออกบัตรรับรองพระแท้ กำลังอยู่ในช่วงจัดเตรียมระบบ...");
@@ -719,7 +673,6 @@
             }
         }
 
-        // เปิด-ปิดหน้าต่าง PIN ล็อกอิน
         function openPinModal() {
             document.getElementById('pinModal').classList.remove('hidden');
             document.getElementById('pinInput').focus();
@@ -730,7 +683,6 @@
             document.getElementById('pinError').classList.add('hidden');
         }
 
-        // เปิด-ปิดหน้าต่าง เพิ่มรายการพระเครื่อง
         function openAddModal() {
             document.getElementById('addModal').classList.remove('hidden');
         }
@@ -738,12 +690,10 @@
             document.getElementById('addModal').classList.add('hidden');
         }
 
-        // ระบบเปิดหน้าต่างทำเนียบพระ (วงกลมสีเขียวด้านล่างขวาสุด)
         function openDirectoryModal() {
             alert("📚 ระบบทำเนียบและพิมพ์ทรงพระดั้งเดิมของ 'ป.ทรัพย์สยาม' กำลังโหลดฐานข้อมูลเดิม... \n(ข้อมูลทำเนียบพระเครื่องทั้งหมดปลอดภัยและยังอยู่ครบตามปกติครับ)");
         }
 
-        // เริ่มโหลดข้อมูลแบบเรียลไทม์ทันทีที่เปิดแอป
         window.onload = function() {
             initRealtimeDatabase();
         };
