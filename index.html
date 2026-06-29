@@ -211,20 +211,7 @@
 
                 <button onclick="switchTab('inventory')" id="tabInventory" class="flex flex-col items-center justify-center flex-1 text-slate-400 py-3 hover:bg-slate-50 rounded-xl transition-colors">
                     <i id="iconInventory" class="ph ph-vault text-2xl mb-1"></i>
-                    <span class="text-[10px] md:text-xs font-bold font-heading">สต็อกพระ</span>
-                </button>
-
-                <button onclick="togglePresetModal(true)" class="flex flex-col items-center justify-center flex-1 text-slate-400 py-3 hover:bg-slate-50 rounded-xl transition-colors">
-                    <i class="ph ph-books text-2xl mb-1"></i>
-                    <span class="text-[10px] md:text-xs font-bold font-heading">ทำเนียบ</span>
-                </button>
-
-            </nav>
-        </div>
-
-        <!-- MODALS -->
-
-        <!-- 1. PIN Unlock Modal (ระบบรักษาความปลอดภัย) -->
+        <!-- 1. PIN Unlock Modal (ระบบรักษาความปลอดภัยแบบหลายเจ้าของร้าน) -->
         <div id="pinModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/80 backdrop-blur-md p-4 fade-in">
             <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-200/50 zoom-in text-center relative">
                 <button onclick="togglePinModal(false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="ph-bold ph-x text-lg"></i></button>
@@ -232,9 +219,22 @@
                     <i class="ph-fill ph-lock text-3xl"></i>
                 </div>
                 <h3 class="font-heading text-xl font-bold text-slate-800 mb-1">ปลดล็อกโหมดเจ้าของร้าน</h3>
-                <p class="text-xs text-slate-500 mb-6">กรุณากรอกรหัสผ่านเพื่อตรวจสอบต้นทุนและผลกำไร</p>
+                <p class="text-xs text-slate-500 mb-4">กรุณาเลือกชื่อของคุณและกรอกรหัสผ่านเพื่อตรวจสอบข้อมูล</p>
+                
                 <form id="pinForm" onsubmit="submitPin(event)" class="space-y-4">
-                    <input type="password" id="pinInput" required placeholder="กรอกรหัสผ่าน (PIN)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-center text-2xl font-bold tracking-widest focus:ring-2 focus:ring-amber-500 outline-none shadow-inner" maxlength="30">
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 block text-left mb-1.5">ระบุตัวตนเจ้าของร้าน</label>
+                        <select id="ownerSelect" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-amber-500 appearance-none cursor-pointer">
+                            <!-- รายชื่อนี้จะถูกดึงไปจับคู่กับอีเมลใน Firebase อัตโนมัติครับ -->
+                            <option value="owner1">คุณพี (Peerapong)</option>
+                            <option value="owner2">เจ้าของร้านท่านที่ 2</option>
+                            <option value="owner3">เจ้าของร้านท่านที่ 3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 block text-left mb-1.5">รหัสผ่าน (PIN 6 หลัก)</label>
+                        <input type="password" id="pinInput" required placeholder="กรอกรหัสผ่าน (PIN)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-center text-2xl font-bold tracking-widest focus:ring-2 focus:ring-amber-500 outline-none shadow-inner" maxlength="30">
+                    </div>
                     <div class="flex gap-2">
                         <button type="button" onclick="togglePinModal(false)" class="flex-1 bg-slate-100 text-slate-600 font-bold py-3 rounded-xl text-sm">ยกเลิก</button>
                         <button type="submit" id="btnUnlockOwner" class="flex-1 bg-velvet-gradient text-white font-bold py-3 rounded-xl text-sm shadow-md hover:brightness-110">ปลดล็อก</button>
@@ -422,8 +422,12 @@
 
         db.enablePersistence().catch(function(err) { console.warn("Firebase Persistence Error:", err); });
 
-        // อีเมลผู้จัดการแอดมินสูงสุดสำหรับการเข้าโหมดเจ้าของร้าน
-        const ADMIN_EMAIL = "peerapong.luechai@gmail.com";
+        // (สามารถแก้ไขชื่อภาษาไทยตรงนี้ และนำอีเมลที่สมัครใน Firebase มาผูกได้เลยครับ)
+        const OWNERS = {
+            "owner1": { name: "คุณพี (Peerapong)", email: "peerapong.luechai@gmail.com" },
+            "owner2": { name: "เจ้าของร้านท่านที่ 2", email: "owner2@example.com" }, 
+            "owner3": { name: "เจ้าของร้านท่านที่ 3", email: "owner3@example.com" }
+        };
 
         const CATEGORIES = {
             SELL: { id: 'SELL', label: 'ปล่อยเช่า (ขาย)', type: 'INCOME', icon: 'ph-trend-up', color: 'text-emerald-600', border: 'border-emerald-500', bg: 'bg-emerald-50' },
@@ -477,10 +481,16 @@
         };
 
         function init() {
-            // ดักความเปลี่ยนแปลงการเข้าระบบ Firebase Auth
+            // ดักความเปลี่ยนแปลงการเข้าระบบ Firebase Auth (รองรับแบบหลายอีเมล)
             auth.onAuthStateChanged((user) => {
-                if (user && !user.isAnonymous && user.email === ADMIN_EMAIL) {
-                    state.isOwner = true;
+                if (user && !user.isAnonymous) {
+                    // ตรวจสอบว่าอีเมลที่ล็อกอินเข้ามา ตรงกับหนึ่งในอีเมลเจ้าของร้านที่ตั้งไว้หรือไม่
+                    const isOwnerEmail = Object.values(OWNERS).some(owner => owner.email.toLowerCase() === user.email.toLowerCase());
+                    if (isOwnerEmail) {
+                        state.isOwner = true;
+                    } else {
+                        state.isOwner = false;
+                    }
                 } else {
                     state.isOwner = false;
                     if (!user) {
@@ -597,6 +607,8 @@
 
         function submitPin(e) {
             e.preventDefault();
+            const selectedOwnerKey = document.getElementById('ownerSelect').value;
+            const targetEmail = OWNERS[selectedOwnerKey].email;
             const pin = document.getElementById('pinInput').value.trim();
             if (!pin) return;
 
@@ -605,11 +617,12 @@
             btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> กำลังตรวจสอบ...';
             btn.disabled = true;
 
-            auth.signInWithEmailAndPassword(ADMIN_EMAIL, pin)
+            // ล็อกอินด้วยอีเมลของเจ้าของร้านที่เลือก และรหัส PIN ของเจ้าของร้านท่านนั้น
+            auth.signInWithEmailAndPassword(targetEmail, pin)
                 .then(() => {
                     state.isOwner = true;
                     togglePinModal(false);
-                    showToast('ยินดีต้อนรับเจ้าของร้าน ปลดล็อกข้อมูลสำเร็จ');
+                    showToast('ยินดีต้อนรับ! ปลดล็อกข้อมูลร้านสำเร็จ');
                     updateLockUI();
                     updateUI();
                 })
@@ -619,7 +632,7 @@
                     if (error.code === "auth/too-many-requests") {
                         msg = "ใส่รหัสผิดพลาดเกินจำนวนครั้ง ระบบถูกระงับชั่วคราว";
                     } else if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password") {
-                        msg = "รหัสผ่านเจ้าของร้านไม่ถูกต้อง (ต้องเป็นตัวเลข 6 ตัว)";
+                        msg = "รหัสผ่าน PIN ของท่านไม่ถูกต้อง";
                     }
                     showToast(msg, true);
                 })
@@ -630,11 +643,15 @@
         }
 
         function handleForgotPassword() {
+            const selectedOwnerKey = document.getElementById('ownerSelect').value;
+            const targetEmail = OWNERS[selectedOwnerKey].email;
+            const targetName = OWNERS[selectedOwnerKey].name;
+
             const btn = document.getElementById('btnUnlockOwner');
             btn.disabled = true;
-            auth.sendPasswordResetEmail(ADMIN_EMAIL)
+            auth.sendPasswordResetEmail(targetEmail)
                 .then(() => {
-                    showToast('ส่งอีเมลตั้งรหัสผ่านใหม่ไปที่ ' + ADMIN_EMAIL + ' สำเร็จ! กรุณาเช็คอีเมลของคุณ');
+                    showToast('ส่งอีเมลตั้งรหัสผ่านใหม่ไปที่ ' + targetEmail + ' ของ ' + targetName + ' สำเร็จ!');
                     togglePinModal(false);
                 })
                 .catch((error) => {
@@ -648,7 +665,18 @@
 
         function updateLockUI() {
             els.iconLock.className = state.isOwner ? "ph-fill ph-lock-key-open text-xl text-emerald-400" : "ph-fill ph-lock text-xl text-rose-400";
-            els.roleBadge.innerText = state.isOwner ? "โหมดเจ้าของร้าน" : "โหมดพนักงาน";
+            
+            // ค้นหาชื่อเล่นของเจ้าของร้านที่กำลังล็อกอินอยู่มาแสดงผลใน Badge
+            let currentOwnerName = "โหมดพนักงาน";
+            if (state.isOwner && auth.currentUser) {
+                const loggedInEmail = auth.currentUser.email;
+                const foundOwner = Object.values(OWNERS).find(o => o.email.toLowerCase() === loggedInEmail.toLowerCase());
+                if (foundOwner) {
+                    currentOwnerName = "สิทธิ์: " + foundOwner.name.split(" ")[0];
+                }
+            }
+            els.roleBadge.innerText = currentOwnerName;
+            
             els.roleBadge.className = state.isOwner 
                 ? "bg-amber-500/20 text-amber-300 text-[10px] md:text-xs px-2 py-1 rounded-md border border-amber-500/30 font-bold"
                 : "bg-rose-500/20 text-rose-300 text-[10px] md:text-xs px-2 py-1 rounded-md border border-rose-500/30 font-bold";
