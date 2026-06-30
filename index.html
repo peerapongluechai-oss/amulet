@@ -69,6 +69,7 @@
 </head>
 <body class="bg-amber-50/10 min-h-screen pb-24 text-slate-800">
 
+    <!-- HEADER -->
     <header id="mainHeader" class="bg-gradient-to-b from-velvet-dark to-velvet-main text-white px-4 md:px-8 pt-6 pb-28 rounded-b-[32px] md:rounded-b-[48px] shadow-lg relative transition-all duration-300">
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
@@ -93,7 +94,7 @@
     <!-- 1. LEDGER WORKSPACE -->
     <main id="ledgerWorkspace" class="max-w-5xl mx-auto px-4 md:px-8 -mt-20 relative z-10 space-y-4 md:space-y-6 transition-all duration-300">
         
-        <!-- OWNER DASHBOARD (ซ่อนอัตโนมัติถ้าเป็นพนักงาน) -->
+        <!-- OWNER DASHBOARD -->
         <div id="ownerDashboard" class="space-y-4 md:space-y-6 hidden">
             <!-- Total Asset Card -->
             <div class="bg-gradient-to-br from-velvet-main to-velvet-dark p-6 md:p-10 rounded-3xl md:rounded-[2rem] shadow-xl text-white border border-gold-main/20 relative overflow-hidden">
@@ -679,6 +680,7 @@
             }).then(() => { closeAddCertModal(); showCustomAlert("สร้างคิวเรียบร้อย", `คิวหมายเลข ${qStr}`, "success"); });
         }
 
+        // ---------- ฟังก์ชันที่เติมกลับมาเพื่อแก้ไข Error ปุ่มชำระเงินหาย ----------
         function openCertPaymentModal(id, qNo, name) {
             document.getElementById('payCertId').value = id;
             document.getElementById('payCertTitle').value = `ค่าออกบัตรคิว ${qNo} (${name})`;
@@ -690,6 +692,7 @@
             document.getElementById('certPaymentModal').classList.add('hidden');
             document.getElementById('certPayForm').reset();
         }
+        // ------------------------------------------------------------------
 
         async function handleCertPaymentSubmit(e) {
             e.preventDefault();
