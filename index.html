@@ -39,39 +39,55 @@
             background-color: #fcfaf8; 
             position: relative;
         }
-        /* ลายน้ำพื้นหลัง: รูปสมเด็จโต (มุมซ้ายบน) */
+        
+        /* ลายน้ำที่ 1: รูปสมเด็จโต (มุมซ้ายบน) */
         body::before {
             content: "";
             position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            top: 0; 
+            left: 0;
+            width: 100vw; 
+            height: 100vh;
             background-image: url('images (1).jpg');
-            background-position: top left;
+            background-position: left top;
             background-repeat: no-repeat;
-            background-size: 75% auto; /* ขนาดบนมือถือ */
-            opacity: 0.035; /* ความจางกำลังดี ไม่กวนสายตา */
-            z-index: -1;
+            background-size: 50% auto; /* ปรับขนาดให้ใหญ่ขึ้น */
+            opacity: 0.23; /* ปรับความเข้มขึ้นอีก 8% เป็น 23% */
+            mix-blend-mode: multiply; /* ทำให้ภาพกลืนกับพื้นหลังขาวได้ดีขึ้น */
+            z-index: 0; /* ให้อยู่เหนือสีพื้นหลัง */
             pointer-events: none;
         }
-        /* ลายน้ำพื้นหลัง: รูปพระพุทธรูปทองคำ (มุมขวาล่าง) */
+
+        /* ลายน้ำที่ 2: รูปพระพุทธรูป (มุมขวาล่าง) */
         body::after {
             content: "";
             position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            top: 0; 
+            left: 0;
+            width: 100vw; 
+            height: 100vh;
             background-image: url('edited-image.jpg');
-            background-position: bottom right;
+            background-position: right bottom;
             background-repeat: no-repeat;
-            background-size: 85% auto; /* ขนาดบนมือถือ */
-            opacity: 0.04; /* ความจางกำลังดี ไม่กวนสายตา */
-            z-index: -1;
+            background-size: 60% auto; /* ปรับขนาดให้ใหญ่ขึ้น */
+            opacity: 0.23; /* ปรับความเข้มขึ้นอีก 8% เป็น 23% */
+            mix-blend-mode: multiply;
+            z-index: 0; /* ให้อยู่เหนือสีพื้นหลัง */
             pointer-events: none;
         }
-        /* ปรับสมดุลขนาดลายน้ำ สำหรับหน้าจอคอมพิวเตอร์ หรือ แท็บเล็ต */
-        @media (min-width: 768px) {
-            body::before { background-size: 30% auto; background-position: top 5% left 5%; }
-            body::after { background-size: 35% auto; background-position: bottom 5% right 5%; }
+
+        /* ต้องให้เนื้อหาลอยอยู่เหนือลายน้ำ */
+        #mainHeader, main, #certsWorkspace, #stockWorkspace, nav {
+            position: relative;
+            z-index: 10;
         }
+
+        /* ปรับแต่งลายน้ำสำหรับหน้าจอคอมพิวเตอร์ */
+        @media (min-width: 768px) {
+            body::before { background-size: 25% auto; background-position: left 5% top 10%; }
+            body::after { background-size: 30% auto; background-position: right 5% bottom 10%; }
+        }
+
         .heading-font { font-family: 'Pridi', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
