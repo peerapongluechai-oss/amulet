@@ -27,6 +27,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <!-- เพิ่ม SDK สำหรับจัดเก็บรูปภาพ -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <!-- Google Fonts: Pridi & Sarabun -->
@@ -54,7 +55,7 @@
             background-size: 50% auto;
             opacity: 0.18; /* ความจาง 18% */
             mix-blend-mode: multiply;
-            z-index: 0; 
+            z-index: -1; 
             pointer-events: none;
         }
 
@@ -72,20 +73,8 @@
             background-size: 60% auto;
             opacity: 0.18; /* ความจาง 18% */
             mix-blend-mode: multiply;
-            z-index: 0; 
+            z-index: -1; 
             pointer-events: none;
-        }
-
-        /* ให้เนื้อหาลอยอยู่เหนือลายน้ำ */
-        #mainHeader, main, #certsWorkspace, #stockWorkspace, nav {
-            position: relative;
-            z-index: 10;
-        }
-
-        /* ปรับแต่งลายน้ำสำหรับหน้าจอคอมพิวเตอร์ */
-        @media (min-width: 768px) {
-            body::before { background-size: 25% auto; background-position: left 5% top 10%; }
-            body::after { background-size: 30% auto; background-position: right 5% bottom 10%; }
         }
 
         .heading-font { font-family: 'Pridi', sans-serif; }
@@ -103,10 +92,9 @@
         }
     </style>
 </head>
-<body class="bg-amber-50/10 min-h-screen pb-24 text-slate-800">
+<body class="min-h-screen pb-24 text-slate-800">
 
-    <!-- HEADER -->
-    <header id="mainHeader" class="bg-gradient-to-b from-velvet-dark to-velvet-main text-white px-4 md:px-8 pt-6 pb-28 rounded-b-[32px] md:rounded-b-[48px] shadow-lg relative transition-all duration-300">
+    <header id="mainHeader" class="bg-gradient-to-b from-velvet-dark to-velvet-main text-white px-4 md:px-8 pt-6 pb-28 rounded-b-[32px] md:rounded-b-[48px] shadow-lg relative transition-all duration-300 z-10">
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <p class="text-xs md:text-sm text-amber-200/80 font-medium">ยินดีต้อนรับ</p>
@@ -130,7 +118,7 @@
     <!-- 1. LEDGER WORKSPACE -->
     <main id="ledgerWorkspace" class="max-w-5xl mx-auto px-4 md:px-8 -mt-20 relative z-10 space-y-4 md:space-y-6 transition-all duration-300">
         
-        <!-- OWNER DASHBOARD -->
+        <!-- OWNER DASHBOARD (ซ่อนอัตโนมัติถ้าเป็นพนักงาน) -->
         <div id="ownerDashboard" class="space-y-4 md:space-y-6 hidden">
             <!-- Total Asset Card -->
             <div class="bg-gradient-to-br from-velvet-main to-velvet-dark p-6 md:p-10 rounded-3xl md:rounded-[2rem] shadow-xl text-white border border-gold-main/20 relative overflow-hidden">
@@ -148,16 +136,16 @@
 
             <!-- Daily Stats & Profit -->
             <div class="grid grid-cols-2 gap-3 md:gap-6">
-                <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-3 md:gap-5">
+                <div class="bg-white/95 backdrop-blur p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-3 md:gap-5">
                     <div class="bg-emerald-50 w-10 h-10 md:w-16 md:h-16 rounded-full flex items-center justify-center text-emerald-600 shrink-0"><i class="ph-bold ph-trend-up text-lg md:text-3xl"></i></div>
                     <div><p class="text-[11px] md:text-sm text-slate-500 font-medium">รายรับวันนี้</p><p id="dailyIncomeText" class="font-bold text-emerald-600 text-base md:text-2xl">0 ฿</p></div>
                 </div>
-                <div class="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-3 md:gap-5">
+                <div class="bg-white/95 backdrop-blur p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-3 md:gap-5">
                     <div class="bg-rose-50 w-10 h-10 md:w-16 md:h-16 rounded-full flex items-center justify-center text-rose-600 shrink-0"><i class="ph-bold ph-trend-down text-lg md:text-3xl"></i></div>
                     <div><p class="text-[11px] md:text-sm text-slate-500 font-medium">รายจ่ายวันนี้</p><p id="dailyExpenseText" class="font-bold text-rose-600 text-base md:text-2xl">0 ฿</p></div>
                 </div>
             </div>
-            <div class="bg-amber-50/50 border border-amber-200/60 p-4 md:p-6 rounded-2xl md:rounded-3xl flex items-center justify-between">
+            <div class="bg-amber-50/80 backdrop-blur border border-amber-200/60 p-4 md:p-6 rounded-2xl md:rounded-3xl flex items-center justify-between">
                 <div class="flex items-center gap-2.5 md:gap-4">
                     <div class="bg-amber-100 w-9 h-9 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-amber-700"><i class="ph-bold ph-hand-coins text-lg md:text-2xl"></i></div>
                     <div><p class="text-xs md:text-sm text-amber-950/70 font-medium">กำไรจากการปล่อยเช่า (วันนี้)</p><p id="profitText" class="font-bold text-amber-900 text-base md:text-xl">0 ฿</p></div>
@@ -165,6 +153,7 @@
                 <i class="ph ph-info text-slate-400 text-sm md:text-xl cursor-pointer" onclick="showCustomAlert('กำไรสุทธิ', 'คำนวณจากยอดรายรับ (ลบ) ราคาทุนของพระเครื่อง', 'info')"></i>
             </div>
         </div>
+        <!-- END OWNER DASHBOARD -->
 
         <!-- PREMIUM SEARCH BAR -->
         <div class="space-y-1.5 md:space-y-3 pt-1 md:pt-3">
@@ -178,7 +167,7 @@
                 <div class="absolute left-4 md:left-6 text-gold-main flex items-center">
                     <i class="ph-bold ph-magnifying-glass text-lg md:text-2xl"></i>
                 </div>
-                <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="พิมพ์ชื่อรายการ หรือหมวดหมู่..." class="w-full bg-white border-2 border-gold-main/60 focus:border-gold-dark text-slate-800 rounded-2xl md:rounded-3xl pl-11 md:pl-16 pr-4 md:pr-6 py-3 md:py-5 text-sm md:text-lg focus:outline-none focus:ring-4 focus:ring-yellow-400/20 shadow-[0_4px_12px_rgba(234,179,8,0.1)] transition-all font-medium placeholder-slate-400"/>
+                <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="พิมพ์ชื่อรายการ หรือหมวดหมู่..." class="w-full bg-white/95 backdrop-blur border-2 border-gold-main/60 focus:border-gold-dark text-slate-800 rounded-2xl md:rounded-3xl pl-11 md:pl-16 pr-4 md:pr-6 py-3 md:py-5 text-sm md:text-lg focus:outline-none focus:ring-4 focus:ring-yellow-400/20 shadow-[0_4px_12px_rgba(234,179,8,0.1)] transition-all font-medium placeholder-slate-400"/>
             </div>
         </div>
 
@@ -187,7 +176,8 @@
             <h3 class="font-bold heading-font text-slate-800 flex items-center gap-2 text-base md:text-2xl"><i class="ph-bold ph-book-open text-velvet-main"></i> รายการบัญชี</h3>
             <div class="flex items-center gap-2">
                 <span id="txCountBadge" class="text-xs md:text-sm bg-slate-200/70 text-slate-600 px-2.5 md:px-4 py-1.5 rounded-full font-semibold">0 รายการ</span>
-                <button onclick="exportToCSV()" class="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-full font-bold flex items-center gap-1 border border-emerald-200 transition-colors">
+                <!-- ปุ่ม Export CSV -->
+                <button onclick="exportToCSV()" class="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-full font-bold flex items-center gap-1 border border-emerald-200 transition-colors shadow-sm">
                     <i class="ph-bold ph-download-simple"></i> โหลด CSV
                 </button>
             </div>
@@ -196,7 +186,7 @@
     </main>
 
     <!-- 2. CERTS WORKSPACE -->
-    <div id="certsWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in">
+    <div id="certsWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in z-10 relative">
         <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-5 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
             <i class="ph ph-certificate absolute -right-6 -bottom-6 text-9xl text-white/5"></i>
             <div class="relative z-10 flex justify-between items-center">
@@ -208,15 +198,15 @@
             </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <div class="bg-rose-50/50 p-4 rounded-[2rem] border border-rose-100/50 h-fit">
+            <div class="bg-rose-50/80 backdrop-blur p-4 rounded-[2rem] border border-rose-100/50 h-fit shadow-sm">
                 <h3 class="font-bold text-rose-900 mb-4 flex items-center justify-between"><span class="flex items-center gap-1.5"><i class="ph-fill ph-circle text-rose-500"></i> รอดำเนินการ</span><span id="certCountPending" class="bg-rose-200 text-rose-800 text-xs px-2.5 py-0.5 rounded-full">0</span></h3>
                 <div id="certListPending" class="space-y-3 min-h-[100px]"></div>
             </div>
-            <div class="bg-amber-50/50 p-4 rounded-[2rem] border border-amber-100/50 h-fit">
+            <div class="bg-amber-50/80 backdrop-blur p-4 rounded-[2rem] border border-amber-100/50 h-fit shadow-sm">
                 <h3 class="font-bold text-amber-900 mb-4 flex items-center justify-between"><span class="flex items-center gap-1.5"><i class="ph-fill ph-circle text-amber-500"></i> รอชำระเงิน</span><span id="certCountReady" class="bg-amber-200 text-amber-800 text-xs px-2.5 py-0.5 rounded-full">0</span></h3>
                 <div id="certListReady" class="space-y-3 min-h-[100px]"></div>
             </div>
-            <div class="bg-emerald-50/50 p-4 rounded-[2rem] border border-emerald-100/50 h-fit">
+            <div class="bg-emerald-50/80 backdrop-blur p-4 rounded-[2rem] border border-emerald-100/50 h-fit shadow-sm">
                 <h3 class="font-bold text-emerald-900 mb-4 flex items-center justify-between"><span class="flex items-center gap-1.5"><i class="ph-fill ph-circle text-emerald-500"></i> เสร็จสิ้นแล้ว (วันนี้)</span><span id="certCountCompleted" class="bg-emerald-200 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full">0</span></h3>
                 <div id="certListCompleted" class="space-y-3 min-h-[100px]"></div>
             </div>
@@ -224,7 +214,7 @@
     </div>
 
     <!-- 3. STOCK WORKSPACE -->
-    <div id="stockWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in">
+    <div id="stockWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in z-10 relative">
         <div class="bg-gradient-to-br from-amber-700 to-amber-900 text-white p-5 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden flex justify-between items-center">
             <i class="ph ph-grid-four absolute -left-6 -bottom-6 text-9xl text-white/5"></i>
             <div class="relative z-10">
@@ -239,7 +229,7 @@
         
         <div class="relative flex items-center">
             <i class="ph-bold ph-magnifying-glass absolute left-6 text-slate-400 text-lg md:text-xl"></i>
-            <input type="text" id="stockSearch" oninput="renderStock()" placeholder="ค้นหารหัสพระ หรือ ชื่อพระในสต็อก..." class="w-full bg-white border border-slate-200 rounded-2xl md:rounded-3xl pl-14 pr-6 py-3.5 md:py-4 text-sm md:text-base focus:outline-none focus:border-amber-500 shadow-sm"/>
+            <input type="text" id="stockSearch" oninput="renderStock()" placeholder="ค้นหารหัสพระ หรือ ชื่อพระในสต็อก..." class="w-full bg-white/95 backdrop-blur border border-slate-200 rounded-2xl md:rounded-3xl pl-14 pr-6 py-3.5 md:py-4 text-sm md:text-base focus:outline-none focus:border-amber-500 shadow-sm"/>
         </div>
 
         <div id="stockContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 min-h-[300px]">
@@ -257,6 +247,7 @@
                 <i class="ph-bold ph-certificate text-xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-xs font-semibold">งานออกบัตร</span>
             </button>
             
+            <!-- Smart Dynamic Add Button -->
             <div class="flex justify-center items-center relative -top-3 md:-top-5">
                 <button onclick="openContextAddModal()" class="w-14 h-14 md:w-20 md:h-20 bg-gradient-to-br from-velvet-light to-velvet-main text-white rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(122,16,25,0.4)] border-4 border-white hover:scale-105 active:scale-95 transition-all">
                     <i class="ph-bold ph-plus text-2xl md:text-4xl"></i>
@@ -363,7 +354,7 @@
         </div>
     </div>
 
-    <!-- ADD TO STOCK MODAL -->
+    <!-- ADD TO STOCK MODAL (พร้อมอัปโหลดรูปภาพ) -->
     <div id="addStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeAddStockModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
@@ -457,33 +448,12 @@
         </div>
     </div>
 
-    <!-- Print Template -->
-    <div id="printSection" class="hidden">
-        <div class="print-header">
-            <h2 style="font-size: 24px; font-weight: bold;">ร้าน ป.ทรัพย์สยาม</h2>
-            <p style="font-size: 16px;">ใบรับงาน / คิวออกบัตรรับรองพระแท้</p>
-            <div class="print-q" id="printQ">Q-000</div>
-        </div>
-        <div class="print-details">
-            <p><b>วันที่:</b> <span id="printDate"></span></p>
-            <p><b>ชื่อลูกค้า:</b> <span id="printName"></span></p>
-            <p><b>เบอร์ติดต่อ:</b> <span id="printPhone"></span></p>
-            <p><b>จำนวนพระที่ตรวจ:</b> <span id="printCount"></span> องค์</p>
-        </div>
-        <div class="print-footer">
-            <p>*** กรุณานำใบนี้มายื่นเพื่อรับพระคืนและชำระเงิน ***</p>
-            <p style="margin-top: 5px;">ขอบพระคุณที่ไว้วางใจ ป.ทรัพย์สยาม</p>
-        </div>
-    </div>
-
     <script>
         // =====================================
-        // CONNECT TO FIREBASE
+        // FIREBASE CONFIGURATION
         // =====================================
-        const keyPartA = "AIzaSy";
-        const keyPartB = "AmQFwL7zniKTnT2INt93iHOlCuT97hC7g";
         const firebaseConfig = { 
-            apiKey: keyPartA + keyPartB, 
+            apiKey: "AIzaSy" + "AmQFwL7zniKTnT2INt93iHOlCuT97hC7g", 
             authDomain: "myfamilyproject-ecff4.firebaseapp.com", 
             projectId: "myfamilyproject-ecff4", 
             storageBucket: "myfamilyproject-ecff4.firebasestorage.app" 
@@ -511,11 +481,8 @@
         async function initFirebaseAndAuth() {
             try {
                 await auth.signInAnonymously();
-            } catch (e) { 
-                console.warn("Auth initialization warning:", e.message); 
-            }
-            initRealtimeDatabase(); 
-            updateUIRole();
+            } catch (e) { console.warn("Auth initialization skipped/offline:", e.message); }
+            initRealtimeDatabase(); updateUIRole();
         }
 
         function initRealtimeDatabase() {
@@ -551,7 +518,7 @@
         }
 
         // =====================================
-        // 1. SMART LEDGER
+        // 1. SMART LEDGER & AUTO-STOCK 
         // =====================================
         function renderAll() {
             let tC = 0, tT = 0, dI = 0, dE = 0, dP = 0;
@@ -575,12 +542,12 @@
             const list = allTransactions.filter(tx => tx.date === selectedDate && ((tx.description||"").toLowerCase().includes(sq) || (tx.category||"").toLowerCase().includes(sq)));
             document.getElementById('txCountBadge').innerText = `${list.length} รายการ`;
             const cont = document.getElementById('txContainer');
-            if(!list.length) return cont.innerHTML = `<div class="text-center py-12 bg-white/70 rounded-3xl border border-slate-100 shadow-sm text-slate-400 font-semibold">ไม่มีรายการบัญชีในวันที่เลือก</div>`;
+            if(!list.length) return cont.innerHTML = `<div class="text-center py-12 bg-white/95 backdrop-blur rounded-3xl border border-slate-100 shadow-sm text-slate-400 font-semibold">ไม่มีรายการบัญชีในวันที่เลือก</div>`;
             
             const names = {'SELL':'ปล่อยเช่าพระ','BUY':'เช่าเข้าพระ','CERT':'ค่าออกบัตรรับรอง','OTHER_INCOME':'รายรับอื่นๆ','OTHER_EXPENSE':'รายจ่ายอื่นๆ'};
             cont.innerHTML = list.map(tx => {
                 const inc = ['SELL','OTHER_INCOME','CERT'].includes(tx.category);
-                return `<div class="bg-white/90 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between ${inc?'border-l-4 border-emerald-500':'border-l-4 border-rose-500'}">
+                return `<div class="bg-white/95 backdrop-blur p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between ${inc?'border-l-4 border-emerald-500':'border-l-4 border-rose-500'}">
                     <div>
                         <h4 class="font-bold text-slate-800">${tx.description}</h4>
                         <div class="flex items-center gap-2 mt-1 text-[11px] md:text-xs">
@@ -650,6 +617,9 @@
             }
         }
 
+        // =====================================
+        // CSV EXPORT
+        // =====================================
         function exportToCSV() {
             const txs = allTransactions.filter(tx => tx.date === selectedDate);
             if(txs.length === 0) {
@@ -682,12 +652,15 @@
             let cP=0, cR=0, cC=0, hP="", hR="", hC="";
 
             allCerts.forEach(c => {
-                if(c.status === 'COMPLETED' && c.date !== selectedDate) return;
-                const h = `<div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-2 border-l-4 ${c.status==='PENDING'?'border-rose-400':c.status==='READY'?'border-amber-400':'border-emerald-400'}">
+                // เช็คเงื่อนไขการซ่อนคิวที่เสร็จแล้ว: โชว์คิวที่เพิ่ง "รับเงินเสร็จ" ในวันที่เลือก
+                const txDateToCheck = c.completedDate || c.date; 
+                if(c.status === 'COMPLETED' && txDateToCheck !== selectedDate) return;
+
+                const h = `<div class="bg-white/95 backdrop-blur p-4 rounded-2xl shadow-sm border border-slate-100 mb-2 border-l-4 ${c.status==='PENDING'?'border-rose-400':c.status==='READY'?'border-amber-400':'border-emerald-400'}">
                     <div class="flex justify-between items-center mb-1"><span class="font-bold bg-slate-100 px-2 py-0.5 rounded text-sm">${c.queueNo}</span><span class="text-xs bg-slate-50 px-2 rounded">${c.amuletCount} องค์</span></div>
                     <p class="font-bold text-slate-800 truncate">${c.customerName}</p><p class="text-xs text-slate-500 mb-3">${c.phone}</p>
                     <div class="flex gap-2 text-xs font-bold">
-                        ${c.status==='PENDING' ? `<button onclick="getColRef('cert_orders').doc('${c.id}').update({status:'READY'})" class="bg-amber-50 text-amber-700 flex-1 py-2 rounded-lg border border-amber-200">ถ่ายรูปเสร็จแล้ว</button>` : ''}
+                        ${c.status==='PENDING' ? `<button onclick="getColRef('cert_orders').doc('${c.id}').update({status:'READY'})" class="bg-amber-50 text-amber-700 flex-1 py-2 rounded-lg border border-amber-200 shadow-sm">ถ่ายรูปเสร็จแล้ว</button>` : ''}
                         ${c.status==='READY' ? `<button onclick="openCertPaymentModal('${c.id}', '${c.queueNo}', '${c.customerName}')" class="bg-emerald-500 text-white flex-1 py-2 rounded-lg shadow-sm">รับชำระเงิน</button>` : ''}
                         ${c.status==='COMPLETED' ? `<span class="bg-emerald-50 text-emerald-600 flex-1 py-2 rounded-lg text-center border border-emerald-100"><i class="ph-bold ph-check"></i> เสร็จสิ้นแล้ว</span>` : ''}
                         ${isOwner ? `<button onclick="if(confirm('ลบคิวนี้?')) getColRef('cert_orders').doc('${c.id}').delete()" class="text-slate-300 hover:text-red-500 px-2"><i class="ph-bold ph-trash"></i></button>`:''}
@@ -695,14 +668,9 @@
                 </div>`;
                 if(c.status==='PENDING'){ hP+=h; cP++; } else if(c.status==='READY'){ hR+=h; cR++; } else { hC+=h; cC++; }
             });
-            
-            const empty = `<div class="text-center py-8 text-slate-400 text-xs bg-white/40 rounded-2xl border-dashed border border-slate-200">ยังไม่มีคิวงาน</div>`;
-            lP.innerHTML = hP||empty; 
-            lR.innerHTML = hR||empty; 
-            lC.innerHTML = hC||empty;
-            document.getElementById('certCountPending').innerText = cP; 
-            document.getElementById('certCountReady').innerText = cR; 
-            document.getElementById('certCountCompleted').innerText = cC;
+            const empty = `<div class="text-center py-8 text-slate-400 text-xs bg-white/40 backdrop-blur rounded-2xl border-dashed border border-slate-200">ยังไม่มีคิวงาน</div>`;
+            lP.innerHTML = hP||empty; lR.innerHTML = hR||empty; lC.innerHTML = hC||empty;
+            document.getElementById('certCountPending').innerText = cP; document.getElementById('certCountReady').innerText = cR; document.getElementById('certCountCompleted').innerText = cC;
         }
 
         function handleCertSubmit(e) {
@@ -714,9 +682,6 @@
             }).then(() => { closeAddCertModal(); showCustomAlert("สร้างคิวเรียบร้อย", `คิวหมายเลข ${qStr}`, "success"); });
         }
 
-        // =====================================
-        // ฟังก์ชันรับชำระเงินงานออกบัตร 
-        // =====================================
         function openCertPaymentModal(id, qNo, name) {
             document.getElementById('payCertId').value = id;
             document.getElementById('payCertTitle').value = `ค่าออกบัตรคิว ${qNo} (${name})`;
@@ -724,7 +689,6 @@
             selectCertWallet('TRANSFER');
             document.getElementById('certPaymentModal').classList.remove('hidden');
         }
-
         function closeCertPaymentModal() {
             document.getElementById('certPaymentModal').classList.add('hidden');
             document.getElementById('certPayForm').reset();
@@ -733,44 +697,24 @@
         async function handleCertPaymentSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitCertPay');
-            btn.disabled = true; 
-            btn.innerText = "กำลังประมวลผล...";
+            btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
 
             try {
                 const amt = Number(document.getElementById('payCertAmount').value);
                 const batch = db.batch();
-                
-                // 1. ลงบัญชีรายรับ
                 batch.set(getColRef("transactions").doc(), { 
-                    description: document.getElementById('payCertTitle').value, 
-                    category: 'CERT', 
-                    amount: amt, 
-                    cost: 0, 
-                    wallet: currentCertWallet, 
-                    date: selectedDate, 
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+                    description: document.getElementById('payCertTitle').value, category: 'CERT', amount: amt, cost: 0, wallet: currentCertWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() 
                 });
-                
-                // 2. อัปเดตสถานะคิวให้เป็น COMPLETED
                 batch.update(getColRef("cert_orders").doc(document.getElementById('payCertId').value), { 
-                    status: 'COMPLETED' 
+                    status: 'COMPLETED', completedDate: selectedDate 
                 });
-                
-                // 3. ยืนยันการเปลี่ยนแปลงข้อมูล
                 await batch.commit();
-                
                 closeCertPaymentModal(); 
                 showCustomAlert("เสร็จสิ้น", `บันทึกรายรับค่างานออกบัตร ${amt} บาท เรียบร้อย`, "success");
-                
-                // บังคับรีเฟรชหน้าจอทันที เพื่อให้คิวย้ายไปช่อง "เสร็จสิ้นแล้ว" ทันใจ
-                renderCerts();
-                renderAll();
-                
             } catch(err) {
-                showCustomAlert("เกิดข้อผิดพลาด", "ระบบไม่สามารถบันทึกได้: " + err.message, "error");
+                showCustomAlert("เกิดข้อผิดพลาด", err.message, "error");
             } finally {
-                btn.disabled = false; 
-                btn.innerText = "ยืนยันรับเงิน & เสร็จสิ้น";
+                btn.disabled = false; btn.innerText = "ยืนยันรับเงิน & เสร็จสิ้น";
             }
         }
 
@@ -783,12 +727,12 @@
             document.getElementById('totalStockCount').innerHTML = `${filtered.filter(s=>s.status!=='SOLD').length} <span class="text-lg">องค์</span>`;
             
             const cont = document.getElementById('stockContainer');
-            if(!filtered.length) return cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่องในตู้</div>`;
+            if(!filtered.length) return cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 backdrop-blur rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่องในตู้</div>`;
             
             cont.innerHTML = filtered.map(s => {
                 const isSold = s.status === 'SOLD';
                 const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
-                return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border ${isSold?'border-rose-100 opacity-70':'border-amber-200/50'} relative overflow-hidden flex flex-col">
+                return `<div class="bg-white/95 backdrop-blur rounded-2xl p-4 shadow-sm border ${isSold?'border-rose-100 opacity-70':'border-amber-200/50'} relative overflow-hidden flex flex-col">
                     ${isSold ? `<div class="absolute top-3 right-3 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded">ปล่อยเช่าแล้ว</div>` : `<div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">อยู่ในตู้</div>`}
                     ${imgHtml}
                     <div class="flex items-center gap-2 mb-2"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-xs">${s.code}</span><span class="text-xs text-slate-500 truncate">${s.category}</span></div>
@@ -797,7 +741,7 @@
                         <div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาเปิดเช่า</p><p class="font-bold text-emerald-600">${s.price.toLocaleString()} ฿</p></div>
                         ${isOwner ? `<div class="bg-rose-50 p-2 rounded-lg"><p class="text-rose-400 mb-0.5">ราคาทุน</p><p class="font-bold text-rose-600">${s.cost.toLocaleString()} ฿</p></div>` : `<div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาทุน</p><p class="font-bold text-slate-400">*** ฿</p></div>`}
                     </div>
-                    ${!isSold ? `<button onclick="openSellStockModal('${s.id}', '${s.name}', ${s.cost}, ${s.price})" class="w-full mt-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-sm transition-all"><i class="ph-bold ph-hand-coins"></i> ปล่อยเช่าองค์นี้</button>` : isOwner ? `<button onclick="if(confirm('ต้องการลบสต็อกองค์นี้ออกจากระบบ?')) getColRef('amulet_stock').doc('${s.id}').delete()" class="w-full mt-3 bg-slate-100 text-slate-400 font-bold py-2 rounded-xl text-xs hover:bg-slate-200 transition-colors"><i class="ph-bold ph-trash"></i> ลบประวัติสต็อก</button>` : ''}
+                    ${!isSold ? `<button onclick="openSellStockModal('${s.id}', '${s.name}', ${s.cost}, ${s.price})" class="w-full mt-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-hand-coins"></i> ปล่อยเช่าองค์นี้</button>` : isOwner ? `<button onclick="if(confirm('ต้องการลบสต็อกองค์นี้ออกจากระบบ?')) getColRef('amulet_stock').doc('${s.id}').delete()" class="w-full mt-3 bg-slate-100 text-slate-400 font-bold py-2 rounded-xl text-xs hover:bg-slate-200 transition-colors"><i class="ph-bold ph-trash"></i> ลบประวัติสต็อก</button>` : ''}
                 </div>`;
             }).join('');
         }
