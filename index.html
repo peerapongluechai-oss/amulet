@@ -39,18 +39,38 @@
             background-color: #fcfaf8; 
             position: relative;
         }
-        /* ลายน้ำพื้นหลังลางๆ สุดหรู */
+        /* ลายน้ำพื้นหลัง: รูปสมเด็จโต (มุมซ้ายบน) */
         body::before {
             content: "";
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: url('142822166_110388424362890_8144986233312069797_n.jpg');
-            background-position: center;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-image: url('images (1).jpg');
+            background-position: top left;
             background-repeat: no-repeat;
-            background-size: cover;
-            opacity: 0.04;
+            background-size: 75% auto; /* ขนาดบนมือถือ */
+            opacity: 0.035; /* ความจางกำลังดี ไม่กวนสายตา */
             z-index: -1;
             pointer-events: none;
+        }
+        /* ลายน้ำพื้นหลัง: รูปพระพุทธรูปทองคำ (มุมขวาล่าง) */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-image: url('edited-image.jpg');
+            background-position: bottom right;
+            background-repeat: no-repeat;
+            background-size: 85% auto; /* ขนาดบนมือถือ */
+            opacity: 0.04; /* ความจางกำลังดี ไม่กวนสายตา */
+            z-index: -1;
+            pointer-events: none;
+        }
+        /* ปรับสมดุลขนาดลายน้ำ สำหรับหน้าจอคอมพิวเตอร์ หรือ แท็บเล็ต */
+        @media (min-width: 768px) {
+            body::before { background-size: 30% auto; background-position: top 5% left 5%; }
+            body::after { background-size: 35% auto; background-position: bottom 5% right 5%; }
         }
         .heading-font { font-family: 'Pridi', sans-serif; }
         ::-webkit-scrollbar { width: 8px; }
