@@ -44,7 +44,6 @@
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: url('images (1).jpg');
-            /* ขยับจุดให้อยู่ในตำแหน่งซ้ายกลางๆ ค่อนไปทางบน (คุณพีสามารถแก้ % ตรงนี้ได้) */
             background-position: left 3% top 25%;
             background-repeat: no-repeat;
             background-size: min(25vw, 250px) auto; 
@@ -54,9 +53,7 @@
         /* ลายน้ำที่ 2: รูปพระพุทธรูป (ด้านขวา) */
         body::after {
             content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            /* ใช้ไฟล์ .png ของคุณพี เพื่อให้โปร่งใสเนียนกับพื้นหลังไม่มีขอบ */
             background-image: url('edited-image.png');
-            /* ขยับจุดให้อยู่ในตำแหน่งขวากลางๆ ค่อนไปทางล่าง (คุณพีสามารถแก้ % ตรงนี้ได้) */
             background-position: right 3% bottom 15%;
             background-repeat: no-repeat;
             background-size: min(30vw, 300px) auto;
@@ -141,7 +138,7 @@
             <h3 class="font-bold heading-font text-slate-800 flex items-center gap-2 text-base md:text-2xl"><i class="ph-bold ph-book-open text-velvet-main"></i> รายการบัญชี</h3>
             <div class="flex items-center gap-2">
                 <span id="txCountBadge" class="text-xs md:text-sm bg-slate-200/70 text-slate-600 px-2.5 md:px-4 py-1.5 rounded-full font-semibold">0 รายการ</span>
-                <!-- ปุ่มเปิดหน้าต่าง Report (แก้ข้อ 2) -->
+                <!-- ปุ่มเปิดหน้าต่าง Report ถูกซ่อนไว้สำหรับพนักงาน -->
                 <button id="btnDownloadReport" onclick="openReportModal()" class="hidden text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-full font-bold flex items-center gap-1 border border-emerald-200 transition-colors shadow-sm">
                     <i class="ph-bold ph-file-csv"></i> โหลด Report
                 </button>
@@ -791,17 +788,22 @@
         // =====================================
         function renderStock() {
             const q = (document.getElementById('stockSearch').value || "").toLowerCase();
-            const filtered = allStock.filter(s => (s.name||"").toLowerCase().includes(q) || (s.code||"").toLowerCase().includes(q) || (s.category||"").toLowerCase().includes(q));
-            document.getElementById('totalStockCount').innerHTML = `${filtered.filter(s=>s.status!=='SOLD').length} <span class="text-lg">องค์</span>`;
+            
+            // กรองหาคำค้นหา และ เอาเฉพาะพระที่ 'ยังไม่ถูกปล่อยเช่า' (status !== 'SOLD')
+            const filtered = allStock.filter(s => 
+                s.status !== 'SOLD' && 
+                ((s.name||"").toLowerCase().includes(q) || (s.code||"").toLowerCase().includes(q) || (s.category||"").toLowerCase().includes(q))
+            );
+            
+            document.getElementById('totalStockCount').innerHTML = `${filtered.length} <span class="text-lg">องค์</span>`;
             
             const cont = document.getElementById('stockContainer');
             if(!filtered.length) return cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่องในตู้</div>`;
             
             cont.innerHTML = filtered.map(s => {
-                const isSold = s.status === 'SOLD';
                 const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
-                return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border ${isSold?'border-rose-100 opacity-70':'border-amber-200/50'} relative overflow-hidden flex flex-col">
-                    ${isSold ? `<div class="absolute top-3 right-3 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded">ปล่อยเช่าแล้ว</div>` : `<div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">อยู่ในตู้</div>`}
+                return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border border-amber-200/50 relative overflow-hidden flex flex-col">
+                    <div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">อยู่ในตู้</div>
                     ${imgHtml}
                     <div class="flex items-center gap-2 mb-2"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-xs">${s.code}</span><span class="text-xs text-slate-500 truncate">${s.category}</span></div>
                     <h4 class="font-bold text-slate-800 mb-3 line-clamp-2 leading-snug">${s.name}</h4>
@@ -810,7 +812,7 @@
                         ${isOwner ? `<div class="bg-rose-50 p-2 rounded-lg"><p class="text-rose-400 mb-0.5">ราคาทุน</p><p class="font-bold text-rose-600">${s.cost.toLocaleString()} ฿</p></div>` : `<div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาทุน</p><p class="font-bold text-slate-400">*** ฿</p></div>`}
                     </div>
                     
-                    ${!isSold ? `<button onclick="openSellStockModal('${s.id}', '${s.name}', ${s.cost}, ${s.price})" class="w-full mt-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-hand-coins"></i> ปล่อยเช่าองค์นี้</button>` : ''}
+                    <button onclick="openSellStockModal('${s.id}', '${s.name}', ${s.cost}, ${s.price})" class="w-full mt-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-hand-coins"></i> ปล่อยเช่าองค์นี้</button>
                     
                     ${isOwner ? `
                         <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100">
