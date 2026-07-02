@@ -40,24 +40,27 @@
             position: relative;
         }
         
-        /* แก้ไขข้อ 1: ปรับสัดส่วนและขนาดของลายน้ำให้สวยงาม */
+        /* ลายน้ำที่ 1: รูปสมเด็จโต (ด้านซ้าย) */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: url('images (1).jpg');
-            background-position: left 1% top 1%;
+            /* ขยับจุดให้อยู่ในตำแหน่งซ้ายกลางๆ ค่อนไปทางบน (คุณพีสามารถแก้ % ตรงนี้ได้) */
+            background-position: left 3% top 25%;
             background-repeat: no-repeat;
-            /* ใช้ min() เพื่อให้ภาพไม่ใหญ่เกินไปบนจอคอม แต่พอดีในจอมือถือ */
-            background-size: min(35vw, 300px) auto; 
-            opacity: 0.10; mix-blend-mode: multiply; z-index: 0; pointer-events: none;
+            background-size: min(25vw, 250px) auto; 
+            opacity: 0.12; mix-blend-mode: multiply; z-index: 0; pointer-events: none;
         }
 
+        /* ลายน้ำที่ 2: รูปพระพุทธรูป (ด้านขวา) */
         body::after {
             content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url('edited-image.jpg');
-            background-position: right 1% bottom 1%;
+            /* ใช้ไฟล์ .png ของคุณพี เพื่อให้โปร่งใสเนียนกับพื้นหลังไม่มีขอบ */
+            background-image: url('edited-image.png');
+            /* ขยับจุดให้อยู่ในตำแหน่งขวากลางๆ ค่อนไปทางล่าง (คุณพีสามารถแก้ % ตรงนี้ได้) */
+            background-position: right 3% bottom 15%;
             background-repeat: no-repeat;
-            background-size: min(40vw, 350px) auto;
-            opacity: 0.10; mix-blend-mode: multiply; z-index: 0; pointer-events: none;
+            background-size: min(30vw, 300px) auto;
+            opacity: 0.12; mix-blend-mode: multiply; z-index: 0; pointer-events: none;
         }
 
         .heading-font { font-family: 'Pridi', sans-serif; }
