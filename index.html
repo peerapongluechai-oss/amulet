@@ -236,7 +236,7 @@
                 </select>
                 <input type="password" id="pinInput" maxlength="6" pattern="[0-9]*" inputmode="numeric" placeholder="••••••" class="w-full border-2 border-slate-200 tracking-widest text-center text-2xl font-bold rounded-xl py-3 focus:outline-none focus:border-velvet-main"/>
                 <div id="pinError" class="text-sm text-red-600 bg-red-50 p-3 rounded-xl hidden"><span id="pinErrorText"></span></div>
-                <button id="btnVerify" onclick="verifyPin()" class="w-full bg-velvet-main text-white font-bold py-3.5 rounded-xl text-base shadow-md mt-2 flex justify-center items-center gap-2"><i class="ph-bold ph-key"></i> ปลดล็อก</button>
+                <button id="btnVerify" onclick="verifyPin()" class="w-full bg-velvet-main text-white font-bold py-3.5 rounded-xl text-base shadow-md mt-2 flex justify-center items-center gap-2"><i class="ph-bold ph-key"></i> ปปลดล็อก</button>
             </div>
         </div>
     </div>
@@ -495,9 +495,17 @@
 
         async function initFirebaseAndAuth() {
             try {
+                // รอจนกว่าจะ Login Anonymous สำเร็จ
                 await auth.signInAnonymously();
             } catch (e) { console.warn("Auth init warning:", e.message); }
-            initRealtimeDatabase(); updateUIRole();
+            
+            // ใช้ onAuthStateChanged เพื่อให้ชัวร์ว่ามี User แล้วจริงๆ ค่อยไปดึงข้อมูล
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    initRealtimeDatabase(); // ดึงข้อมูล
+                    updateUIRole(); // อัปเดต UI ว่าเป็นพนักงานหรือเจ้าของ
+                }
+            });
         }
 
         function initRealtimeDatabase() {
