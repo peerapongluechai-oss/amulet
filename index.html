@@ -1173,6 +1173,13 @@
         // =====================================
         // UI & AUTH
         // =====================================
+        function openAddModal(){ document.getElementById('addModal').classList.remove('hidden'); } 
+        function closeAddModal(){ document.getElementById('addModal').classList.add('hidden'); }
+        function openAddCertModal(){ document.getElementById('addCertModal').classList.remove('hidden'); } 
+        function closeAddCertModal(){ document.getElementById('addCertModal').classList.add('hidden'); }
+        function openAddStockModal(){ document.getElementById('addStockModal').classList.remove('hidden'); } 
+        function closeAddStockModal(){ document.getElementById('addStockModal').classList.add('hidden'); }
+
         function openPinModal(){ document.getElementById('pinModal').classList.remove('hidden'); setTimeout(()=>document.getElementById('pinInput').focus(),100); }
         function closePinModal(){ document.getElementById('pinModal').classList.add('hidden'); document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden'); }
         
