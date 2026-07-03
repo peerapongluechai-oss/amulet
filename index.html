@@ -88,8 +88,8 @@
         </div>
     </header>
 
+    <!-- 1. LEDGER WORKSPACE -->
     <main id="ledgerWorkspace" class="max-w-5xl mx-auto px-4 md:px-8 -mt-20 relative z-10 space-y-4 md:space-y-6 transition-all duration-300">
-        
         <div id="ownerDashboard" class="space-y-4 md:space-y-6 hidden">
             <!-- Total Asset Card -->
             <div class="bg-gradient-to-br from-velvet-main to-velvet-dark p-6 md:p-10 rounded-3xl md:rounded-[2rem] shadow-xl text-white border border-gold-main/20 relative overflow-hidden">
@@ -147,6 +147,7 @@
         <div id="txContainer" class="space-y-3 md:space-y-4 min-h-[150px]"></div>
     </main>
 
+    <!-- 2. CERTS WORKSPACE -->
     <div id="certsWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in relative z-10">
         <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-5 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
             <i class="ph ph-certificate absolute -right-6 -bottom-6 text-9xl text-white/5"></i>
@@ -174,12 +175,14 @@
         </div>
     </div>
 
+    <!-- 3. STOCK WORKSPACE -->
     <div id="stockWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in relative z-10">
         <div class="bg-gradient-to-br from-amber-700 to-amber-900 text-white p-5 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden flex justify-between items-center">
             <i class="ph ph-grid-four absolute -left-6 -bottom-6 text-9xl text-white/5"></i>
             <div class="relative z-10">
                 <h2 class="text-xl md:text-3xl font-bold heading-font flex items-center gap-2 text-yellow-300"><i class="ph-bold ph-grid-four"></i> ตู้พระ / สต็อกสินค้า</h2>
-                <p class="text-xs md:text-sm text-amber-100 mt-1.5 opacity-90">ระบบจัดการคลังพระเครื่องและปล่อยเช่าด่วน</p>
+                <p class="text-xs md:text-sm text-amber-100 mt-1.5 opacity-90 mb-3 md:mb-4">ระบบจัดการคลังพระเครื่องและปล่อยเช่าด่วน</p>
+                <button onclick="openDirectoryModal()" class="bg-white/20 hover:bg-white/30 border border-white/30 px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm font-bold transition-colors flex items-center gap-1.5"><i class="ph-bold ph-books"></i> เปิดทำเนียบพิมพ์พระ</button>
             </div>
             <div class="text-right relative z-10 flex flex-col justify-center">
                 <p class="text-xs text-amber-200">พระในตู้ทั้งหมด</p>
@@ -197,8 +200,38 @@
         </div>
     </div>
 
+    <!-- 4. BOOKS RESERVATION WORKSPACE (NEW) -->
+    <div id="booksWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in relative z-10">
+        <div class="bg-gradient-to-br from-blue-800 to-indigo-900 text-white p-5 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
+            <i class="ph ph-book-bookmark absolute -right-6 -bottom-6 text-9xl text-white/5"></i>
+            <div class="relative z-10 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl md:text-3xl font-bold heading-font flex items-center gap-2 text-blue-200"><i class="ph-bold ph-book-bookmark"></i> ระบบรับจองหนังสือ</h2>
+                    <p class="text-xs md:text-sm text-blue-100 mt-1.5 opacity-90">จัดการคิวจอง จำนวนเล่ม และสถานะการชำระเงิน</p>
+                </div>
+                <button onclick="openAddBookModal()" class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all text-xs flex items-center gap-1.5 shrink-0"><i class="ph-bold ph-plus"></i> เพิ่มการจอง</button>
+            </div>
+            
+            <div class="relative z-10 mt-6 grid grid-cols-3 gap-2 md:gap-4 border-t border-white/10 pt-4">
+                <div class="bg-white/10 p-2 md:p-3 rounded-xl border border-white/10 text-center"><p class="text-blue-200/80 text-[10px] md:text-xs mb-0.5">ยอดจองรวม</p><p id="bookTotalQty" class="text-lg md:text-2xl font-bold">0 เล่ม</p></div>
+                <div class="bg-white/10 p-2 md:p-3 rounded-xl border border-white/10 text-center"><p class="text-blue-200/80 text-[10px] md:text-xs mb-0.5">รอชำระเงิน</p><p id="bookPendingQty" class="text-lg md:text-2xl font-bold text-amber-300">0 เล่ม</p></div>
+                <div class="bg-white/10 p-2 md:p-3 rounded-xl border border-white/10 text-center"><p class="text-blue-200/80 text-[10px] md:text-xs mb-0.5">ชำระแล้ว</p><p id="bookPaidQty" class="text-lg md:text-2xl font-bold text-emerald-300">0 เล่ม</p></div>
+            </div>
+        </div>
+
+        <div class="relative flex items-center">
+            <i class="ph-bold ph-magnifying-glass absolute left-6 text-slate-400 text-lg md:text-xl"></i>
+            <input type="text" id="bookSearch" oninput="renderBooks()" placeholder="ค้นหาชื่อผู้จอง หรือ เบอร์โทร..." class="w-full bg-white/95 border border-slate-200 rounded-2xl md:rounded-3xl pl-14 pr-6 py-3.5 md:py-4 text-sm md:text-base focus:outline-none focus:border-blue-500 shadow-sm"/>
+        </div>
+
+        <div id="bookContainer" class="space-y-3 min-h-[300px]">
+            <!-- Book Reservation Cards Here -->
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] z-40">
-        <div class="max-w-5xl mx-auto grid grid-cols-5 h-16 md:h-20 relative px-2">
+        <div class="max-w-5xl mx-auto grid grid-cols-5 h-16 md:h-20 relative px-1 md:px-2">
             <button id="navTab_ledger" onclick="switchTab('ledger')" class="flex flex-col items-center justify-center text-velvet-main transition-colors select-none group">
                 <i class="ph-bold ph-book-open text-xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-xs font-semibold">บัญชีรายรับ</span>
             </button>
@@ -215,11 +248,15 @@
             <button id="navTab_stock" onclick="switchTab('stock')" class="flex flex-col items-center justify-center text-slate-400 hover:text-amber-700 transition-colors select-none group">
                 <i class="ph-bold ph-grid-four text-xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-xs font-semibold">ตู้พระ/สต็อก</span>
             </button>
-            <button id="tabDirectory" onclick="openDirectoryModal()" class="flex flex-col items-center justify-center text-slate-400 hover:text-gold-dark transition-colors select-none group">
-                <i class="ph-bold ph-books text-xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-xs font-bold">ทำเนียบ</span>
+            <button id="navTab_books" onclick="switchTab('books')" class="flex flex-col items-center justify-center text-slate-400 hover:text-blue-600 transition-colors select-none group">
+                <i class="ph-bold ph-book-bookmark text-xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-xs font-bold">จองหนังสือ</span>
             </button>
         </div>
     </nav>
+
+    <!-- ========================================== -->
+    <!-- MODALS SECTION                             -->
+    <!-- ========================================== -->
 
     <!-- PIN LOGIN MODAL -->
     <div id="pinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
@@ -236,7 +273,7 @@
                 </select>
                 <input type="password" id="pinInput" maxlength="6" pattern="[0-9]*" inputmode="numeric" placeholder="••••••" class="w-full border-2 border-slate-200 tracking-widest text-center text-2xl font-bold rounded-xl py-3 focus:outline-none focus:border-velvet-main"/>
                 <div id="pinError" class="text-sm text-red-600 bg-red-50 p-3 rounded-xl hidden"><span id="pinErrorText"></span></div>
-                <button id="btnVerify" onclick="verifyPin()" class="w-full bg-velvet-main text-white font-bold py-3.5 rounded-xl text-base shadow-md mt-2 flex justify-center items-center gap-2"><i class="ph-bold ph-key"></i> ปปลดล็อก</button>
+                <button id="btnVerify" onclick="verifyPin()" class="w-full bg-velvet-main text-white font-bold py-3.5 rounded-xl text-base shadow-md mt-2 flex justify-center items-center gap-2"><i class="ph-bold ph-key"></i> ปลดล็อก</button>
             </div>
         </div>
     </div>
@@ -259,6 +296,8 @@
                     <select id="formCategory" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-velvet-main">
                         <option value="SELL">ปล่อยเช่า (ขาย)</option>
                         <option value="BUY">เช่าเข้า (ซื้อ)</option>
+                        <option value="CERT">ค่าออกบัตรรับรอง</option>
+                        <option value="BOOK">รายรับจากหนังสือ</option>
                         <option value="OTHER_INCOME">รายรับอื่นๆ</option>
                         <option value="OTHER_EXPENSE">รายจ่ายอื่นๆ</option>
                     </select>
@@ -312,6 +351,44 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- NEW: BOOK RESERVATION MODALS               -->
+    <!-- ========================================== -->
+
+    <!-- ADD BOOK MODAL -->
+    <div id="addBookModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 md:p-8 relative">
+            <button onclick="closeAddBookModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
+            <h3 class="text-xl font-bold heading-font text-slate-800 mb-4 flex items-center gap-2"><i class="ph-bold ph-book-bookmark text-blue-500 text-2xl"></i> สร้างคิวจองหนังสือ</h3>
+            <form id="bookForm" onsubmit="handleBookSubmit(event)" class="space-y-4">
+                <div><label class="block text-sm font-bold text-slate-500 mb-1">ชื่อผู้จอง</label><input type="text" id="bookCustomerName" required class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-blue-500"></div>
+                <div><label class="block text-sm font-bold text-slate-500 mb-1">เบอร์โทรติดต่อ</label><input type="tel" id="bookCustomerPhone" required class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-blue-500"></div>
+                <div><label class="block text-sm font-bold text-slate-500 mb-1">จำนวนหนังสือที่จอง (เล่ม)</label><input type="number" id="bookQty" required min="1" value="1" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-bold text-lg text-center focus:border-blue-500"></div>
+                <button type="submit" id="btnSubmitBook" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-md mt-2 transition-all">บันทึกข้อมูลการจอง</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PAY BOOK MODAL -->
+    <div id="payBookModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 relative text-center">
+            <button onclick="closePayBookModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
+            <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex justify-center items-center mx-auto mb-3"><i class="ph-bold ph-wallet text-3xl"></i></div>
+            <h3 class="text-xl font-bold text-slate-800 mb-1">รับชำระค่าจองหนังสือ</h3>
+            <p id="bookPaymentQueue" class="text-sm font-bold text-amber-600 mb-4 bg-amber-50 w-fit mx-auto px-3 py-1 rounded-lg">B-XXX</p>
+            <form id="bookPayForm" onsubmit="handleBookPaymentSubmit(event)" class="space-y-4 text-left">
+                <input type="hidden" id="payBookId"><input type="hidden" id="payBookTitle">
+                <div><label class="block text-sm font-bold text-slate-500 mb-1 text-center">ยอดชำระ (บาท)</label><input type="number" id="payBookAmount" required min="1" class="w-full border-2 border-emerald-200 bg-emerald-50 text-emerald-700 rounded-2xl px-4 py-4 text-2xl text-center font-bold"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" id="btnBookPayTransfer" onclick="selectBookWallet('TRANSFER')" class="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"><i class="ph ph-credit-card text-lg"></i> โอน</button>
+                    <button type="button" id="btnBookPayCash" onclick="selectBookWallet('CASH')" class="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"><i class="ph ph-coins text-lg"></i> เงินสด</button>
+                </div>
+                <button type="submit" id="btnSubmitBookPay" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg mt-2 transition-all"><i class="ph-bold ph-check"></i> ยืนยันรับเงิน</button>
+            </form>
+        </div>
+    </div>
+
+
     <!-- ADD TO STOCK MODAL -->
     <div id="addStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
@@ -339,7 +416,7 @@
         </div>
     </div>
 
-    <!-- EDIT STOCK MODAL (ข้อ 5) -->
+    <!-- EDIT STOCK MODAL -->
     <div id="editStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeEditStockModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
@@ -481,8 +558,8 @@
             return db.collection(colName);
         }
 
-        let allTransactions = [], allCerts = [], allStock = [], allDirectory = [];
-        let currentWallet = 'TRANSFER', currentCertWallet = 'TRANSFER', currentSellStockWallet = 'TRANSFER';
+        let allTransactions = [], allCerts = [], allStock = [], allDirectory = [], allBooks = [];
+        let currentWallet = 'TRANSFER', currentCertWallet = 'TRANSFER', currentSellStockWallet = 'TRANSFER', currentBookWallet = 'TRANSFER';
         let isOwner = false, currentActiveTab = 'ledger', selectedDate = new Date().toISOString().split('T')[0];
         let pickMode = false; let searchQuery = ""; 
 
@@ -513,24 +590,27 @@
             getColRef("cert_orders").orderBy("timestamp", "asc").onSnapshot(snap => { allCerts = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'certs') renderCerts(); });
             getColRef("amulet_stock").orderBy("timestamp", "desc").onSnapshot(snap => { allStock = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'stock') renderStock(); });
             getColRef("amulet_directory").orderBy("category").onSnapshot(snap => { allDirectory = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(allDirectory.length === 0) seedDirectory(); });
+            getColRef("book_orders").orderBy("timestamp", "desc").onSnapshot(snap => { allBooks = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'books') renderBooks(); });
         }
 
         function changeAppDate(val) {
             selectedDate = val;
             renderAll();
             renderCerts();
+            renderBooks();
         }
 
         function switchTab(tabId) {
             currentActiveTab = tabId;
-            ['ledger', 'certs', 'stock'].forEach(id => { const ws = document.getElementById(`${id}Workspace`); if(ws) ws.classList.add('hidden'); });
+            ['ledger', 'certs', 'stock', 'books'].forEach(id => { const ws = document.getElementById(`${id}Workspace`); if(ws) ws.classList.add('hidden'); });
             const targetWs = document.getElementById(`${tabId}Workspace`); if(targetWs) targetWs.classList.remove('hidden');
-            ['ledger', 'certs', 'stock'].forEach(id => { const el = document.getElementById(`navTab_${id}`); if(el) { el.classList.remove('text-velvet-main', 'text-amber-600', 'text-amber-700'); el.classList.add('text-slate-400'); } });
+            ['ledger', 'certs', 'stock', 'books'].forEach(id => { const el = document.getElementById(`navTab_${id}`); if(el) { el.classList.remove('text-velvet-main', 'text-amber-600', 'text-amber-700', 'text-blue-600'); el.classList.add('text-slate-400'); } });
             
             const activeEl = document.getElementById(`navTab_${tabId}`);
             if(tabId === 'ledger') { if(activeEl) activeEl.classList.add('text-velvet-main'); document.getElementById('mainHeader').classList.remove('hidden'); renderAll(); }
             else if(tabId === 'certs') { if(activeEl) activeEl.classList.add('text-amber-600'); document.getElementById('mainHeader').classList.add('hidden'); renderCerts(); }
             else if(tabId === 'stock') { if(activeEl) activeEl.classList.add('text-amber-700'); document.getElementById('mainHeader').classList.add('hidden'); renderStock(); }
+            else if(tabId === 'books') { if(activeEl) activeEl.classList.add('text-blue-600'); document.getElementById('mainHeader').classList.add('hidden'); renderBooks(); }
             window.scrollTo(0,0);
         }
 
@@ -538,6 +618,7 @@
             if(currentActiveTab === 'ledger') openAddModal();
             else if(currentActiveTab === 'certs') openAddCertModal();
             else if(currentActiveTab === 'stock') openAddStockModal();
+            else if(currentActiveTab === 'books') openAddBookModal();
         }
 
         // =====================================
@@ -546,7 +627,7 @@
         function renderAll() {
             let tC = 0, tT = 0, dI = 0, dE = 0, dP = 0;
             allTransactions.forEach(tx => {
-                const inc = ['SELL', 'OTHER_INCOME', 'CERT'].includes(tx.category);
+                const inc = ['SELL', 'OTHER_INCOME', 'CERT', 'BOOK'].includes(tx.category);
                 if (tx.wallet === 'CASH') tC += inc ? tx.amount : -tx.amount; else tT += inc ? tx.amount : -tx.amount;
                 if (tx.date === selectedDate) { if (inc) { dI += tx.amount; dP += (tx.amount - (tx.cost||0)); } else dE += tx.amount; }
             });
@@ -567,16 +648,16 @@
             const cont = document.getElementById('txContainer');
             if(!list.length) return cont.innerHTML = `<div class="text-center py-12 bg-white/70 rounded-3xl border border-slate-100 shadow-sm text-slate-400 font-semibold">ไม่มีรายการบัญชีในวันที่เลือก</div>`;
             
-            const names = {'SELL':'ปล่อยเช่าพระ','BUY':'เช่าเข้าพระ','CERT':'ค่าออกบัตรรับรอง','OTHER_INCOME':'รายรับอื่นๆ','OTHER_EXPENSE':'รายจ่ายอื่นๆ'};
+            const names = {'SELL':'ปล่อยเช่าพระ','BUY':'เช่าเข้าพระ','CERT':'ค่าออกบัตรรับรอง','BOOK':'ค่าจองหนังสือ','OTHER_INCOME':'รายรับอื่นๆ','OTHER_EXPENSE':'รายจ่ายอื่นๆ'};
             cont.innerHTML = list.map(tx => {
-                const inc = ['SELL','OTHER_INCOME','CERT'].includes(tx.category);
+                const inc = ['SELL','OTHER_INCOME','CERT','BOOK'].includes(tx.category);
                 return `<div class="bg-white/95 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between ${inc?'border-l-4 border-emerald-500':'border-l-4 border-rose-500'}">
                     <div>
                         <h4 class="font-bold text-slate-800">${tx.description}</h4>
                         <div class="flex items-center gap-2 mt-1 text-[11px] md:text-xs">
                             <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${names[tx.category]||'ทั่วไป'}</span>
                             <span class="text-slate-400">${tx.wallet==='CASH'?'เงินสด':'โอน'}</span>
-                            ${isOwner && !inc ? `<span class="text-rose-600 bg-rose-50 px-2 py-0.5 rounded font-bold border border-rose-100">ทุน ${format(tx.cost||0)}</span>` : ''}
+                            ${isOwner && !inc && tx.category !== 'OTHER_EXPENSE' ? `<span class="text-rose-600 bg-rose-50 px-2 py-0.5 rounded font-bold border border-rose-100">ทุน ${format(tx.cost||0)}</span>` : ''}
                         </div>
                     </div>
                     <div class="text-right shrink-0">
@@ -637,10 +718,9 @@
         }
 
         // =====================================
-        // 2. ADVANCED REPORT (CSV) - ข้อ 2, 3, 4
+        // 2. ADVANCED REPORT (CSV) - อัปเดตเพิ่มหมวดจองหนังสือ
         // =====================================
         function openReportModal() {
-            // เซ็ตค่าเริ่มต้นให้ปฏิทินเป็นวันที่กำลังเลือกอยู่
             document.getElementById('reportStartDate').value = selectedDate;
             document.getElementById('reportEndDate').value = selectedDate;
             document.getElementById('reportModal').classList.remove('hidden');
@@ -663,7 +743,7 @@
             let sumIncome=0, sumExpense=0, sumProfit=0;
             
             txInRange.forEach(tx => {
-                const isIncome = ['SELL','OTHER_INCOME','CERT'].includes(tx.category);
+                const isIncome = ['SELL','OTHER_INCOME','CERT','BOOK'].includes(tx.category);
                 const type = isIncome ? "รายรับ" : "รายจ่าย";
                 const time = tx.timestamp ? new Date(tx.timestamp.toDate()).toLocaleTimeString('th-TH') : "";
                 const safeDesc = tx.description ? tx.description.replace(/"/g, '""') : "";
@@ -674,45 +754,60 @@
             });
             csv += `,,,,รวมรายรับ,${sumIncome},รวมรายจ่าย,${sumExpense},กำไรรวม,${sumProfit}\n\n`;
 
-            // === หมวดที่ 2: งานออกบัตร (ข้อ 3) ===
+            // === หมวดที่ 2: งานออกบัตร ===
             csv += "=== 2. สรุปรายงานงานออกบัตรรับรอง (Certifications) ===\n";
             csv += "คิวงาน,ชื่อลูกค้า,เบอร์โทร,จำนวน (องค์),วันที่รับงาน,วันที่เสร็จสิ้น,สถานะ,ช่องทางรับเงิน,ยอดชำระ (บาท)\n";
-            
-            // ดึงคิวที่ถูกสร้าง หรือ รับเงินเสร็จ ในช่วงเวลาที่เลือก
             const certsInRange = allCerts.filter(c => (c.date >= start && c.date <= end) || (c.completedDate && c.completedDate >= start && c.completedDate <= end));
             certsInRange.forEach(c => {
                 const safeName = c.customerName ? c.customerName.replace(/"/g, '""') : "";
-                const amt = c.paymentAmount || 0; // ยอดเงินที่บันทึกตอนกดรับ
-                const wallet = c.paymentWallet || "-"; // ช่องทางรับเงิน
+                const amt = c.paymentAmount || 0;
+                const wallet = c.paymentWallet || "-";
                 csv += `${c.queueNo},"${safeName}",${c.phone},${c.amuletCount},${c.date},${c.completedDate||'-'},${c.status},${wallet},${amt}\n`;
             });
             csv += "\n";
 
-            // === หมวดที่ 3: สต็อกและการปล่อยเช่า (ข้อ 4) ===
+            // === หมวดที่ 3: สต็อกและการปล่อยเช่า ===
             csv += "=== 3. สรุปรายงานสต็อกและการปล่อยเช่า (Amulet Stock) ===\n";
             csv += "รหัส,หมวดหมู่,ชื่อพระ,วันที่เช่าเข้า (ซื้อ),เวลาที่รับเข้า,ราคาทุน (บาท),วันที่ปล่อยเช่า (ขาย),เวลาที่ปล่อย,ช่องทางรับเงิน,ยอดปล่อยเช่า (บาท),กำไร (บาท),สถานะ\n";
-            
             const stockInRange = allStock.filter(s => {
                 const createDate = s.date || (s.timestamp ? new Date(s.timestamp.toDate()).toISOString().split('T')[0] : "");
                 const soldDate = s.soldDate || "";
                 return (createDate >= start && createDate <= end) || (soldDate >= start && soldDate <= end);
             });
-
             stockInRange.forEach(s => {
                 const safeName = s.name ? s.name.replace(/"/g, '""') : "";
                 const createDate = s.date || (s.timestamp ? new Date(s.timestamp.toDate()).toISOString().split('T')[0] : "");
                 const createTime = s.timestamp ? new Date(s.timestamp.toDate()).toLocaleTimeString('th-TH') : "";
-                
                 const soldDate = s.soldDate || "-";
                 const soldTime = s.soldTime || "-";
                 const statusStr = s.status === 'SOLD' ? 'ปล่อยเช่าแล้ว' : 'อยู่ในตู้';
-                
                 const sellAmt = s.sellAmount || 0;
                 const profit = s.status === 'SOLD' ? (sellAmt - s.cost) : 0;
                 const wallet = s.sellWallet || "-";
-
                 csv += `${s.code},"${s.category}","${safeName}",${createDate},${createTime},${s.cost},${soldDate},${soldTime},${wallet},${sellAmt},${profit},${statusStr}\n`;
             });
+            csv += "\n";
+
+            // === หมวดที่ 4: การจองหนังสือ (ใหม่) ===
+            csv += "=== 4. สรุปรายงานการจองหนังสือ (Book Reservations) ===\n";
+            csv += "รหัสจอง,ชื่อผู้จอง,เบอร์โทร,จำนวน (เล่ม),วันที่จอง,สถานะ,ช่องทางชำระเงิน,ยอดชำระ (บาท),วันที่ชำระ,เวลาที่ชำระ\n";
+            const booksInRange = allBooks.filter(b => (b.date >= start && b.date <= end) || (b.paidDate && b.paidDate >= start && b.paidDate <= end));
+            
+            let totalBookQty = 0; let totalBookIncome = 0;
+            booksInRange.forEach(b => {
+                const safeName = b.customerName ? b.customerName.replace(/"/g, '""') : "";
+                const statusStr = b.status === 'PAID' ? 'ชำระเงินแล้ว' : 'รอชำระเงิน';
+                const wallet = b.paymentWallet === 'CASH' ? 'เงินสด' : (b.paymentWallet === 'TRANSFER' ? 'เงินโอน' : '-');
+                const amt = b.paymentAmount || 0;
+                const pDate = b.paidDate || "-";
+                const pTime = b.paidTime || "-";
+                
+                totalBookQty += b.qty;
+                if(b.status === 'PAID') totalBookIncome += amt;
+                
+                csv += `${b.queueNo},"${safeName}",'${b.phone},${b.qty},${b.date},${statusStr},${wallet},${amt},${pDate},${pTime}\n`;
+            });
+            csv += `,,,รวมยอดจอง,${totalBookQty} เล่ม,,,,รวมรับเงิน,${totalBookIncome} บาท\n`;
 
             // ดาวน์โหลดไฟล์
             const encodedUri = encodeURI(csv);
@@ -733,7 +828,6 @@
             let cP=0, cR=0, cC=0, hP="", hR="", hC="";
 
             allCerts.forEach(c => {
-                // แก้ไขการแสดงผลคิวที่เสร็จแล้ว ให้ยึดวันที่อัปเดตล่าสุด (รับชำระเงิน)
                 const txDateToCheck = c.completedDate || c.date; 
                 if(c.status === 'COMPLETED' && txDateToCheck !== selectedDate) return;
 
@@ -764,8 +858,7 @@
         }
 
         function openCertPaymentModal(id, qNo, name) {
-            document.getElementById('payCertId').value = id;
-            document.getElementById('payCertTitle').value = `ค่าออกบัตรคิว ${qNo} (${name})`;
+            document.getElementById('payCertId').value = id; document.getElementById('payCertTitle').value = `ค่าออกบัตรคิว ${qNo} (${name})`;
             document.getElementById('certPaymentQueue').innerText = qNo;
             selectCertWallet('TRANSFER'); document.getElementById('certPaymentModal').classList.remove('hidden');
         }
@@ -780,13 +873,9 @@
                 const amt = Number(document.getElementById('payCertAmount').value);
                 const batch = db.batch();
                 batch.set(getColRef("transactions").doc(), { description: document.getElementById('payCertTitle').value, category: 'CERT', amount: amt, cost: 0, wallet: currentCertWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                // บันทึกรายละเอียดการชำระเงินลงในคิวงาน เพื่อดึงข้อมูลออก Report ได้ง่าย (ข้อ 3)
-                batch.update(getColRef("cert_orders").doc(document.getElementById('payCertId').value), { 
-                    status: 'COMPLETED', completedDate: selectedDate, paymentAmount: amt, paymentWallet: currentCertWallet 
-                });
+                batch.update(getColRef("cert_orders").doc(document.getElementById('payCertId').value), { status: 'COMPLETED', completedDate: selectedDate, paymentAmount: amt, paymentWallet: currentCertWallet });
                 await batch.commit();
-                closeCertPaymentModal(); 
-                showCustomAlert("เสร็จสิ้น", `บันทึกรายรับค่างานออกบัตร ${amt} บาท เรียบร้อย`, "success");
+                closeCertPaymentModal(); showCustomAlert("เสร็จสิ้น", `บันทึกรายรับค่างานออกบัตร ${amt} บาท เรียบร้อย`, "success");
             } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
             finally { btn.disabled = false; btn.innerText = "ยืนยันรับเงิน & เสร็จสิ้น"; }
         }
@@ -796,13 +885,7 @@
         // =====================================
         function renderStock() {
             const q = (document.getElementById('stockSearch').value || "").toLowerCase();
-            
-            // กรองหาคำค้นหา และ เอาเฉพาะพระที่ 'ยังไม่ถูกปล่อยเช่า' (status !== 'SOLD')
-            const filtered = allStock.filter(s => 
-                s.status !== 'SOLD' && 
-                ((s.name||"").toLowerCase().includes(q) || (s.code||"").toLowerCase().includes(q) || (s.category||"").toLowerCase().includes(q))
-            );
-            
+            const filtered = allStock.filter(s => s.status !== 'SOLD' && ((s.name||"").toLowerCase().includes(q) || (s.code||"").toLowerCase().includes(q) || (s.category||"").toLowerCase().includes(q)));
             document.getElementById('totalStockCount').innerHTML = `${filtered.length} <span class="text-lg">องค์</span>`;
             
             const cont = document.getElementById('stockContainer');
@@ -824,9 +907,7 @@
                     
                     ${isOwner ? `
                         <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100">
-                            <!-- ปุ่มแก้ไขสต็อก (ข้อ 5) -->
                             <button onclick="openEditStockModal('${s.id}', '${s.code}', '${s.name.replace(/'/g, "\\'")}', '${s.category}', ${s.cost}, ${s.price}, '${s.imageUrl||''}')" class="flex-1 bg-slate-100 text-slate-600 font-bold py-2 rounded-xl text-xs hover:bg-slate-200 transition-colors"><i class="ph-bold ph-pencil-simple"></i> แก้ไข</button>
-                            <!-- ปุ่มลบสต็อก -->
                             <button onclick="if(confirm('ต้องการลบสต็อกองค์นี้ออกจากระบบ?')) getColRef('amulet_stock').doc('${s.id}').delete()" class="flex-1 bg-rose-50 text-rose-600 font-bold py-2 rounded-xl text-xs hover:bg-rose-100 transition-colors"><i class="ph-bold ph-trash"></i> ลบ</button>
                         </div>
                     ` : ''}
@@ -854,8 +935,7 @@
                     code: document.getElementById('stockCode').value.toUpperCase(), name: document.getElementById('stockName').value,
                     category: document.getElementById('stockCategory').value, cost: Number(document.getElementById('stockCost').value),
                     price: Number(document.getElementById('stockPrice').value), status: 'IN_STOCK', imageUrl: imgUrl, 
-                    date: selectedDate, // บันทึกวันที่เข้าเพื่อง่ายต่อการหา
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 closeAddStockModal(); document.getElementById('stockForm').reset();
                 showCustomAlert("เพิ่มสต็อกสำเร็จ", "พระเครื่ององค์ใหม่ขึ้นโชว์ในตู้เรียบร้อย", "success");
@@ -863,14 +943,10 @@
             finally { btn.disabled = false; btn.innerText = "บันทึกเข้าตู้พระ"; }
         }
 
-        // ระบบแก้ไขสต็อก (ข้อ 5)
         function openEditStockModal(id, code, name, category, cost, price, imageUrl) {
-            document.getElementById('editStockId').value = id;
-            document.getElementById('editStockOldImage').value = imageUrl;
-            document.getElementById('editStockCode').value = code;
-            document.getElementById('editStockName').value = name;
-            document.getElementById('editStockCategory').value = category;
-            document.getElementById('editStockCost').value = cost.toLocaleString() + ' ฿';
+            document.getElementById('editStockId').value = id; document.getElementById('editStockOldImage').value = imageUrl;
+            document.getElementById('editStockCode').value = code; document.getElementById('editStockName').value = name;
+            document.getElementById('editStockCategory').value = category; document.getElementById('editStockCost').value = cost.toLocaleString() + ' ฿';
             document.getElementById('editStockPrice').value = price.toLocaleString() + ' ฿';
             document.getElementById('editStockModal').classList.remove('hidden');
         }
@@ -878,22 +954,15 @@
 
         async function handleEditStockSubmit(e) {
             e.preventDefault();
-            const btn = document.getElementById('btnSubmitEditStock');
-            btn.disabled = true; btn.innerText = "กำลังอัปโหลดการแก้ไข...";
+            const btn = document.getElementById('btnSubmitEditStock'); btn.disabled = true; btn.innerText = "กำลังอัปโหลดการแก้ไข...";
             try {
                 const id = document.getElementById('editStockId').value;
                 let imgUrl = document.getElementById('editStockOldImage').value;
                 const fileInput = document.getElementById('editStockImage');
                 if(fileInput.files.length > 0) imgUrl = await uploadImage(fileInput.files[0]);
 
-                await getColRef("amulet_stock").doc(id).update({
-                    name: document.getElementById('editStockName').value,
-                    category: document.getElementById('editStockCategory').value,
-                    imageUrl: imgUrl
-                });
-                
-                closeEditStockModal();
-                showCustomAlert("แก้ไขสำเร็จ", "อัปเดตข้อมูลพระเครื่องในตู้เรียบร้อย", "success");
+                await getColRef("amulet_stock").doc(id).update({ name: document.getElementById('editStockName').value, category: document.getElementById('editStockCategory').value, imageUrl: imgUrl });
+                closeEditStockModal(); showCustomAlert("แก้ไขสำเร็จ", "อัปเดตข้อมูลพระเครื่องในตู้เรียบร้อย", "success");
             } catch (err) { showCustomAlert("ข้อผิดพลาด", err.message, "error"); } 
             finally { btn.disabled = false; btn.innerText = "บันทึกการแก้ไข"; }
         }
@@ -912,24 +981,13 @@
 
         async function handleSellStockSubmit(e) {
             e.preventDefault();
-            const btn = document.getElementById('btnSubmitSellStock');
-            btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
-
+            const btn = document.getElementById('btnSubmitSellStock'); btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
             try {
                 const id = document.getElementById('sellStockId').value; const amt = Number(document.getElementById('sellStockAmount').value);
                 const cost = Number(document.getElementById('sellStockCost').value); const name = document.getElementById('sellStockName').innerText;
                 const batch = db.batch();
                 batch.set(getColRef("transactions").doc(), { description: "ปล่อยเช่า: " + name, category: 'SELL', amount: amt, cost: cost, wallet: currentSellStockWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                
-                // อัปเดตข้อมูลรายละเอียดการขายเพื่อง่ายต่อการทำ Report (ข้อ 4)
-                batch.update(getColRef("amulet_stock").doc(id), { 
-                    status: 'SOLD', 
-                    soldDate: selectedDate, 
-                    soldTime: new Date().toLocaleTimeString('th-TH'),
-                    sellAmount: amt,
-                    sellWallet: currentSellStockWallet
-                });
-                
+                batch.update(getColRef("amulet_stock").doc(id), { status: 'SOLD', soldDate: selectedDate, soldTime: new Date().toLocaleTimeString('th-TH'), sellAmount: amt, sellWallet: currentSellStockWallet });
                 await batch.commit();
                 closeSellStockModal(); showCustomAlert("ปล่อยเช่าสำเร็จ!", `ระบบตัดสต็อกและบันทึกรายรับลงบัญชีอัตโนมัติแล้ว`, "success");
             } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
@@ -941,9 +999,7 @@
         // =====================================
         function seedDirectory() {
             const batch = db.batch();
-            [{c:"พระสมเด็จยอดนิยม", i:["สมเด็จวัดระฆัง พิมพ์ใหญ่", "สมเด็จบางขุนพรหม พิมพ์ทรงเจดีย์"]}, {c:"เหรียญคณาจารย์ยอดนิยม", i:["เหรียญหลวงพ่อรวย รุ่นชนะจน", "เหรียญหลวงปู่โต๊ะ รุ่นแรก"]}].forEach(cat => {
-                cat.i.forEach(name => { batch.set(getColRef("amulet_directory").doc(), { category: cat.c, name: name }); });
-            });
+            [{c:"พระสมเด็จยอดนิยม", i:["สมเด็จวัดระฆัง พิมพ์ใหญ่", "สมเด็จบางขุนพรหม พิมพ์ทรงเจดีย์"]}, {c:"เหรียญคณาจารย์ยอดนิยม", i:["เหรียญหลวงพ่อรวย รุ่นชนะจน", "เหรียญหลวงปู่โต๊ะ รุ่นแรก"]}].forEach(cat => { cat.i.forEach(name => { batch.set(getColRef("amulet_directory").doc(), { category: cat.c, name: name }); }); });
             batch.commit();
         }
 
@@ -985,35 +1041,141 @@
         function openAddDirModal() { document.getElementById('dirEditId').value=""; document.getElementById('dirCategory').value=""; document.getElementById('dirName').value=""; document.getElementById('dirModalTitle').innerText="เพิ่มพิมพ์พระลงทำเนียบ"; document.getElementById('addDirModal').classList.remove('hidden'); }
         function closeAddDirModal() { document.getElementById('addDirModal').classList.add('hidden'); }
         function editDirItem(id, cat, name) { document.getElementById('dirEditId').value=id; document.getElementById('dirCategory').value=cat; document.getElementById('dirName').value=name; document.getElementById('dirModalTitle').innerText="แก้ไขพิมพ์พระ"; document.getElementById('addDirModal').classList.remove('hidden'); }
-
         function handleDirSubmit(e) {
             e.preventDefault();
-            const id = document.getElementById('dirEditId').value;
-            const data = { category: document.getElementById('dirCategory').value, name: document.getElementById('dirName').value };
-            if(id) getColRef("amulet_directory").doc(id).update(data).then(closeAddDirModal);
-            else getColRef("amulet_directory").add(data).then(closeAddDirModal);
+            const id = document.getElementById('dirEditId').value; const data = { category: document.getElementById('dirCategory').value, name: document.getElementById('dirName').value };
+            if(id) getColRef("amulet_directory").doc(id).update(data).then(closeAddDirModal); else getColRef("amulet_directory").add(data).then(closeAddDirModal);
+        }
+
+        // =====================================
+        // 6. BOOK RESERVATION SYSTEM (NEW)
+        // =====================================
+        function renderBooks() {
+            const q = (document.getElementById('bookSearch').value || "").toLowerCase();
+            let tQty = 0, pQty = 0, paidQty = 0;
+            
+            const filtered = allBooks.filter(b => {
+                const match = (b.customerName||"").toLowerCase().includes(q) || (b.phone||"").toLowerCase().includes(q);
+                if (match) {
+                    tQty += b.qty;
+                    if (b.status === 'PENDING') pQty += b.qty; else paidQty += b.qty;
+                }
+                return match;
+            });
+            
+            document.getElementById('bookTotalQty').innerText = `${tQty} เล่ม`;
+            document.getElementById('bookPendingQty').innerText = `${pQty} เล่ม`;
+            document.getElementById('bookPaidQty').innerText = `${paidQty} เล่ม`;
+            
+            const cont = document.getElementById('bookContainer');
+            if(!filtered.length) return cont.innerHTML = `<div class="text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการรับจอง</div>`;
+            
+            cont.innerHTML = filtered.map(b => {
+                return `<div class="bg-white/95 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-l-4 ${b.status==='PENDING' ? 'border-amber-400' : 'border-emerald-500'}">
+                    <div class="flex-1 w-full">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-sm">${b.queueNo}</span>
+                            <span class="text-xs text-slate-500"><i class="ph-bold ph-calendar-blank"></i> จอง ${b.date}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-base md:text-lg">${b.customerName}</h4>
+                        <p class="text-xs md:text-sm text-slate-500 mb-2"><i class="ph-fill ph-phone-call"></i> ${b.phone}</p>
+                        
+                        <div class="flex flex-wrap items-center gap-2 text-xs md:text-sm font-semibold mt-2">
+                            <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg">จอง ${b.qty} เล่ม</span>
+                            ${b.status === 'PAID' 
+                                ? `<span class="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg"><i class="ph-bold ph-check-circle"></i> ชำระแล้ว ${b.paymentAmount} ฿ (${b.paymentWallet === 'CASH' ? 'เงินสด' : 'โอน'})</span> 
+                                   <span class="text-xs text-slate-400 ml-1">ชำระเมื่อ ${b.paidDate} ${b.paidTime}</span>` 
+                                : `<span class="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-lg"><i class="ph-bold ph-clock"></i> รอชำระเงิน</span>`
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0 justify-end md:justify-start">
+                        ${b.status === 'PENDING' ? `<button onclick="openPayBookModal('${b.id}', '${b.queueNo}', '${b.customerName}')" class="flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm transition-colors text-sm"><i class="ph-bold ph-wallet"></i> รับชำระเงิน</button>` : ''}
+                        ${isOwner ? `<button onclick="if(confirm('ต้องการลบรายการจองนี้?')) getColRef('book_orders').doc('${b.id}').delete()" class="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors bg-slate-50 rounded-xl"><i class="ph-bold ph-trash text-lg"></i></button>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function openAddBookModal() { document.getElementById('addBookModal').classList.remove('hidden'); }
+        function closeAddBookModal() { document.getElementById('addBookModal').classList.add('hidden'); document.getElementById('bookForm').reset(); }
+
+        function handleBookSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitBook'); btn.disabled = true; btn.innerText = "กำลังบันทึก...";
+            
+            // Format B-001, B-002...
+            const countInDate = allBooks.filter(b => b.date === selectedDate).length + 1;
+            const qStr = `B-${String(countInDate).padStart(3, '0')}`;
+            
+            getColRef("book_orders").add({
+                queueNo: qStr,
+                customerName: document.getElementById('bookCustomerName').value,
+                phone: document.getElementById('bookCustomerPhone').value,
+                qty: Number(document.getElementById('bookQty').value),
+                status: 'PENDING',
+                date: selectedDate,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                closeAddBookModal(); showCustomAlert("บันทึกการจองเรียบร้อย", `รหัสจอง ${qStr}`, "success");
+            }).catch(err => { showCustomAlert("ข้อผิดพลาด", err.message, "error");
+            }).finally(() => { btn.disabled = false; btn.innerText = "บันทึกข้อมูลการจอง"; });
+        }
+
+        function openPayBookModal(id, qNo, name) {
+            document.getElementById('payBookId').value = id;
+            document.getElementById('payBookTitle').value = `ค่าจองหนังสือ ${qNo} (${name})`;
+            document.getElementById('bookPaymentQueue').innerText = qNo;
+            selectBookWallet('TRANSFER'); 
+            document.getElementById('payBookModal').classList.remove('hidden');
+        }
+        function closePayBookModal() { document.getElementById('payBookModal').classList.add('hidden'); document.getElementById('bookPayForm').reset(); }
+
+        function selectBookWallet(t) {
+            currentBookWallet = t;
+            if(t==='TRANSFER'){ document.getElementById('btnBookPayTransfer').className="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnBookPayCash').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
+            else { document.getElementById('btnBookPayCash').className="py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnBookPayTransfer').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
+        }
+
+        async function handleBookPaymentSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitBookPay'); btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
+
+            try {
+                const amt = Number(document.getElementById('payBookAmount').value);
+                const batch = db.batch();
+                
+                // 1. ลงบันทึกบัญชีรายรับ
+                batch.set(getColRef("transactions").doc(), { 
+                    description: document.getElementById('payBookTitle').value, 
+                    category: 'BOOK', 
+                    amount: amt, cost: 0, wallet: currentBookWallet, 
+                    date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+                });
+                
+                // 2. อัปเดตสถานะหนังสือว่าจ่ายแล้ว พร้อมลงวันที่และเวลา
+                const currentTime = new Date().toLocaleTimeString('th-TH');
+                batch.update(getColRef("book_orders").doc(document.getElementById('payBookId').value), { 
+                    status: 'PAID', 
+                    paidDate: selectedDate, 
+                    paidTime: currentTime, 
+                    paymentAmount: amt, 
+                    paymentWallet: currentBookWallet 
+                });
+                
+                await batch.commit();
+                closePayBookModal(); showCustomAlert("เสร็จสิ้น", `บันทึกรับเงินค่าจองหนังสือ ${amt} บาท เรียบร้อย`, "success");
+            } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
+            finally { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-check"></i> ยืนยันรับเงิน'; }
         }
 
         // =====================================
         // UI & AUTH
         // =====================================
-        function openAddModal(){ document.getElementById('addModal').classList.remove('hidden'); } function closeAddModal(){ document.getElementById('addModal').classList.add('hidden'); }
-        function openAddCertModal(){ document.getElementById('addCertModal').classList.remove('hidden'); } function closeAddCertModal(){ document.getElementById('addCertModal').classList.add('hidden'); }
-        function openAddStockModal(){ document.getElementById('addStockModal').classList.remove('hidden'); } function closeAddStockModal(){ document.getElementById('addStockModal').classList.add('hidden'); }
         function openPinModal(){ document.getElementById('pinModal').classList.remove('hidden'); setTimeout(()=>document.getElementById('pinInput').focus(),100); }
         function closePinModal(){ document.getElementById('pinModal').classList.add('hidden'); document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden'); }
         
-        function selectWallet(t) {
-            currentWallet = t;
-            if(t==='TRANSFER'){ document.getElementById('btnWalletTransfer').className="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnWalletCash').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
-            else { document.getElementById('btnWalletCash').className="py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnWalletTransfer').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
-        }
-        function selectCertWallet(t) {
-            currentCertWallet = t;
-            if(t==='TRANSFER'){ document.getElementById('btnCertPayTransfer').className="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnCertPayCash').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
-            else { document.getElementById('btnCertPayCash').className="py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnCertPayTransfer').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
-        }
-
         function showCustomAlert(title, msg, type) {
             document.getElementById('infoTitle').innerText = title; document.getElementById('infoDesc').innerText = msg;
             const b = document.getElementById('infoIconBox');
@@ -1026,7 +1188,7 @@
         function verifyPin() {
             const btn = document.getElementById('btnVerify'); btn.disabled = true; btn.innerHTML = 'ตรวจสอบ...';
             auth.signInWithEmailAndPassword(document.getElementById('ownerSelect').value, document.getElementById('pinInput').value)
-                .then(() => { isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock(); renderDirectory(); })
+                .then(() => { isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock(); renderDirectory(); renderBooks(); })
                 .catch((e) => { 
                     const errorDiv = document.getElementById('pinError');
                     const errorText = document.getElementById('pinErrorText');
@@ -1056,9 +1218,9 @@
                 document.getElementById('ownerDashboard').classList.add('hidden');
                 document.getElementById('btnDownloadReport').classList.add('hidden');
             }
-            renderStock(); // รีเฟรชหน้าสต็อกเพื่อเปิดปุ่มแก้ไข/ลบ
+            renderStock(); renderDirectory();
         }
-        function logoutRole() { auth.signOut().then(() => { isOwner = false; updateUIRole(); renderAll(); renderStock(); renderDirectory(); }); }
+        function logoutRole() { auth.signOut().then(() => { isOwner = false; updateUIRole(); renderAll(); renderStock(); renderDirectory(); renderBooks(); }); }
         function handleSearch(v) { searchQuery=v; renderAll(); }
     </script>
 </body>
