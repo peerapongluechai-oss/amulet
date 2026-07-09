@@ -589,15 +589,18 @@
         }
 
         function initRealtimeDatabase() {
+            // ฟังก์ชันช่วยดึงเวลาให้ปลอดภัย 100% (ป้องกัน Error ถ้าข้อมูลเก่าไม่มีเวลา)
+            const getMs = (t) => (t && typeof t.toMillis === 'function') ? t.toMillis() : 0;
+
             // โหลดรายการรับจ่าย
             getColRef("transactions").onSnapshot(snap => { 
-                allTransactions = snap.docs.map(doc => ({id: doc.id, ...doc.data()})).sort((a,b) => (b.timestamp?.toMillis()||0) - (a.timestamp?.toMillis()||0)); 
+                allTransactions = snap.docs.map(doc => ({id: doc.id, ...doc.data()})).sort((a,b) => getMs(b.timestamp) - getMs(a.timestamp)); 
                 if(currentActiveTab === 'ledger') renderAll(); 
                 if(currentDetailAmulet) renderAmuletTimeline(); 
             });
-            // โหลดสต็อกพระ (แก้ไข: เรียงฝั่งแอปเพื่อไม่ให้ของเก่าที่ไม่มี timestamp หาย)
+            // โหลดสต็อกพระ (ใช้ฟังก์ชันปลอดภัย ข้อมูลเก่ากลับมาแน่นอน)
             getColRef("amulet_stock").onSnapshot(snap => { 
-                allStock = snap.docs.map(doc => ({id: doc.id, ...doc.data()})).sort((a,b) => (b.timestamp?.toMillis()||0) - (a.timestamp?.toMillis()||0)); 
+                allStock = snap.docs.map(doc => ({id: doc.id, ...doc.data()})).sort((a,b) => getMs(b.timestamp) - getMs(a.timestamp)); 
                 if(currentActiveTab === 'stock') renderStock(); 
             });
             // โหลดทำเนียบพระ
@@ -607,7 +610,7 @@
             });
             // โหลดหนังสือจอง
             getColRef("book_orders").onSnapshot(snap => { 
-                allBooks = snap.docs.map(doc => ({id: doc.id, ...doc.data()})).sort((a,b) => (b.timestamp?.toMillis()||0) - (a.timestamp?.toMillis()||0)); 
+                allBooks = snap.docs.map(doc => ({id: doc.id, ...doc.data()})).sort((a,b) => getMs(b.timestamp) - getMs(a.timestamp)); 
                 if(currentActiveTab === 'books') renderBooks(); 
             });
         }
@@ -1396,6 +1399,8 @@
         }
         function openAddModal() { selectWallet('TRANSFER'); openModal('addModal'); }
         function closeAddModal() { closeModal('addModal'); document.getElementById('txForm').reset(); }
+        function openAddStockModal() { openModal('addStockModal'); }
+        function closeAddStockModal() { closeModal('addStockModal'); document.getElementById('stockForm').reset(); }
         function handleSearch(v) { searchQuery=v; renderAll(); }
     </script>
 </body>
