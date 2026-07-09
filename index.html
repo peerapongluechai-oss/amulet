@@ -501,7 +501,7 @@
         </div>
     </div>
 
-    <!-- REPORT MODAL (ข้อ 2: เลือกช่วงเวลา Export) -->
+    <!-- REPORT MODAL -->
     <div id="reportModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 relative text-center">
             <button onclick="closeReportModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
@@ -714,7 +714,7 @@
                     batch.set(stockRef, {
                         code: autoCode, name: desc, category: stockCategory,
                         cost: amount, price: amount > 0 ? amount * 1.5 : 0, status: 'IN_STOCK', imageUrl: "",
-                        date: selectedDate, // เพิ่มบันทึกวันที่นำเข้าเพื่อง่ายต่อการทำ Report (ข้อ 4)
+                        date: selectedDate, // เพิ่มบันทึกวันที่นำเข้าเพื่อง่ายต่อการทำ Report
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
@@ -772,7 +772,7 @@
                 const safeName = c.customerName ? c.customerName.replace(/"/g, '""') : "";
                 const amt = c.paymentAmount || 0;
                 const wallet = c.paymentWallet || "-";
-                csv += `${c.queueNo},"${safeName}",${c.phone},${c.amuletCount},${c.date},${c.completedDate||'-'},${c.status},${wallet},${amt}\n`;
+                csv += `${c.queueNo},"${safeName}",'${c.phone},${c.amuletCount},${c.date},${c.completedDate||'-'},${c.status},${wallet},${amt}\n`;
             });
             csv += "\n";
 
@@ -902,7 +902,8 @@
             if(!filtered.length) return cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่องในตู้</div>`;
             
             cont.innerHTML = filtered.map(s => {
-                const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" onclick="openImageViewer('${s.imageUrl}')" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 cursor-pointer hover:opacity-85 transition-all shadow-sm hover:shadow-md" title="คลิกเพื่อดูรูปขยาย">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
+                // แก้ไขการส่งพารามิเตอร์รูปภาพเป็น this.src เพื่อป้องกัน Error จากชื่อไฟล์ที่มีเครื่องหมายพิเศษ
+                const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" onclick="openImageViewer(this.src)" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 cursor-pointer hover:opacity-85 transition-all shadow-sm hover:shadow-md" title="คลิกเพื่อดูรูปขยาย">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
                 return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border border-amber-200/50 relative overflow-hidden flex flex-col">
                     <div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">อยู่ในตู้</div>
                     ${imgHtml}
