@@ -119,9 +119,9 @@
             <div class="bg-amber-50/70 border border-amber-200/60 p-4 md:p-6 rounded-2xl md:rounded-3xl flex items-center justify-between">
                 <div class="flex items-center gap-2.5 md:gap-4">
                     <div class="bg-amber-100 w-9 h-9 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-amber-700"><i class="ph-bold ph-hand-coins text-lg md:text-2xl"></i></div>
-                    <div><p class="text-xs md:text-sm text-amber-950/70 font-medium">กำไรจากการปล่อยเช่า (วันนี้)</p><p id="profitText" class="font-bold text-amber-900 text-base md:text-xl">0 ฿</p></div>
+                    <div><p class="text-xs md:text-sm text-amber-950/70 font-medium">กำไรจากการปล่อยเช่าสุทธิ</p><p id="profitText" class="font-bold text-amber-900 text-base md:text-xl">0 ฿</p></div>
                 </div>
-                <i class="ph ph-info text-slate-400 text-sm md:text-xl cursor-pointer" onclick="showCustomAlert('กำไรสุทธิ', 'คำนวณจากยอดรายรับ (ลบ) ราคาทุนของพระเครื่อง', 'info')"></i>
+                <i class="ph ph-info text-slate-400 text-sm md:text-xl cursor-pointer" onclick="showCustomAlert('กำไรสุทธิ', 'คำนวณจากยอดรายรับ/ยอดผ่อน (ลบ) ด้วยราคาทุนของพระเครื่อง เมื่อปิดการขายแล้ว', 'info')"></i>
             </div>
         </div>
 
@@ -138,7 +138,6 @@
             <h3 class="font-bold heading-font text-slate-800 flex items-center gap-2 text-base md:text-2xl"><i class="ph-bold ph-book-open text-velvet-main"></i> รายการบัญชี</h3>
             <div class="flex items-center gap-2">
                 <span id="txCountBadge" class="text-xs md:text-sm bg-slate-200/70 text-slate-600 px-2.5 md:px-4 py-1.5 rounded-full font-semibold">0 รายการ</span>
-                <!-- ปุ่มเปิดหน้าต่าง Report ถูกซ่อนไว้สำหรับพนักงาน -->
                 <button id="btnDownloadReport" onclick="openReportModal()" class="hidden text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-full font-bold flex items-center gap-1 border border-emerald-200 transition-colors shadow-sm">
                     <i class="ph-bold ph-file-csv"></i> โหลด Report
                 </button>
@@ -147,24 +146,32 @@
         <div id="txContainer" class="space-y-3 md:space-y-4 min-h-[150px]"></div>
     </main>
 
-    <!-- 2. STOCK WORKSPACE (เปลี่ยนเป็นหมายเลข 2 แทนงานออกบัตร) -->
+    <!-- 2. STOCK WORKSPACE (อัปเดตระบบมัดจำผ่อนชำระ) -->
     <div id="stockWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in relative z-10">
         <div class="bg-gradient-to-br from-amber-700 to-amber-900 text-white p-5 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden flex justify-between items-center">
             <i class="ph ph-grid-four absolute -left-6 -bottom-6 text-9xl text-white/5"></i>
             <div class="relative z-10">
                 <h2 class="text-xl md:text-3xl font-bold heading-font flex items-center gap-2 text-yellow-300"><i class="ph-bold ph-grid-four"></i> ตู้พระ / สต็อกสินค้า</h2>
-                <p class="text-xs md:text-sm text-amber-100 mt-1.5 opacity-90 mb-3 md:mb-4">ระบบจัดการคลังพระเครื่องและปล่อยเช่าด่วน</p>
+                <p class="text-xs md:text-sm text-amber-100 mt-1.5 opacity-90 mb-3 md:mb-4">จัดการคลังพระ วางมัดจำ ผ่อนชำระ และประวัติการขาย</p>
                 <button onclick="openDirectoryModal()" class="bg-white/20 hover:bg-white/30 border border-white/30 px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl text-xs md:text-sm font-bold transition-colors flex items-center gap-1.5"><i class="ph-bold ph-books"></i> เปิดทำเนียบพิมพ์พระ</button>
             </div>
             <div class="text-right relative z-10 flex flex-col justify-center">
-                <p class="text-xs text-amber-200">พระในตู้ทั้งหมด</p>
-                <p id="totalStockCount" class="text-3xl md:text-5xl font-bold">0 <span class="text-lg">องค์</span></p>
+                <p class="text-xs text-amber-200">มูลค่าพระในตู้</p>
+                <p id="totalStockValue" class="text-2xl md:text-4xl font-bold">0 <span class="text-sm">฿</span></p>
             </div>
         </div>
         
+        <!-- Tab Filters for Stock -->
+        <div class="flex bg-white/60 p-1.5 rounded-2xl shadow-sm border border-slate-200/60 w-full overflow-x-auto">
+            <button onclick="changeStockFilter('ALL')" id="filter_ALL" class="flex-1 text-xs md:text-sm font-bold py-2 px-3 rounded-xl transition-all whitespace-nowrap bg-amber-100 text-amber-800 shadow-sm border border-amber-200">ทั้งหมด</button>
+            <button onclick="changeStockFilter('AVAILABLE')" id="filter_AVAILABLE" class="flex-1 text-xs md:text-sm font-bold py-2 px-3 rounded-xl text-slate-500 hover:bg-slate-100 transition-all whitespace-nowrap">พร้อมเช่า</button>
+            <button onclick="changeStockFilter('PENDING')" id="filter_PENDING" class="flex-1 text-xs md:text-sm font-bold py-2 px-3 rounded-xl text-slate-500 hover:bg-slate-100 transition-all whitespace-nowrap">มัดจำ/ผ่อน</button>
+            <button onclick="changeStockFilter('SOLD')" id="filter_SOLD" class="flex-1 text-xs md:text-sm font-bold py-2 px-3 rounded-xl text-slate-500 hover:bg-slate-100 transition-all whitespace-nowrap"><i class="ph-bold ph-clock-counter-clockwise"></i> ประวัติที่ปล่อยแล้ว</button>
+        </div>
+
         <div class="relative flex items-center">
             <i class="ph-bold ph-magnifying-glass absolute left-6 text-slate-400 text-lg md:text-xl"></i>
-            <input type="text" id="stockSearch" oninput="renderStock()" placeholder="ค้นหารหัสพระ หรือ ชื่อพระในสต็อก..." class="w-full bg-white/95 border border-slate-200 rounded-2xl md:rounded-3xl pl-14 pr-6 py-3.5 md:py-4 text-sm md:text-base focus:outline-none focus:border-amber-500 shadow-sm"/>
+            <input type="text" id="stockSearch" oninput="renderStock()" placeholder="ค้นหารหัส หรือ ชื่อพระ..." class="w-full bg-white/95 border border-slate-200 rounded-2xl md:rounded-3xl pl-14 pr-6 py-3.5 md:py-4 text-sm md:text-base focus:outline-none focus:border-amber-500 shadow-sm"/>
         </div>
 
         <div id="stockContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 min-h-[300px]">
@@ -201,28 +208,28 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION (แก้ไขการแบ่งคอลัมน์จาก 5 เหลือ 3 + 1 ปุ่มกลาง) -->
+    <!-- BOTTOM NAVIGATION (อัปเดตเหลือ 3 ปุ่มหลัก + 1 ปุ่มบวก) -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] z-40">
-        <!-- เปลี่ยน grid-cols-5 เป็น grid-cols-4 หรือจัดระยะห่างใหม่ -->
-        <div class="max-w-5xl mx-auto flex justify-between items-center h-16 md:h-20 px-6 md:px-12 relative">
-            <button id="navTab_ledger" onclick="switchTab('ledger')" class="flex flex-col items-center justify-center text-velvet-main transition-colors select-none group w-20">
+        <div class="max-w-md mx-auto grid grid-cols-3 h-16 md:h-20 relative px-6 md:px-12 items-center justify-items-center">
+            <button id="navTab_ledger" onclick="switchTab('ledger')" class="flex flex-col items-center justify-center text-velvet-main transition-colors select-none group">
                 <i class="ph-bold ph-book-open text-2xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[10px] md:text-xs font-semibold">บัญชีรายรับ</span>
             </button>
             
-            <button id="navTab_stock" onclick="switchTab('stock')" class="flex flex-col items-center justify-center text-slate-400 hover:text-amber-700 transition-colors select-none group w-20">
-                <i class="ph-bold ph-grid-four text-2xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[10px] md:text-xs font-semibold">ตู้พระ/สต็อก</span>
-            </button>
-            
-            <div class="flex justify-center items-center relative -top-4 md:-top-6 mx-2">
+            <div class="flex justify-center items-center relative -top-6 md:-top-8">
                 <button onclick="openContextAddModal()" class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-velvet-light to-velvet-main text-white rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(122,16,25,0.4)] border-4 border-white hover:scale-105 active:scale-95 transition-all">
                     <i class="ph-bold ph-plus text-3xl md:text-4xl"></i>
                 </button>
             </div>
             
-            <button id="navTab_books" onclick="switchTab('books')" class="flex flex-col items-center justify-center text-slate-400 hover:text-blue-600 transition-colors select-none group w-20">
-                <i class="ph-bold ph-book-bookmark text-2xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[10px] md:text-xs font-bold">จองหนังสือ</span>
+            <button id="navTab_stock" onclick="switchTab('stock')" class="flex flex-col items-center justify-center text-slate-400 hover:text-amber-700 transition-colors select-none group">
+                <i class="ph-bold ph-grid-four text-2xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[10px] md:text-xs font-semibold">ตู้พระ/สต็อก</span>
             </button>
         </div>
+        
+        <!-- เมนูย่อย จองหนังสือ เอาไปไว้มุมขวาบนเล็กๆ หรือรวมใน + ก็ได้ แต่โจทย์บอกว่าเอาออกบัตรรับรองออก งั้นเอาหนังสือมาเป็นปุ่มที่ 4 -->
+        <button id="navTab_books" onclick="switchTab('books')" class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center text-slate-400 hover:text-blue-600 transition-colors select-none group">
+            <i class="ph-bold ph-book-bookmark text-xl md:text-2xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-[10px] font-bold">จองหนังสือ</span>
+        </button>
     </nav>
 
     <!-- ========================================== -->
@@ -265,9 +272,8 @@
                 <div>
                     <label class="block font-bold text-slate-500 mb-1.5">ประเภทรายการ</label>
                     <select id="formCategory" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-velvet-main">
-                        <option value="SELL">ปล่อยเช่า (ขาย)</option>
-                        <option value="BUY">เช่าเข้า (ซื้อ)</option>
-                        <!-- ลบหมวดค่าออกบัตรรับรองออก -->
+                        <option value="SELL">ปล่อยเช่า (ขายเต็มจำนวน)</option>
+                        <option value="BUY">เช่าเข้า (ซื้อเข้าตู้)</option>
                         <option value="BOOK">รายรับจากหนังสือ</option>
                         <option value="OTHER_INCOME">รายรับอื่นๆ</option>
                         <option value="OTHER_EXPENSE">รายจ่ายอื่นๆ</option>
@@ -275,7 +281,7 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block font-bold text-slate-500 mb-1.5">จำนวนเงินที่รับ/จ่าย</label><input type="number" id="formAmount" required min="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold focus:border-velvet-main"></div>
-                    <div><label class="block font-bold text-slate-500 mb-1.5">ราคาทุน</label><input type="number" id="formCost" required min="0" value="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold focus:border-velvet-main text-rose-600"></div>
+                    <div><label class="block font-bold text-slate-500 mb-1.5">ราคาทุน (ถ้ามี)</label><input type="number" id="formCost" required min="0" value="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold focus:border-velvet-main text-rose-600"></div>
                 </div>
                 <div>
                     <label class="block font-bold text-slate-500 mb-1.5">ช่องทางชำระ</label>
@@ -289,10 +295,114 @@
         </div>
     </div>
 
+    <!-- ADD TO STOCK MODAL -->
+    <div id="addStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeAddStockModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
+            <h3 class="text-xl font-bold heading-font text-slate-800 mb-6 flex items-center gap-2"><i class="ph-bold ph-package text-amber-600 text-2xl"></i> เพิ่มพระเข้าตู้ด้วยตนเอง</h3>
+            <form id="stockForm" onsubmit="handleManualStockSubmit(event)" class="space-y-4 text-sm">
+                <div>
+                    <label class="block font-bold text-slate-500 mb-1.5">อัปโหลดรูปภาพพระเครื่อง</label>
+                    <input type="file" id="stockImage" accept="image/*" class="w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-2 text-sm focus:border-amber-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold text-slate-500 mb-1.5">รหัสพระ (Code)</label><input type="text" id="stockCode" required placeholder="เช่น A001" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-bold text-amber-700 bg-amber-50 focus:border-amber-500 uppercase"></div>
+                    <div><label class="block font-bold text-slate-500 mb-1.5">หมวดหมู่</label><input type="text" id="stockCategory" required placeholder="เช่น พระสมเด็จ" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500"></div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-500 mb-1.5">ชื่อพระเครื่อง</label>
+                    <input type="text" id="stockName" required placeholder="เช่น สมเด็จวัดระฆัง พิมพ์ใหญ่" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block font-bold text-slate-500 mb-1.5">ราคาทุน</label><input type="number" id="stockCost" required min="0" value="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold focus:border-amber-500 text-rose-600"></div>
+                    <div><label class="block font-bold text-slate-500 mb-1.5">ราคาเปิดเช่า</label><input type="number" id="stockPrice" required min="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold focus:border-amber-500 text-emerald-600"></div>
+                </div>
+                <button type="submit" id="btnSubmitStock" class="w-full bg-amber-600 text-white font-bold py-4 rounded-xl shadow-md mt-4 transition-all">บันทึกเข้าตู้พระ</button>
+            </form>
+        </div>
+    </div>
 
-    <!-- ========================================== -->
-    <!-- NEW: BOOK RESERVATION MODALS               -->
-    <!-- ========================================== -->
+    <!-- NEW: AMULET DETAILS & PAYMENT MODAL (แฟ้มประวัติพระเครื่อง) -->
+    <div id="amuletDetailModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 md:p-4 hidden animate-in fade-in">
+        <div class="bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl relative flex flex-col max-h-[95vh] overflow-hidden">
+            <button onclick="closeAmuletDetailModal()" class="absolute top-4 right-4 text-white bg-black/30 hover:bg-black/50 p-2 rounded-full z-20 backdrop-blur-sm transition-all"><i class="ph-bold ph-x text-lg"></i></button>
+            
+            <!-- HEADER SECTION -->
+            <div class="relative bg-slate-900 text-white p-6 md:p-8 shrink-0">
+                <div class="absolute inset-0 opacity-20 bg-cover bg-center" id="detailHeaderBg" style="background-image: url('images (1).jpg'); filter: blur(4px);"></div>
+                <div class="relative z-10 flex gap-4 items-center">
+                    <img id="detailImage" src="" class="w-20 h-20 md:w-28 md:h-28 rounded-2xl object-cover border-2 border-white/20 shadow-lg cursor-pointer" onclick="openImageViewer(this.src)" onerror="this.src=''; this.classList.add('hidden');" />
+                    <div>
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span id="detailCode" class="bg-amber-500 text-amber-950 font-bold px-2 py-0.5 rounded text-xs md:text-sm shadow-sm">CODE</span>
+                            <span id="detailBadge" class="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded shadow-sm border">สถานะ</span>
+                        </div>
+                        <h2 id="detailName" class="text-lg md:text-2xl font-bold heading-font leading-tight line-clamp-2">ชื่อพระเครื่อง</h2>
+                        <p id="detailCategory" class="text-slate-300 text-xs md:text-sm mt-1">หมวดหมู่</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div class="flex border-b border-slate-100 bg-slate-50 shrink-0">
+                <button onclick="switchAmuletTab('info')" id="tabAmulet_info" class="flex-1 py-3 text-sm font-bold text-amber-600 border-b-2 border-amber-500 bg-white">ทำรายการ / ข้อมูล</button>
+                <button onclick="switchAmuletTab('history')" id="tabAmulet_history" class="flex-1 py-3 text-sm font-bold text-slate-500 border-b-2 border-transparent hover:text-slate-700">ประวัติการชำระ (Timeline)</button>
+            </div>
+
+            <!-- TAB 1: INFO & ACTION (Scrollable) -->
+            <div id="amuletTabContent_info" class="flex-1 overflow-y-auto p-5 md:p-6 space-y-5">
+                
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-slate-50 p-3 rounded-2xl text-center border border-slate-100"><p class="text-[10px] text-slate-500 font-medium mb-0.5">ราคาตกลงเช่า</p><p id="detailSellPrice" class="font-bold text-slate-800 text-sm md:text-base">0 ฿</p></div>
+                    <div class="bg-emerald-50 p-3 rounded-2xl text-center border border-emerald-100"><p class="text-[10px] text-emerald-600 font-medium mb-0.5">ชำระแล้ว</p><p id="detailPaidAmount" class="font-bold text-emerald-700 text-sm md:text-base">0 ฿</p></div>
+                    <div class="bg-rose-50 p-3 rounded-2xl text-center border border-rose-100"><p class="text-[10px] text-rose-600 font-medium mb-0.5">ค้างชำระ</p><p id="detailRemaining" class="font-bold text-rose-700 text-sm md:text-base">0 ฿</p></div>
+                </div>
+
+                <div id="ownerInfoBox" class="bg-amber-50/50 p-4 rounded-2xl border border-amber-100 text-xs hidden">
+                    <div class="flex justify-between items-center mb-1"><span class="text-slate-500">ราคาทุน (เฉพาะเจ้าของ)</span><span id="detailCost" class="font-bold text-rose-600 text-sm">0 ฿</span></div>
+                    <div class="flex justify-between items-center"><span class="text-slate-500">คาดการณ์กำไร</span><span id="detailEstProfit" class="font-bold text-emerald-600 text-sm">0 ฿</span></div>
+                </div>
+
+                <!-- ACTION FORM -->
+                <div id="actionFormContainer" class="border-t border-slate-100 pt-5">
+                    <h3 class="font-bold text-slate-800 mb-3 flex items-center gap-1.5"><i class="ph-bold ph-hand-coins text-amber-500"></i> บันทึกรับชำระเงิน</h3>
+                    <form id="amuletActionForm" onsubmit="handleAmuletPayment(event)" class="space-y-4">
+                        <input type="hidden" id="actAmuletId">
+                        
+                        <div id="firstTimeFields" class="space-y-4 hidden">
+                            <div><label class="block text-xs font-bold text-slate-500 mb-1">ชื่อลูกค้า (จำเป็น)</label><input type="text" id="actCustomerName" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:border-amber-500 text-sm"></div>
+                            <div><label class="block text-xs font-bold text-slate-500 mb-1">ราคาที่ตกลงจบจริง (บาท)</label><input type="number" id="actAgreedPrice" class="w-full border-2 border-amber-200 bg-amber-50 text-amber-900 rounded-xl px-3 py-2 font-bold focus:border-amber-500 text-sm"></div>
+                        </div>
+
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">ประเภทการจ่ายรอบนี้</label>
+                            <select id="actPaymentType" onchange="toggleFullPayment()" class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:border-amber-500 text-sm font-semibold">
+                                <option value="DEPOSIT">วางมัดจำ / ติดจอง</option>
+                                <option value="INSTALLMENT">จ่ายค่างวด (ผ่อนชำระ)</option>
+                                <option value="FULL" class="text-emerald-600 font-bold">จ่ายเต็มจำนวน / จ่ายส่วนที่เหลือ (ปิดการขาย)</option>
+                            </select>
+                        </div>
+                        
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">ยอดเงินรอบนี้ (บาท)</label><input type="number" id="actPayAmount" required min="1" class="w-full border-2 border-emerald-200 bg-emerald-50 text-emerald-700 rounded-xl px-3 py-3 text-lg text-center font-bold"></div>
+                        
+                        <div><label class="block text-xs font-bold text-slate-500 mb-1">ช่องทางรับเงิน</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" id="btnActTransfer" onclick="selectActWallet('TRANSFER')" class="py-2.5 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1 text-sm"><i class="ph ph-credit-card text-lg"></i> โอน</button>
+                                <button type="button" id="btnActCash" onclick="selectActWallet('CASH')" class="py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1 text-sm"><i class="ph ph-coins text-lg"></i> เงินสด</button>
+                            </div>
+                        </div>
+                        <button type="submit" id="btnSubmitAct" class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl shadow-md mt-2 transition-all">บันทึกรับเงิน</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB 2: TIMELINE (Scrollable) -->
+            <div id="amuletTabContent_history" class="flex-1 overflow-y-auto p-5 md:p-6 hidden bg-slate-50">
+                <div class="relative pl-4 md:pl-6 border-l-2 border-slate-200 space-y-6" id="detailTimeline">
+                    <!-- Timeline items generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ADD BOOK MODAL -->
     <div id="addBookModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
@@ -323,81 +433,6 @@
                     <button type="button" id="btnBookPayCash" onclick="selectBookWallet('CASH')" class="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"><i class="ph ph-coins text-lg"></i> เงินสด</button>
                 </div>
                 <button type="submit" id="btnSubmitBookPay" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg mt-2 transition-all"><i class="ph-bold ph-check"></i> ยืนยันรับเงิน</button>
-            </form>
-        </div>
-    </div>
-
-
-    <!-- ADD TO STOCK MODAL -->
-    <div id="addStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
-        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeAddStockModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
-            <h3 class="text-xl font-bold heading-font text-slate-800 mb-6 flex items-center gap-2"><i class="ph-bold ph-package text-amber-600 text-2xl"></i> เพิ่มพระเข้าตู้ด้วยตนเอง</h3>
-            <form id="stockForm" onsubmit="handleManualStockSubmit(event)" class="space-y-4 text-sm">
-                <div>
-                    <label class="block font-bold text-slate-500 mb-1.5">อัปโหลดรูปภาพพระเครื่อง</label>
-                    <input type="file" id="stockImage" accept="image/*" class="w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-2 text-sm focus:border-amber-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold text-slate-500 mb-1.5">รหัสพระ (Code)</label><input type="text" id="stockCode" required placeholder="เช่น A001" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-bold text-amber-700 bg-amber-50 focus:border-amber-500 uppercase"></div>
-                    <div><label class="block font-bold text-slate-500 mb-1.5">หมวดหมู่</label><input type="text" id="stockCategory" required placeholder="เช่น พระสมเด็จ" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500"></div>
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-500 mb-1.5">ชื่อพระเครื่อง</label>
-                    <input type="text" id="stockName" required placeholder="เช่น สมเด็จวัดระฆัง พิมพ์ใหญ่" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold text-slate-500 mb-1.5">ราคาทุน</label><input type="number" id="stockCost" required min="0" value="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold focus:border-amber-500 text-rose-600"></div>
-                    <div><label class="block font-bold text-slate-500 mb-1.5">ราคาเปิดเช่า</label><input type="number" id="stockPrice" required min="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold focus:border-amber-500 text-emerald-600"></div>
-                </div>
-                <button type="submit" id="btnSubmitStock" class="w-full bg-amber-600 text-white font-bold py-4 rounded-xl shadow-md mt-4 transition-all">บันทึกเข้าตู้พระ</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- EDIT STOCK MODAL -->
-    <div id="editStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
-        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
-            <button onclick="closeEditStockModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
-            <h3 class="text-xl font-bold heading-font text-slate-800 mb-6 flex items-center gap-2"><i class="ph-bold ph-pencil-simple text-amber-600 text-2xl"></i> แก้ไขข้อมูลสต็อก</h3>
-            <form id="editStockForm" onsubmit="handleEditStockSubmit(event)" class="space-y-4 text-sm">
-                <input type="hidden" id="editStockId">
-                <input type="hidden" id="editStockOldImage">
-                <div>
-                    <label class="block font-bold text-slate-500 mb-1.5">เปลี่ยนรูปภาพพระเครื่อง (เว้นว่างไว้ถ้าไม่เปลี่ยน)</label>
-                    <input type="file" id="editStockImage" accept="image/*" class="w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-2 text-sm focus:border-amber-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold text-slate-500 mb-1.5">รหัสพระ (Code)</label><input type="text" id="editStockCode" disabled class="w-full border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-500 bg-slate-100 cursor-not-allowed"></div>
-                    <div><label class="block font-bold text-slate-500 mb-1.5">หมวดหมู่</label><input type="text" id="editStockCategory" required class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500"></div>
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-500 mb-1.5">ชื่อพระเครื่อง</label>
-                    <input type="text" id="editStockName" required class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block font-bold text-slate-500 mb-1.5">ราคาทุน <span class="text-xs font-normal text-slate-400">(ห้ามแก้ไข)</span></label><input type="text" id="editStockCost" disabled class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold text-rose-400 bg-slate-50 cursor-not-allowed"></div>
-                    <div><label class="block font-bold text-slate-500 mb-1.5">ราคาเปิดเช่า <span class="text-xs font-normal text-slate-400">(ห้ามแก้ไข)</span></label><input type="text" id="editStockPrice" disabled class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold text-emerald-400 bg-slate-50 cursor-not-allowed"></div>
-                </div>
-                <button type="submit" id="btnSubmitEditStock" class="w-full bg-amber-600 text-white font-bold py-4 rounded-xl shadow-md mt-4 transition-all">บันทึกการแก้ไข</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Quick Sell Stock Modal -->
-    <div id="sellStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
-        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 relative">
-            <button onclick="closeSellStockModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
-            <h3 class="text-xl font-bold heading-font text-slate-800 mb-1">ปล่อยเช่าด่วน</h3>
-            <p id="sellStockName" class="text-sm font-semibold text-amber-600 mb-4 truncate"></p>
-            <form id="sellStockForm" onsubmit="handleSellStockSubmit(event)" class="space-y-4">
-                <input type="hidden" id="sellStockId"><input type="hidden" id="sellStockCost">
-                <div><label class="block text-sm font-bold text-slate-500 mb-1">ยอดเงินที่ตกลงเช่าจริง (บาท)</label><input type="number" id="sellStockAmount" required min="1" class="w-full border-2 border-emerald-200 bg-emerald-50 text-emerald-700 rounded-2xl px-4 py-4 text-2xl text-center font-bold"></div>
-                <div class="grid grid-cols-2 gap-3">
-                    <button type="button" id="btnSellStockTransfer" onclick="selectSellStockWallet('TRANSFER')" class="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"><i class="ph ph-credit-card text-lg"></i> โอน</button>
-                    <button type="button" id="btnSellStockCash" onclick="selectSellStockWallet('CASH')" class="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"><i class="ph ph-coins text-lg"></i> เงินสด</button>
-                </div>
-                <button type="submit" id="btnSubmitSellStock" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg mt-2 transition-all"><i class="ph-bold ph-check"></i> ยืนยันการปล่อยเช่า</button>
             </form>
         </div>
     </div>
@@ -503,17 +538,24 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(); const auth = firebase.auth();
 
-        function getColRef(colName) {
-            return db.collection(colName);
-        }
+        function getColRef(colName) { return db.collection(colName); }
 
-        // ลบอาร์เรย์ allCerts ออก
         let allTransactions = [], allStock = [], allDirectory = [], allBooks = [];
-        let currentWallet = 'TRANSFER', currentSellStockWallet = 'TRANSFER', currentBookWallet = 'TRANSFER';
+        let currentWallet = 'TRANSFER', currentBookWallet = 'TRANSFER', currentActWallet = 'TRANSFER';
         let isOwner = false, currentActiveTab = 'ledger', selectedDate = new Date().toISOString().split('T')[0];
         let pickMode = false; let searchQuery = ""; 
+        let activeStockFilter = 'ALL'; // ALL, AVAILABLE, PENDING, SOLD
+        let currentDetailAmulet = null;
 
         const ownersList = { 'peerapong.luechai@gmail.com': 'คุณพี (Admin)', 'partner2@p-supsiam.com': 'หุ้นส่วนท่านที่ 2' };
+
+        // Constants for Amulet Status
+        const AMULET_STATUS = {
+            AVAILABLE: { text: 'พร้อมเช่า', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', badge: 'bg-emerald-500 text-white' },
+            RESERVED: { text: 'มัดจำ/ติดจอง', color: 'bg-amber-100 text-amber-700 border-amber-200', badge: 'bg-amber-500 text-amber-950' },
+            INSTALLMENT: { text: 'กำลังผ่อนชำระ', color: 'bg-blue-100 text-blue-700 border-blue-200', badge: 'bg-blue-500 text-white' },
+            SOLD: { text: 'ขายแล้ว', color: 'bg-slate-100 text-slate-500 border-slate-200', badge: 'bg-slate-400 text-white' }
+        };
 
         window.onload = function() {
             document.getElementById('appDatePicker').value = selectedDate;
@@ -521,31 +563,20 @@
         };
 
         async function initFirebaseAndAuth() {
-            try {
-                // รอจนกว่าจะ Login Anonymous สำเร็จ
-                await auth.signInAnonymously();
-            } catch (e) { console.warn("Auth init warning:", e.message); }
-            
+            try { await auth.signInAnonymously(); } catch (e) { console.warn("Auth init warning:", e.message); }
             auth.onAuthStateChanged((user) => {
-                if (user) {
-                    initRealtimeDatabase(); 
-                    updateUIRole(); 
-                }
+                if (user) { initRealtimeDatabase(); updateUIRole(); }
             });
         }
 
         function initRealtimeDatabase() {
-            getColRef("transactions").orderBy("timestamp", "desc").onSnapshot(snap => { allTransactions = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'ledger') renderAll(); });
+            getColRef("transactions").orderBy("timestamp", "desc").onSnapshot(snap => { allTransactions = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'ledger') renderAll(); if(currentDetailAmulet) renderAmuletTimeline(); });
             getColRef("amulet_stock").orderBy("timestamp", "desc").onSnapshot(snap => { allStock = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'stock') renderStock(); });
             getColRef("amulet_directory").orderBy("category").onSnapshot(snap => { allDirectory = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(allDirectory.length === 0) seedDirectory(); });
             getColRef("book_orders").orderBy("timestamp", "desc").onSnapshot(snap => { allBooks = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'books') renderBooks(); });
         }
 
-        function changeAppDate(val) {
-            selectedDate = val;
-            renderAll();
-            renderBooks();
-        }
+        function changeAppDate(val) { selectedDate = val; renderAll(); renderBooks(); }
 
         function switchTab(tabId) {
             currentActiveTab = tabId;
@@ -560,29 +591,13 @@
             window.scrollTo(0,0);
         }
 
-        function openContextAddModal() {
-            if(currentActiveTab === 'ledger') openAddModal();
-            else if(currentActiveTab === 'stock') openAddStockModal();
-            else if(currentActiveTab === 'books') openAddBookModal();
-        }
-
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function selectWallet(w) { 
-            currentWallet = w; 
-            document.getElementById('btnWalletTransfer').className = w === 'TRANSFER' ? 'py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
-            document.getElementById('btnWalletCash').className = w === 'CASH' ? 'py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
-        }
-        function openAddModal() { selectWallet('TRANSFER'); openModal('addModal'); }
-        function closeAddModal() { closeModal('addModal'); document.getElementById('txForm').reset(); }
-
         // =====================================
-        // 1. SMART LEDGER 
+        // CORE: LEDGER LOGIC 
         // =====================================
         function renderAll() {
             let tC = 0, tT = 0, dI = 0, dE = 0, dP = 0;
             allTransactions.forEach(tx => {
-                const inc = ['SELL', 'OTHER_INCOME', 'BOOK'].includes(tx.category);
+                const inc = ['SELL', 'OTHER_INCOME', 'BOOK', 'AMULET_PAYMENT'].includes(tx.category);
                 if (tx.wallet === 'CASH') tC += inc ? tx.amount : -tx.amount; else tT += inc ? tx.amount : -tx.amount;
                 if (tx.date === selectedDate) { if (inc) { dI += tx.amount; dP += (tx.amount - (tx.cost||0)); } else dE += tx.amount; }
             });
@@ -603,9 +618,9 @@
             const cont = document.getElementById('txContainer');
             if(!list.length) return cont.innerHTML = `<div class="text-center py-12 bg-white/70 rounded-3xl border border-slate-100 shadow-sm text-slate-400 font-semibold">ไม่มีรายการบัญชีในวันที่เลือก</div>`;
             
-            const names = {'SELL':'ปล่อยเช่าพระ','BUY':'เช่าเข้าพระ','BOOK':'ค่าจองหนังสือ','OTHER_INCOME':'รายรับอื่นๆ','OTHER_EXPENSE':'รายจ่ายอื่นๆ'};
+            const names = {'SELL':'ปล่อยเช่าพระ','BUY':'เช่าเข้าพระ','BOOK':'ค่าจองหนังสือ','OTHER_INCOME':'รายรับอื่นๆ','OTHER_EXPENSE':'รายจ่ายอื่นๆ', 'AMULET_PAYMENT':'รับชำระค่าพระ'};
             cont.innerHTML = list.map(tx => {
-                const inc = ['SELL','OTHER_INCOME','BOOK'].includes(tx.category);
+                const inc = ['SELL','OTHER_INCOME','BOOK', 'AMULET_PAYMENT'].includes(tx.category);
                 return `<div class="bg-white/95 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between ${inc?'border-l-4 border-emerald-500':'border-l-4 border-rose-500'}">
                     <div>
                         <h4 class="font-bold text-slate-800">${tx.description}</h4>
@@ -623,492 +638,347 @@
             }).join('');
         }
 
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitTx');
-            btn.disabled = true; btn.innerText = "กำลังบันทึกข้อมูล...";
-
-            try {
-                const txCategory = document.getElementById('formCategory').value;
-                const desc = document.getElementById('formDesc').value;
-                const amount = Number(document.getElementById('formAmount').value);
-                const cost = Number(document.getElementById('formCost').value);
-
-                const batch = db.batch();
-                const txRef = getColRef("transactions").doc();
-                
-                batch.set(txRef, {
-                    description: desc, category: txCategory, amount: amount, cost: cost,
-                    wallet: currentWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                if(txCategory === 'BUY') {
-                    const dirItem = allDirectory.find(d => d.name === desc);
-                    const stockCategory = dirItem ? dirItem.category : 'พระทั่วไป';
-                    let prefix = stockCategory.substring(0, 4);
-                    if(stockCategory.includes('สมเด็จ')) prefix = 'สมเด็จ';
-                    else if(stockCategory.includes('ปิดตา')) prefix = 'ปิดตา';
-                    else if(stockCategory.includes('เหรียญ')) prefix = 'เหรียญ';
-                    else if(stockCategory.includes('กรุ')) prefix = 'กรุ';
-                    else if(stockCategory.includes('รูปหล่อ')) prefix = 'รูปหล่อ';
-                    
-                    const countInCategory = allStock.filter(s => s.category === stockCategory).length + 1;
-                    const autoCode = `${prefix}-${String(countInCategory).padStart(3, '0')}`;
-                    
-                    const stockRef = getColRef("amulet_stock").doc();
-                    batch.set(stockRef, {
-                        code: autoCode, name: desc, category: stockCategory,
-                        cost: amount, price: amount > 0 ? amount * 1.5 : 0, status: 'IN_STOCK', imageUrl: "",
-                        date: selectedDate, 
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
+        // =====================================
+        // CORE: ADVANCED STOCK & PAYMENT SYSTEM (V6.0)
+        // =====================================
+        function changeStockFilter(filter) {
+            activeStockFilter = filter;
+            ['ALL', 'AVAILABLE', 'PENDING', 'SOLD'].forEach(f => {
+                const el = document.getElementById(`filter_${f}`);
+                if(el) {
+                    if(f === filter) {
+                        el.className = `flex-1 text-xs md:text-sm font-bold py-2 px-3 rounded-xl transition-all whitespace-nowrap shadow-sm border ${f==='SOLD'?'bg-slate-700 text-white border-slate-800':'bg-amber-100 text-amber-800 border-amber-200'}`;
+                    } else {
+                        el.className = "flex-1 text-xs md:text-sm font-bold py-2 px-3 rounded-xl text-slate-500 hover:bg-slate-100 transition-all whitespace-nowrap border border-transparent";
+                    }
                 }
-
-                await batch.commit();
-                closeAddModal(); document.getElementById('txForm').reset();
-                const msg = txCategory === 'BUY' ? "ระบบลงบัญชีรายจ่าย และเพิ่มพระเข้าตู้อัตโนมัติพร้อมรันรหัสเรียบร้อยแล้ว" : "ระบบลงบัญชีเรียบร้อย";
-                showCustomAlert("บันทึกสำเร็จ", msg, "success");
-            } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
-            finally { btn.disabled = false; btn.innerText = "บันทึกข้อมูล"; }
+            });
+            renderStock();
         }
 
-        // =====================================
-        // 2. ADVANCED REPORT (CSV) 
-        // =====================================
-        function openReportModal() {
-            document.getElementById('reportStartDate').value = selectedDate;
-            document.getElementById('reportEndDate').value = selectedDate;
-            openModal('reportModal');
-        }
-        function closeReportModal() { closeModal('reportModal'); }
-
-        function exportAdvancedCSV() {
-            const start = document.getElementById('reportStartDate').value;
-            const end = document.getElementById('reportEndDate').value;
-            
-            if(!start || !end) return showCustomAlert("แจ้งเตือน", "กรุณาเลือกช่วงเวลาให้ครบถ้วน", "info");
-            if(start > end) return showCustomAlert("แจ้งเตือน", "วันที่เริ่มต้น ต้องไม่มากกว่าวันที่สิ้นสุด", "error");
-
-            let csv = "data:text/csv;charset=utf-8,\uFEFF"; 
-
-            // === หมวดที่ 1: สรุปบัญชีรับ-จ่าย ทั่วไป ===
-            csv += "=== 1. สรุปรายงานบัญชีรับ-จ่าย (Transactions) ===\n";
-            csv += "วันที่,เวลา,รายการ,หมวดหมู่,ช่องทาง,ประเภท,จำนวนเงิน (บาท),ราคาทุน (บาท),กำไร (บาท)\n";
-            const txInRange = allTransactions.filter(tx => tx.date >= start && tx.date <= end);
-            let sumIncome=0, sumExpense=0, sumProfit=0;
-            
-            txInRange.forEach(tx => {
-                const isIncome = ['SELL','OTHER_INCOME','BOOK'].includes(tx.category);
-                const type = isIncome ? "รายรับ" : "รายจ่าย";
-                const time = tx.timestamp ? new Date(tx.timestamp.toDate()).toLocaleTimeString('th-TH') : "";
-                const safeDesc = tx.description ? tx.description.replace(/"/g, '""') : "";
-                const profit = isIncome && tx.category === 'SELL' ? tx.amount - (tx.cost||0) : 0;
-                
-                if(isIncome) { sumIncome += tx.amount; sumProfit += profit; } else sumExpense += tx.amount;
-                csv += `${tx.date},${time},"${safeDesc}",${tx.category},${tx.wallet},${type},${tx.amount},${tx.cost||0},${profit}\n`;
-            });
-            csv += `,,,,รวมรายรับ,${sumIncome},รวมรายจ่าย,${sumExpense},กำไรรวม,${sumProfit}\n\n`;
-
-            // === หมวดที่ 2: สต็อกและการปล่อยเช่า ===
-            csv += "=== 2. สรุปรายงานสต็อกและการปล่อยเช่า (Amulet Stock) ===\n";
-            csv += "รหัส,หมวดหมู่,ชื่อพระ,วันที่เช่าเข้า (ซื้อ),เวลาที่รับเข้า,ราคาทุน (บาท),วันที่ปล่อยเช่า (ขาย),เวลาที่ปล่อย,ช่องทางรับเงิน,ยอดปล่อยเช่า (บาท),กำไร (บาท),สถานะ\n";
-            const stockInRange = allStock.filter(s => {
-                const createDate = s.date || (s.timestamp ? new Date(s.timestamp.toDate()).toISOString().split('T')[0] : "");
-                const soldDate = s.soldDate || "";
-                return (createDate >= start && createDate <= end) || (soldDate >= start && soldDate <= end);
-            });
-            stockInRange.forEach(s => {
-                const safeName = s.name ? s.name.replace(/"/g, '""') : "";
-                const createDate = s.date || (s.timestamp ? new Date(s.timestamp.toDate()).toISOString().split('T')[0] : "");
-                const createTime = s.timestamp ? new Date(s.timestamp.toDate()).toLocaleTimeString('th-TH') : "";
-                const soldDate = s.soldDate || "-";
-                const soldTime = s.soldTime || "-";
-                const statusStr = s.status === 'SOLD' ? 'ปล่อยเช่าแล้ว' : 'อยู่ในตู้';
-                const sellAmt = s.sellAmount || 0;
-                const profit = s.status === 'SOLD' ? (sellAmt - s.cost) : 0;
-                const wallet = s.sellWallet || "-";
-                csv += `${s.code},"${s.category}","${safeName}",${createDate},${createTime},${s.cost},${soldDate},${soldTime},${wallet},${sellAmt},${profit},${statusStr}\n`;
-            });
-            csv += "\n";
-
-            // === หมวดที่ 3: การจองหนังสือ ===
-            csv += "=== 3. สรุปรายงานการจองหนังสือ (Book Reservations) ===\n";
-            csv += "รหัสจอง,ชื่อผู้จอง,เบอร์โทร,จำนวน (เล่ม),วันที่จอง,สถานะ,ช่องทางชำระเงิน,ยอดชำระ (บาท),วันที่ชำระ,เวลาที่ชำระ\n";
-            const booksInRange = allBooks.filter(b => (b.date >= start && b.date <= end) || (b.paidDate && b.paidDate >= start && b.paidDate <= end));
-            
-            let totalBookQty = 0; let totalBookIncome = 0;
-            booksInRange.forEach(b => {
-                const safeName = b.customerName ? b.customerName.replace(/"/g, '""') : "";
-                const statusStr = b.status === 'PAID' ? 'ชำระเงินแล้ว' : 'รอชำระเงิน';
-                const wallet = b.paymentWallet === 'CASH' ? 'เงินสด' : (b.paymentWallet === 'TRANSFER' ? 'เงินโอน' : '-');
-                const amt = b.paymentAmount || 0;
-                const pDate = b.paidDate || "-";
-                const pTime = b.paidTime || "-";
-                
-                totalBookQty += b.qty;
-                if(b.status === 'PAID') totalBookIncome += amt;
-                
-                csv += `${b.queueNo},"${safeName}",'${b.phone},${b.qty},${b.date},${statusStr},${wallet},${amt},${pDate},${pTime}\n`;
-            });
-            csv += `,,,รวมยอดจอง,${totalBookQty} เล่ม,,,,รวมรับเงิน,${totalBookIncome} บาท\n`;
-
-            // ดาวน์โหลดไฟล์
-            const encodedUri = encodeURI(csv);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Supsiam_Report_${start}_to_${end}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            closeReportModal();
-        }
-
-        // =====================================
-        // 3. STOCK & IMAGE UPLOAD
-        // =====================================
         function renderStock() {
             const q = (document.getElementById('stockSearch').value || "").toLowerCase();
-            const filtered = allStock.filter(s => s.status !== 'SOLD' && ((s.name||"").toLowerCase().includes(q) || (s.code||"").toLowerCase().includes(q) || (s.category||"").toLowerCase().includes(q)));
-            document.getElementById('totalStockCount').innerHTML = `${filtered.length} <span class="text-lg">องค์</span>`;
+            let totalValue = 0;
             
+            const filtered = allStock.filter(s => {
+                const matchSearch = (s.name||"").toLowerCase().includes(q) || (s.code||"").toLowerCase().includes(q) || (s.category||"").toLowerCase().includes(q);
+                if (!matchSearch) return false;
+                
+                // Normalizing legacy status
+                let stat = s.status || 'AVAILABLE';
+                if(stat === 'IN_STOCK') stat = 'AVAILABLE';
+                
+                // Value Calculation (Only count items not fully sold for inventory value)
+                if (stat !== 'SOLD') totalValue += (s.price || 0);
+
+                if (activeStockFilter === 'ALL') return stat !== 'SOLD'; // Show all active
+                if (activeStockFilter === 'AVAILABLE') return stat === 'AVAILABLE';
+                if (activeStockFilter === 'PENDING') return stat === 'RESERVED' || stat === 'INSTALLMENT';
+                if (activeStockFilter === 'SOLD') return stat === 'SOLD';
+                return true;
+            });
+
+            document.getElementById('totalStockValue').innerHTML = `${totalValue.toLocaleString()} <span class="text-sm">฿</span>`;
             const cont = document.getElementById('stockContainer');
-            if(!filtered.length) return cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่องในตู้</div>`;
+            
+            if(!filtered.length) return cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่อง</div>`;
             
             cont.innerHTML = filtered.map(s => {
-                const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" onclick="openImageViewer(this.src)" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 cursor-pointer hover:opacity-85 transition-all shadow-sm hover:shadow-md" title="คลิกเพื่อดูรูปขยาย">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
-                return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border border-amber-200/50 relative overflow-hidden flex flex-col">
-                    <div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">อยู่ในตู้</div>
-                    ${imgHtml}
-                    <div class="flex items-center gap-2 mb-2"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-xs">${s.code}</span><span class="text-xs text-slate-500 truncate">${s.category}</span></div>
-                    <h4 class="font-bold text-slate-800 mb-3 line-clamp-2 leading-snug">${s.name}</h4>
+                let stat = s.status || 'AVAILABLE';
+                if(stat === 'IN_STOCK') stat = 'AVAILABLE';
+                const sDef = AMULET_STATUS[stat];
+                
+                const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" onclick="event.stopPropagation(); openImageViewer(this.src)" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 hover:opacity-85 transition-opacity" title="คลิกเพื่อดูรูปขยาย">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
+                
+                // If SOLD, show final sell price. Else, show asking price.
+                let priceHtml = '';
+                if(stat === 'SOLD') {
+                    priceHtml = `
                     <div class="mt-auto grid grid-cols-2 gap-2 text-xs">
-                        <div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาเปิดเช่า</p><p class="font-bold text-emerald-600">${s.price.toLocaleString()} ฿</p></div>
-                        ${isOwner ? `<div class="bg-rose-50 p-2 rounded-lg"><p class="text-rose-400 mb-0.5">ราคาทุน</p><p class="font-bold text-rose-600">${s.cost.toLocaleString()} ฿</p></div>` : `<div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาทุน</p><p class="font-bold text-slate-400">*** ฿</p></div>`}
-                    </div>
-                    
-                    <button onclick="openSellStockModal('${s.id}', '${s.name}', ${s.cost}, ${s.price})" class="w-full mt-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-hand-coins"></i> ปล่อยเช่าองค์นี้</button>
-                    
-                    ${isOwner ? `
-                        <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100">
-                            <button onclick="openEditStockModal('${s.id}', '${s.code}', '${s.name.replace(/'/g, "\\'")}', '${s.category}', ${s.cost}, ${s.price}, '${s.imageUrl||''}')" class="flex-1 bg-slate-100 text-slate-600 font-bold py-2 rounded-xl text-xs hover:bg-slate-200 transition-colors"><i class="ph-bold ph-pencil-simple"></i> แก้ไข</button>
-                            <button onclick="if(confirm('ต้องการลบสต็อกองค์นี้ออกจากระบบ?')) getColRef('amulet_stock').doc('${s.id}').delete()" class="flex-1 bg-rose-50 text-rose-600 font-bold py-2 rounded-xl text-xs hover:bg-rose-100 transition-colors"><i class="ph-bold ph-trash"></i> ลบ</button>
-                        </div>
-                    ` : ''}
-                </div>`;
-            }).join('');
-        }
-
-        function openAddStockModal() { openModal('addStockModal'); }
-        function closeAddStockModal() { closeModal('addStockModal'); document.getElementById('stockForm').reset(); }
-
-        async function uploadImage(file) {
-            const storageRef = firebase.storage().ref();
-            const fileRef = storageRef.child(`amulets/${Date.now()}_${file.name}`);
-            await fileRef.put(file);
-            return await fileRef.getDownloadURL();
-        }
-
-        async function handleManualStockSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitStock');
-            btn.disabled = true; btn.innerText = "กำลังอัปโหลดข้อมูลและรูปภาพ...";
-            try {
-                let imgUrl = "";
-                const fileInput = document.getElementById('stockImage');
-                if(fileInput.files.length > 0) imgUrl = await uploadImage(fileInput.files[0]);
-
-                await getColRef("amulet_stock").add({
-                    code: document.getElementById('stockCode').value.toUpperCase(), name: document.getElementById('stockName').value,
-                    category: document.getElementById('stockCategory').value, cost: Number(document.getElementById('stockCost').value),
-                    price: Number(document.getElementById('stockPrice').value), status: 'IN_STOCK', imageUrl: imgUrl, 
-                    date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                closeAddStockModal(); 
-                showCustomAlert("เพิ่มสต็อกสำเร็จ", "พระเครื่ององค์ใหม่ขึ้นโชว์ในตู้เรียบร้อย", "success");
-            } catch (err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
-            finally { btn.disabled = false; btn.innerText = "บันทึกเข้าตู้พระ"; }
-        }
-
-        function openEditStockModal(id, code, name, category, cost, price, imageUrl) {
-            document.getElementById('editStockId').value = id; document.getElementById('editStockOldImage').value = imageUrl;
-            document.getElementById('editStockCode').value = code; document.getElementById('editStockName').value = name;
-            document.getElementById('editStockCategory').value = category; document.getElementById('editStockCost').value = cost.toLocaleString() + ' ฿';
-            document.getElementById('editStockPrice').value = price.toLocaleString() + ' ฿';
-            openModal('editStockModal');
-        }
-        function closeEditStockModal() { closeModal('editStockModal'); document.getElementById('editStockForm').reset(); }
-
-        async function handleEditStockSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitEditStock'); btn.disabled = true; btn.innerText = "กำลังอัปโหลดการแก้ไข...";
-            try {
-                const id = document.getElementById('editStockId').value;
-                let imgUrl = document.getElementById('editStockOldImage').value;
-                const fileInput = document.getElementById('editStockImage');
-                if(fileInput.files.length > 0) imgUrl = await uploadImage(fileInput.files[0]);
-
-                await getColRef("amulet_stock").doc(id).update({ name: document.getElementById('editStockName').value, category: document.getElementById('editStockCategory').value, imageUrl: imgUrl });
-                closeEditStockModal(); showCustomAlert("แก้ไขสำเร็จ", "อัปเดตข้อมูลพระเครื่องในตู้เรียบร้อย", "success");
-            } catch (err) { showCustomAlert("ข้อผิดพลาด", err.message, "error"); } 
-            finally { btn.disabled = false; btn.innerText = "บันทึกการแก้ไข"; }
-        }
-
-        function openSellStockModal(id, name, cost, price) {
-            document.getElementById('sellStockId').value = id; document.getElementById('sellStockCost').value = cost;
-            document.getElementById('sellStockName').innerText = name; document.getElementById('sellStockAmount').value = price;
-            selectSellStockWallet('TRANSFER'); openModal('sellStockModal');
-        }
-        function closeSellStockModal() { closeModal('sellStockModal'); }
-        function selectSellStockWallet(t) {
-            currentSellStockWallet = t;
-            document.getElementById('btnSellStockTransfer').className = t === 'TRANSFER' ? 'py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
-            document.getElementById('btnSellStockCash').className = t === 'CASH' ? 'py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
-        }
-
-        async function handleSellStockSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitSellStock'); btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
-            try {
-                const id = document.getElementById('sellStockId').value; const amt = Number(document.getElementById('sellStockAmount').value);
-                const cost = Number(document.getElementById('sellStockCost').value); const name = document.getElementById('sellStockName').innerText;
-                const batch = db.batch();
-                batch.set(getColRef("transactions").doc(), { description: "ปล่อยเช่า: " + name, category: 'SELL', amount: amt, cost: cost, wallet: currentSellStockWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                batch.update(getColRef("amulet_stock").doc(id), { status: 'SOLD', soldDate: selectedDate, soldTime: new Date().toLocaleTimeString('th-TH'), sellAmount: amt, sellWallet: currentSellStockWallet });
-                await batch.commit();
-                closeSellStockModal(); showCustomAlert("ปล่อยเช่าสำเร็จ!", `ระบบตัดสต็อกและบันทึกรายรับลงบัญชีอัตโนมัติแล้ว`, "success");
-            } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
-            finally { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-check"></i> ยืนยันการปล่อยเช่า'; }
-        }
-
-        // =====================================
-        // 4. CLOUD DIRECTORY
-        // =====================================
-        function seedDirectory() {
-            const batch = db.batch();
-            [{c:"พระสมเด็จยอดนิยม", i:["สมเด็จวัดระฆัง พิมพ์ใหญ่", "สมเด็จบางขุนพรหม พิมพ์ทรงเจดีย์"]}, {c:"เหรียญคณาจารย์ยอดนิยม", i:["เหรียญหลวงพ่อรวย รุ่นชนะจน", "เหรียญหลวงปู่โต๊ะ รุ่นแรก"]}].forEach(cat => { cat.i.forEach(name => { batch.set(getColRef("amulet_directory").doc(), { category: cat.c, name: name }); }); });
-            batch.commit();
-        }
-
-        function renderDirectory(search = "") {
-            const q = search.toLowerCase();
-            const btnManage = document.getElementById('btnManageDirectory');
-            if(isOwner) btnManage.classList.remove('hidden'); else btnManage.classList.add('hidden');
-
-            const filtered = allDirectory.filter(d => (d.name||"").toLowerCase().includes(q) || (d.category||"").toLowerCase().includes(q));
-            const groups = {}; filtered.forEach(d => { if(!groups[d.category]) groups[d.category]=[]; groups[d.category].push(d); });
-            
-            const cont = document.getElementById('directoryContent');
-            if(Object.keys(groups).length === 0) return cont.innerHTML = `<div class="text-center py-10 text-slate-400">ไม่พบข้อมูลพิมพ์พระทรงในทำเนียบ</div>`;
-
-            cont.innerHTML = Object.keys(groups).map(cat => `
-                <div class="space-y-2">
-                    <h4 class="font-bold text-sm text-gold-dark bg-yellow-50 px-3 py-1.5 rounded-lg flex items-center"><i class="ph ph-folder-open mr-2"></i> ${cat}</h4>
-                    <div class="grid grid-cols-1 gap-2">
-                        ${groups[cat].map(item => `
-                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center group">
-                                <span class="text-sm font-semibold text-slate-700">${item.name}</span>
-                                <div class="flex gap-2">
-                                    ${isOwner ? `<button onclick="editDirItem('${item.id}', '${item.category}', '${item.name}')" class="text-slate-400 hover:text-amber-600 p-1.5"><i class="ph-bold ph-pencil-simple text-base"></i></button>
-                                                 <button onclick="if(confirm('ต้องการลบพิมพ์พระนี้ออกจากทำเนียบ?')) getColRef('amulet_directory').doc('${item.id}').delete()" class="text-slate-400 hover:text-rose-600 p-1.5"><i class="ph-bold ph-trash text-base"></i></button>` : ''}
-                                    ${pickMode ? `<button onclick="selectDirItem('${item.name}')" class="bg-white border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gold-main hover:text-white transition-all shadow-sm">เลือกพิมพ์นี้</button>` : ''}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function openDirectoryForPicking() { pickMode = true; document.getElementById('directorySearch').value=""; renderDirectory(); closeAddModal(); openModal('directoryModal'); }
-        function openDirectoryModal() { pickMode = false; document.getElementById('directorySearch').value=""; renderDirectory(); openModal('directoryModal'); }
-        function closeDirectoryModal() { closeModal('directoryModal'); }
-        function selectDirItem(name) { document.getElementById('formDesc').value = name; closeDirectoryModal(); openAddModal(); }
-        
-        function openAddDirModal() { document.getElementById('dirEditId').value=""; document.getElementById('dirCategory').value=""; document.getElementById('dirName').value=""; document.getElementById('dirModalTitle').innerText="เพิ่มพิมพ์พระลงทำเนียบ"; openModal('addDirModal'); }
-        function closeAddDirModal() { closeModal('addDirModal'); }
-        function editDirItem(id, cat, name) { document.getElementById('dirEditId').value=id; document.getElementById('dirCategory').value=cat; document.getElementById('dirName').value=name; document.getElementById('dirModalTitle').innerText="แก้ไขพิมพ์พระ"; openModal('addDirModal'); }
-        function handleDirSubmit(e) {
-            e.preventDefault();
-            const id = document.getElementById('dirEditId').value; const data = { category: document.getElementById('dirCategory').value, name: document.getElementById('dirName').value };
-            if(id) getColRef("amulet_directory").doc(id).update(data).then(closeAddDirModal); else getColRef("amulet_directory").add(data).then(closeAddDirModal);
-        }
-
-        // =====================================
-        // 5. BOOK RESERVATION SYSTEM
-        // =====================================
-        function renderBooks() {
-            const q = (document.getElementById('bookSearch').value || "").toLowerCase();
-            let tQty = 0, pQty = 0, paidQty = 0;
-            
-            const filtered = allBooks.filter(b => {
-                const match = (b.customerName||"").toLowerCase().includes(q) || (b.phone||"").toLowerCase().includes(q);
-                if (match) {
-                    tQty += b.qty;
-                    if (b.status === 'PENDING') pQty += b.qty; else paidQty += b.qty;
+                        <div class="bg-slate-100 p-2 rounded-lg border border-slate-200 col-span-2 flex justify-between items-center"><span class="text-slate-500 font-medium">จบการขายที่</span><span class="font-bold text-slate-800 text-sm">${(s.sellPrice||0).toLocaleString()} ฿</span></div>
+                        ${isOwner ? `<div class="bg-rose-50 p-2 rounded-lg col-span-2 flex justify-between items-center"><span class="text-rose-400 font-medium">ราคาทุน</span><span class="font-bold text-rose-600">${s.cost.toLocaleString()} ฿</span></div>` : ''}
+                    </div>`;
+                } else {
+                    const remaining = s.sellPrice ? (s.sellPrice - (s.paidAmount||0)) : s.price;
+                    priceHtml = `
+                    <div class="mt-auto grid grid-cols-2 gap-2 text-xs">
+                        ${stat === 'AVAILABLE' ? 
+                            `<div class="bg-slate-50 p-2 rounded-lg col-span-2 border border-slate-100"><p class="text-slate-400 mb-0.5">ราคาเปิดเช่า</p><p class="font-bold text-emerald-600 text-sm">${s.price.toLocaleString()} ฿</p></div>` 
+                            : 
+                            `<div class="bg-slate-50 p-2 rounded-lg border border-slate-100"><p class="text-slate-400 mb-0.5">ยอดตกลงเช่า</p><p class="font-bold text-slate-800 text-sm">${(s.sellPrice||0).toLocaleString()} ฿</p></div>
+                             <div class="bg-rose-50 p-2 rounded-lg border border-rose-100"><p class="text-rose-500 mb-0.5">ค้างชำระ</p><p class="font-bold text-rose-600 text-sm">${remaining.toLocaleString()} ฿</p></div>`
+                        }
+                    </div>`;
                 }
-                return match;
+
+                return `<div onclick="openAmuletDetails('${s.id}')" class="bg-white/95 rounded-2xl p-4 shadow-sm border ${sDef.color} relative overflow-hidden flex flex-col cursor-pointer hover:shadow-md transition-all group">
+                    <div class="absolute top-3 right-3 ${sDef.badge} text-[10px] font-bold px-2 py-1 rounded shadow-md z-10">${sDef.text}</div>
+                    ${imgHtml}
+                    <div class="flex items-center gap-2 mb-1.5"><span class="bg-slate-100 text-slate-600 font-bold px-2 py-0.5 rounded text-xs border">${s.code}</span><span class="text-xs text-slate-500 truncate">${s.category}</span></div>
+                    <h4 class="font-bold text-slate-800 mb-3 line-clamp-2 leading-snug group-hover:text-amber-700 transition-colors">${s.name}</h4>
+                    ${priceHtml}
+                    ${stat !== 'SOLD' ? `<button class="w-full mt-3 bg-amber-50 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-xs flex justify-center items-center gap-1"><i class="ph-bold ph-folder-open"></i> ดูประวัติ / ทำรายการ</button>` : `<button class="w-full mt-3 bg-slate-100 text-slate-500 font-bold py-2 rounded-xl text-xs">ดูประวัติการขาย</button>`}
+                </div>`;
+            }).join('');
+        }
+
+        // --- AMULET DETAIL MODAL LOGIC ---
+        function openAmuletDetails(id) {
+            currentDetailAmulet = allStock.find(s => s.id === id);
+            if(!currentDetailAmulet) return;
+
+            let stat = currentDetailAmulet.status || 'AVAILABLE';
+            if(stat === 'IN_STOCK') stat = 'AVAILABLE';
+            const sDef = AMULET_STATUS[stat];
+
+            // Render Header
+            document.getElementById('detailImage').src = currentDetailAmulet.imageUrl || '';
+            document.getElementById('detailCode').innerText = currentDetailAmulet.code;
+            document.getElementById('detailName').innerText = currentDetailAmulet.name;
+            document.getElementById('detailCategory').innerText = currentDetailAmulet.category;
+            
+            const badge = document.getElementById('detailBadge');
+            badge.innerText = sDef.text; badge.className = `text-[10px] md:text-xs font-bold px-2 py-0.5 rounded shadow-sm border ${sDef.badge}`;
+
+            // Render Info Numbers
+            const sellPrice = currentDetailAmulet.sellPrice || currentDetailAmulet.price || 0;
+            const paid = currentDetailAmulet.paidAmount || 0;
+            const remain = stat === 'SOLD' ? 0 : (sellPrice - paid);
+            
+            document.getElementById('detailSellPrice').innerText = sellPrice.toLocaleString() + ' ฿';
+            document.getElementById('detailPaidAmount').innerText = paid.toLocaleString() + ' ฿';
+            document.getElementById('detailRemaining').innerText = remain.toLocaleString() + ' ฿';
+
+            if(isOwner) {
+                document.getElementById('ownerInfoBox').classList.remove('hidden');
+                document.getElementById('detailCost').innerText = (currentDetailAmulet.cost||0).toLocaleString() + ' ฿';
+                document.getElementById('detailEstProfit').innerText = (sellPrice - (currentDetailAmulet.cost||0)).toLocaleString() + ' ฿';
+            } else {
+                document.getElementById('ownerInfoBox').classList.add('hidden');
+            }
+
+            // Setup Action Form
+            const formContainer = document.getElementById('actionFormContainer');
+            if (stat === 'SOLD') {
+                formContainer.classList.add('hidden'); // Hide form if sold
+            } else {
+                formContainer.classList.remove('hidden');
+                document.getElementById('actAmuletId').value = id;
+                document.getElementById('actPayAmount').value = remain > 0 ? remain : '';
+                document.getElementById('actPayAmount').max = remain > 0 ? remain : '';
+                
+                const firstTimeBox = document.getElementById('firstTimeFields');
+                const typeSelect = document.getElementById('actPaymentType');
+                
+                if (stat === 'AVAILABLE') {
+                    // First time selling/reserving
+                    firstTimeBox.classList.remove('hidden');
+                    document.getElementById('actCustomerName').required = true;
+                    document.getElementById('actAgreedPrice').required = true;
+                    document.getElementById('actAgreedPrice').value = currentDetailAmulet.price;
+                    typeSelect.innerHTML = `<option value="FULL" class="text-emerald-600 font-bold">จ่ายเต็มจำนวน (ปิดการขาย)</option><option value="DEPOSIT">วางมัดจำ / ติดจอง</option><option value="INSTALLMENT">ผ่อนชำระงวดแรก</option>`;
+                } else {
+                    // Ongoing payments
+                    firstTimeBox.classList.add('hidden');
+                    document.getElementById('actCustomerName').required = false;
+                    document.getElementById('actAgreedPrice').required = false;
+                    typeSelect.innerHTML = `<option value="FULL" class="text-emerald-600 font-bold">จ่ายส่วนที่เหลือ (ปิดการขาย)</option><option value="INSTALLMENT">ผ่อนชำระค่างวด</option>`;
+                }
+                selectActWallet('TRANSFER');
+                document.getElementById('amuletActionForm').reset(); // reset sets defaults, so we re-apply values above
+            }
+
+            switchAmuletTab('info');
+            renderAmuletTimeline(); // Load history
+            document.getElementById('amuletDetailModal').classList.remove('hidden');
+        }
+
+        function closeAmuletDetailModal() {
+            document.getElementById('amuletDetailModal').classList.add('hidden');
+            currentDetailAmulet = null;
+        }
+
+        function switchAmuletTab(tab) {
+            document.getElementById('amuletTabContent_info').classList.add('hidden');
+            document.getElementById('amuletTabContent_history').classList.add('hidden');
+            document.getElementById('tabAmulet_info').className = "flex-1 py-3 text-sm font-bold text-slate-500 border-b-2 border-transparent bg-slate-50 hover:text-slate-700 transition-colors";
+            document.getElementById('tabAmulet_history').className = "flex-1 py-3 text-sm font-bold text-slate-500 border-b-2 border-transparent bg-slate-50 hover:text-slate-700 transition-colors";
+            
+            document.getElementById(`amuletTabContent_${tab}`).classList.remove('hidden');
+            document.getElementById(`tabAmulet_${tab}`).className = "flex-1 py-3 text-sm font-bold text-amber-600 border-b-2 border-amber-500 bg-white transition-colors";
+        }
+
+        function selectActWallet(w) {
+            currentActWallet = w;
+            if(w==='TRANSFER'){ document.getElementById('btnActTransfer').className="py-2.5 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1 text-sm"; document.getElementById('btnActCash').className="py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1 text-sm"; }
+            else { document.getElementById('btnActCash').className="py-2.5 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1 text-sm"; document.getElementById('btnActTransfer').className="py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1 text-sm"; }
+        }
+
+        function toggleFullPayment() {
+            if(!currentDetailAmulet) return;
+            const type = document.getElementById('actPaymentType').value;
+            const inputAmount = document.getElementById('actPayAmount');
+            let remain = 0;
+            
+            let stat = currentDetailAmulet.status || 'AVAILABLE';
+            if(stat === 'IN_STOCK') stat = 'AVAILABLE';
+
+            if(stat === 'AVAILABLE') {
+                remain = Number(document.getElementById('actAgreedPrice').value) || currentDetailAmulet.price;
+            } else {
+                remain = currentDetailAmulet.sellPrice - (currentDetailAmulet.paidAmount || 0);
+            }
+
+            if(type === 'FULL') {
+                inputAmount.value = remain;
+                inputAmount.readOnly = true; // Lock input if FULL
+            } else {
+                inputAmount.readOnly = false;
+                if(Number(inputAmount.value) >= remain) inputAmount.value = ''; // Clear if it was full
+            }
+        }
+
+        async function handleAmuletPayment(e) {
+            e.preventDefault();
+            if(!currentDetailAmulet) return;
+            const btn = document.getElementById('btnSubmitAct'); btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
+
+            try {
+                const id = currentDetailAmulet.id;
+                const payAmount = Number(document.getElementById('actPayAmount').value);
+                const payType = document.getElementById('actPaymentType').value; // DEPOSIT, INSTALLMENT, FULL
+                
+                let stat = currentDetailAmulet.status || 'AVAILABLE';
+                if(stat === 'IN_STOCK') stat = 'AVAILABLE';
+                
+                let newStatus = stat;
+                let newSellPrice = currentDetailAmulet.sellPrice || 0;
+                let newPaidAmount = (currentDetailAmulet.paidAmount || 0) + payAmount;
+                let custName = currentDetailAmulet.customerName || "";
+
+                // 1. If it's the first time processing this amulet
+                if (stat === 'AVAILABLE') {
+                    newSellPrice = Number(document.getElementById('actAgreedPrice').value);
+                    custName = document.getElementById('actCustomerName').value;
+                    if(payType === 'FULL') newStatus = 'SOLD';
+                    else if(payType === 'DEPOSIT') newStatus = 'RESERVED';
+                    else if(payType === 'INSTALLMENT') newStatus = 'INSTALLMENT';
+                } else {
+                    // 2. Subsequent payments
+                    if(payType === 'FULL' || newPaidAmount >= newSellPrice) newStatus = 'SOLD';
+                    else newStatus = 'INSTALLMENT'; // Even if reserved, paying again makes it installment mode
+                }
+
+                // Security check
+                if(newPaidAmount > newSellPrice) throw new Error("ยอดเงินที่รับชำระ สูงกว่าราคาที่ตกลงเช่า กรุณาตรวจสอบ");
+
+                // Prepare Ledger Description
+                let ledgerDesc = "";
+                if(payType === 'FULL') ledgerDesc = `ปิดการขาย: ${currentDetailAmulet.code} (${custName})`;
+                else if(payType === 'DEPOSIT') ledgerDesc = `มัดจำ: ${currentDetailAmulet.code} (${custName})`;
+                else ledgerDesc = `รับค่างวด: ${currentDetailAmulet.code} (${custName})`;
+
+                // Calculate profit only when FULLY SOLD to log properly
+                // We will assign cost to ledger only on the LAST payment to easily calculate net profit in reports
+                let txCost = 0;
+                if (newStatus === 'SOLD' && stat !== 'SOLD') {
+                    txCost = currentDetailAmulet.cost; // Attach original cost to the final transaction
+                }
+
+                const batch = db.batch();
+                
+                // Add to general ledger transactions
+                batch.set(getColRef("transactions").doc(), { 
+                    description: ledgerDesc, 
+                    category: 'AMULET_PAYMENT', 
+                    amount: payAmount, 
+                    cost: txCost, // Cost applied only on final payment for profit calculation
+                    wallet: currentActWallet, 
+                    date: selectedDate, 
+                    amuletId: id, // Linking to specific amulet
+                    paymentType: payType,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+                });
+
+                // Update Amulet Stock Doc
+                let stockUpdateObj = { 
+                    status: newStatus, 
+                    paidAmount: newPaidAmount, 
+                    sellPrice: newSellPrice, 
+                    customerName: custName 
+                };
+                if(newStatus === 'SOLD' && stat !== 'SOLD') {
+                    stockUpdateObj.soldDate = selectedDate;
+                    stockUpdateObj.soldTime = new Date().toLocaleTimeString('th-TH');
+                }
+                batch.update(getColRef("amulet_stock").doc(id), stockUpdateObj);
+
+                await batch.commit();
+                
+                // Update local memory manually to reflect instantly before listener catches up
+                currentDetailAmulet = { ...currentDetailAmulet, ...stockUpdateObj };
+                
+                showCustomAlert("บันทึกสำเร็จ", `รับเงิน ${payAmount.toLocaleString()} บาท เรียบร้อย`, "success");
+                openAmuletDetails(id); // Re-render modal to show new data
+                
+            } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
+            finally { btn.disabled = false; btn.innerText = "บันทึกรับเงิน"; }
+        }
+
+        function renderAmuletTimeline() {
+            if(!currentDetailAmulet) return;
+            const container = document.getElementById('detailTimeline');
+            
+            // Find all transactions matching this amulet ID
+            const amTxs = allTransactions.filter(tx => tx.amuletId === currentDetailAmulet.id).sort((a,b) => {
+                const ta = a.timestamp ? a.timestamp.toMillis() : 0;
+                const tb = b.timestamp ? b.timestamp.toMillis() : 0;
+                return tb - ta; // Descending (newest first)
             });
-            
-            document.getElementById('bookTotalQty').innerText = `${tQty} เล่ม`;
-            document.getElementById('bookPendingQty').innerText = `${pQty} เล่ม`;
-            document.getElementById('bookPaidQty').innerText = `${paidQty} เล่ม`;
-            
-            const cont = document.getElementById('bookContainer');
-            if(!filtered.length) return cont.innerHTML = `<div class="text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการรับจอง</div>`;
-            
-            cont.innerHTML = filtered.map(b => {
-                return `<div class="bg-white/95 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-l-4 ${b.status==='PENDING' ? 'border-amber-400' : 'border-emerald-500'}">
-                    <div class="flex-1 w-full">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-sm">${b.queueNo}</span>
-                            <span class="text-xs text-slate-500"><i class="ph-bold ph-calendar-blank"></i> จอง ${b.date}</span>
+
+            if(amTxs.length === 0) {
+                container.innerHTML = `<div class="text-sm text-slate-400 py-4 text-center">ยังไม่มีประวัติการทำรายการ</div>`;
+                return;
+            }
+
+            container.innerHTML = amTxs.map(tx => {
+                const timeStr = tx.timestamp ? new Date(tx.timestamp.toDate()).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}) : '';
+                let icon = 'ph-hand-coins', color = 'bg-amber-100 text-amber-600', title = 'รับเงิน';
+                
+                if(tx.paymentType === 'DEPOSIT') { icon = 'ph-lock-key'; color = 'bg-amber-100 text-amber-600'; title = 'วางมัดจำ'; }
+                else if(tx.paymentType === 'INSTALLMENT') { icon = 'ph-calendar'; color = 'bg-blue-100 text-blue-600'; title = 'รับค่างวด'; }
+                else if(tx.paymentType === 'FULL') { icon = 'ph-check-circle'; color = 'bg-emerald-100 text-emerald-600'; title = 'รับเงินครบ (ปิดการขาย)'; }
+
+                return `
+                <div class="relative">
+                    <div class="absolute -left-[33px] md:-left-[41px] top-1 w-6 h-6 md:w-8 md:h-8 rounded-full ${color} flex items-center justify-center border-4 border-slate-50"><i class="ph-bold ${icon} text-sm md:text-base"></i></div>
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-slate-800 text-sm mb-0.5">${title}</p>
+                            <p class="text-[10px] text-slate-500">${tx.date} ${timeStr} | ${tx.wallet==='CASH'?'เงินสด':'โอน'}</p>
                         </div>
-                        <h4 class="font-bold text-slate-800 text-base md:text-lg">${b.customerName}</h4>
-                        <p class="text-xs md:text-sm text-slate-500 mb-2"><i class="ph-fill ph-phone-call"></i> ${b.phone}</p>
-                        
-                        <div class="flex flex-wrap items-center gap-2 text-xs md:text-sm font-semibold mt-2">
-                            <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg">จอง ${b.qty} เล่ม</span>
-                            ${b.status === 'PAID' 
-                                ? `<span class="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg"><i class="ph-bold ph-check-circle"></i> ชำระแล้ว ${b.paymentAmount} ฿ (${b.paymentWallet === 'CASH' ? 'เงินสด' : 'โอน'})</span> 
-                                   <span class="text-xs text-slate-400 ml-1">ชำระเมื่อ ${b.paidDate} ${b.paidTime}</span>` 
-                                : `<span class="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-lg"><i class="ph-bold ph-clock"></i> รอชำระเงิน</span>`
-                            }
-                        </div>
-                    </div>
-                    
-                    <div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0 justify-end md:justify-start">
-                        ${b.status === 'PENDING' ? `<button onclick="openPayBookModal('${b.id}', '${b.queueNo}', '${b.customerName}')" class="flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm transition-colors text-sm"><i class="ph-bold ph-wallet"></i> รับชำระเงิน</button>` : ''}
-                        ${isOwner ? `<button onclick="if(confirm('ต้องการลบรายการจองนี้?')) getColRef('book_orders').doc('${b.id}').delete()" class="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors bg-slate-50 rounded-xl"><i class="ph-bold ph-trash text-lg"></i></button>` : ''}
+                        <p class="font-bold text-emerald-600">+${tx.amount.toLocaleString()} ฿</p>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        function openAddBookModal() { openModal('addBookModal'); }
-        function closeAddBookModal() { closeModal('addBookModal'); document.getElementById('bookForm').reset(); }
-
-        function handleBookSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitBook'); btn.disabled = true; btn.innerText = "กำลังบันทึก...";
-            
-            const countInDate = allBooks.filter(b => b.date === selectedDate).length + 1;
-            const qStr = `B-${String(countInDate).padStart(3, '0')}`;
-            
-            getColRef("book_orders").add({
-                queueNo: qStr,
-                customerName: document.getElementById('bookCustomerName').value,
-                phone: document.getElementById('bookCustomerPhone').value,
-                qty: Number(document.getElementById('bookQty').value),
-                status: 'PENDING',
-                date: selectedDate,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                closeAddBookModal(); showCustomAlert("บันทึกการจองเรียบร้อย", `รหัสจอง ${qStr}`, "success");
-            }).catch(err => { showCustomAlert("ข้อผิดพลาด", err.message, "error");
-            }).finally(() => { btn.disabled = false; btn.innerText = "บันทึกข้อมูลการจอง"; });
+        function openContextAddModal() {
+            if(currentActiveTab === 'ledger') openAddModal();
+            else if(currentActiveTab === 'stock') openAddStockModal();
+            else if(currentActiveTab === 'books') openAddBookModal();
         }
 
-        function openPayBookModal(id, qNo, name) {
-            document.getElementById('payBookId').value = id;
-            document.getElementById('payBookTitle').value = `ค่าจองหนังสือ ${qNo} (${name})`;
-            document.getElementById('bookPaymentQueue').innerText = qNo;
-            selectBookWallet('TRANSFER'); 
-            openModal('payBookModal');
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function selectWallet(w) { 
+            currentWallet = w; 
+            document.getElementById('btnWalletTransfer').className = w === 'TRANSFER' ? 'py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
+            document.getElementById('btnWalletCash').className = w === 'CASH' ? 'py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
         }
-        function closePayBookModal() { closeModal('payBookModal'); document.getElementById('bookPayForm').reset(); }
+        function openAddModal() { selectWallet('TRANSFER'); openModal('addModal'); }
+        function closeAddModal() { closeModal('addModal'); document.getElementById('txForm').reset(); }
 
-        function selectBookWallet(t) {
-            currentBookWallet = t;
-            document.getElementById('btnBookPayTransfer').className = t === 'TRANSFER' ? 'py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
-            document.getElementById('btnBookPayCash').className = t === 'CASH' ? 'py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
-        }
-
-        async function handleBookPaymentSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitBookPay'); btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
-
-            try {
-                const amt = Number(document.getElementById('payBookAmount').value);
-                const batch = db.batch();
-                
-                batch.set(getColRef("transactions").doc(), { 
-                    description: document.getElementById('payBookTitle').value, 
-                    category: 'BOOK', 
-                    amount: amt, cost: 0, wallet: currentBookWallet, 
-                    date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() 
-                });
-                
-                const currentTime = new Date().toLocaleTimeString('th-TH');
-                batch.update(getColRef("book_orders").doc(document.getElementById('payBookId').value), { 
-                    status: 'PAID', 
-                    paidDate: selectedDate, 
-                    paidTime: currentTime, 
-                    paymentAmount: amt, 
-                    paymentWallet: currentBookWallet 
-                });
-                
-                await batch.commit();
-                closePayBookModal(); showCustomAlert("เสร็จสิ้น", `บันทึกรับเงินค่าจองหนังสือ ${amt} บาท เรียบร้อย`, "success");
-            } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
-            finally { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-check"></i> ยืนยันรับเงิน'; }
-        }
-
-        // =====================================
-        // UI & AUTH
-        // =====================================
-        function openPinModal(){ openModal('pinModal'); setTimeout(()=>document.getElementById('pinInput').focus(),100); }
-        function closePinModal(){ closeModal('pinModal'); document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden'); }
-        
-        /* ฟังก์ชันเปิด/ปิด รูปขยาย */
-        function openImageViewer(url) { document.getElementById('viewerImageSrc').src = url; openModal('imageViewerModal'); }
-        function closeImageViewer() { closeModal('imageViewerModal'); setTimeout(() => document.getElementById('viewerImageSrc').src = "", 200); }
-
-        function showCustomAlert(title, msg, type) {
-            document.getElementById('infoTitle').innerText = title; document.getElementById('infoDesc').innerText = msg;
-            const b = document.getElementById('infoIconBox');
-            if(type==="success"){ b.className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-check-circle text-3xl"></i>'; }
-            else if(type==="error"){ b.className="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-warning text-3xl"></i>'; }
-            else { b.className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-info text-3xl"></i>'; }
-            openModal('generalInfoModal');
-        }
-
-        function verifyPin() {
-            const btn = document.getElementById('btnVerify'); btn.disabled = true; btn.innerHTML = 'ตรวจสอบ...';
-            auth.signInWithEmailAndPassword(document.getElementById('ownerSelect').value, document.getElementById('pinInput').value)
-                .then(() => { isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock(); renderDirectory(); renderBooks(); })
-                .catch((e) => { 
-                    const errorDiv = document.getElementById('pinError');
-                    const errorText = document.getElementById('pinErrorText');
-                    errorDiv.classList.remove('hidden');
-                    if (e.code === 'auth/user-not-found') errorText.innerHTML = "❌ ยังไม่ได้สร้างบัญชีนี้ใน Firebase";
-                    else if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') errorText.innerText = "❌ รหัส PIN ไม่ถูกต้อง";
-                    else if (e.code === 'auth/operation-not-allowed') errorText.innerHTML = "❌ ระบบล็อกอินยังไม่ได้เปิดใช้งาน (ไปเปิดใน Firebase)";
-                    else errorText.innerText = `❌ Error: ${e.message}`;
-                    document.getElementById('pinInput').value=''; 
-                })
-                .finally(() => { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-key"></i> ปลดล็อก'; });
-        }
-
-        function updateUIRole() {
-            if (isOwner) {
-                document.getElementById('roleIcon').innerHTML = '<i class="ph-bold ph-seal-check text-yellow-300"></i>';
-                document.getElementById('roleText').innerText = `สิทธิ์: ${ownersList[auth.currentUser.email].split(' ')[0]}`;
-                document.getElementById('badgeRole').innerText = "โหมดเจ้าของร้าน";
-                document.getElementById('btnLockStatus').onclick = logoutRole;
-                document.getElementById('ownerDashboard').classList.remove('hidden');
-                document.getElementById('btnDownloadReport').classList.remove('hidden');
-            } else {
-                document.getElementById('roleIcon').innerHTML = '<i class="ph-bold ph-lock-key"></i>';
-                document.getElementById('roleText').innerText = "โหมดพนักงาน";
-                document.getElementById('badgeRole').innerText = "โหมดพนักงาน";
-                document.getElementById('btnLockStatus').onclick = openPinModal;
-                document.getElementById('ownerDashboard').classList.add('hidden');
-                document.getElementById('btnDownloadReport').classList.add('hidden');
-            }
-            renderStock(); renderDirectory();
-        }
-        function logoutRole() { auth.signOut().then(() => { isOwner = false; updateUIRole(); renderAll(); renderStock(); renderDirectory(); renderBooks(); }); }
-        function handleSearch(v) { searchQuery=v; renderAll(); }
     </script>
 </body>
 </html>
