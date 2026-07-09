@@ -533,6 +533,16 @@
         </div>
     </div>
 
+    <!-- IMAGE VIEWER MODAL (ป็อปอัพดูรูปขยาย) -->
+    <div id="imageViewerModal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[80] flex items-center justify-center p-4 hidden animate-in fade-in" onclick="closeImageViewer()">
+        <div class="relative max-w-5xl w-full flex justify-center items-center" onclick="event.stopPropagation()">
+            <button onclick="closeImageViewer()" class="absolute -top-12 right-0 md:-right-10 text-white/60 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-sm">
+                <i class="ph-bold ph-x text-2xl md:text-3xl"></i>
+            </button>
+            <img id="viewerImageSrc" src="" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-2 border-white/10" alt="ภาพขยายพระเครื่อง">
+        </div>
+    </div>
+
     <script>
         // =====================================
         // FIREBASE CONFIGURATION
@@ -892,7 +902,7 @@
             if(!filtered.length) return cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่องในตู้</div>`;
             
             cont.innerHTML = filtered.map(s => {
-                const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
+                const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" onclick="openImageViewer('${s.imageUrl}')" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 cursor-pointer hover:opacity-85 transition-all shadow-sm hover:shadow-md" title="คลิกเพื่อดูรูปขยาย">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
                 return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border border-amber-200/50 relative overflow-hidden flex flex-col">
                     <div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">อยู่ในตู้</div>
                     ${imgHtml}
@@ -1173,16 +1183,13 @@
         // =====================================
         // UI & AUTH
         // =====================================
-        function openAddModal(){ document.getElementById('addModal').classList.remove('hidden'); } 
-        function closeAddModal(){ document.getElementById('addModal').classList.add('hidden'); }
-        function openAddCertModal(){ document.getElementById('addCertModal').classList.remove('hidden'); } 
-        function closeAddCertModal(){ document.getElementById('addCertModal').classList.add('hidden'); }
-        function openAddStockModal(){ document.getElementById('addStockModal').classList.remove('hidden'); } 
-        function closeAddStockModal(){ document.getElementById('addStockModal').classList.add('hidden'); }
-
         function openPinModal(){ document.getElementById('pinModal').classList.remove('hidden'); setTimeout(()=>document.getElementById('pinInput').focus(),100); }
         function closePinModal(){ document.getElementById('pinModal').classList.add('hidden'); document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden'); }
         
+        /* ฟังก์ชันเปิด/ปิด รูปขยาย */
+        function openImageViewer(url) { document.getElementById('viewerImageSrc').src = url; document.getElementById('imageViewerModal').classList.remove('hidden'); }
+        function closeImageViewer() { document.getElementById('imageViewerModal').classList.add('hidden'); setTimeout(() => document.getElementById('viewerImageSrc').src = "", 200); }
+
         function showCustomAlert(title, msg, type) {
             document.getElementById('infoTitle').innerText = title; document.getElementById('infoDesc').innerText = msg;
             const b = document.getElementById('infoIconBox');
