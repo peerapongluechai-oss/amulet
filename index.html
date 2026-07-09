@@ -208,7 +208,7 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION (อัปเดตเหลือ 3 ปุ่มหลัก + 1 ปุ่มบวก) -->
+    <!-- BOTTOM NAVIGATION -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] z-40">
         <div class="max-w-md mx-auto grid grid-cols-3 h-16 md:h-20 relative px-6 md:px-12 items-center justify-items-center">
             <button id="navTab_ledger" onclick="switchTab('ledger')" class="flex flex-col items-center justify-center text-velvet-main transition-colors select-none group">
@@ -226,7 +226,6 @@
             </button>
         </div>
         
-        <!-- เมนูย่อย จองหนังสือ เอาไปไว้มุมขวาบนเล็กๆ หรือรวมใน + ก็ได้ แต่โจทย์บอกว่าเอาออกบัตรรับรองออก งั้นเอาหนังสือมาเป็นปุ่มที่ 4 -->
         <button id="navTab_books" onclick="switchTab('books')" class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center text-slate-400 hover:text-blue-600 transition-colors select-none group">
             <i class="ph-bold ph-book-bookmark text-xl md:text-2xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-[10px] font-bold">จองหนังสือ</span>
         </button>
@@ -688,7 +687,7 @@
                 if(stat === 'IN_STOCK') stat = 'AVAILABLE';
                 const sDef = AMULET_STATUS[stat];
                 
-                const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" onclick="event.stopPropagation(); openImageViewer(this.src)" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 hover:opacity-85 transition-opacity" title="คลิกเพื่อดูรูปขยาย">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
+                const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" onclick="event.stopPropagation(); openImageViewer(this.src)" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 hover:opacity-85 transition-opacity cursor-pointer" title="คลิกเพื่อดูรูปขยาย">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
                 
                 // If SOLD, show final sell price. Else, show asking price.
                 let priceHtml = '';
@@ -879,7 +878,6 @@
                 else ledgerDesc = `รับค่างวด: ${currentDetailAmulet.code} (${custName})`;
 
                 // Calculate profit only when FULLY SOLD to log properly
-                // We will assign cost to ledger only on the LAST payment to easily calculate net profit in reports
                 let txCost = 0;
                 if (newStatus === 'SOLD' && stat !== 'SOLD') {
                     txCost = currentDetailAmulet.cost; // Attach original cost to the final transaction
@@ -963,6 +961,396 @@
             }).join('');
         }
 
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitTx');
+            btn.disabled = true; btn.innerText = "กำลังบันทึกข้อมูล...";
+
+            try {
+                const txCategory = document.getElementById('formCategory').value;
+                const desc = document.getElementById('formDesc').value;
+                const amount = Number(document.getElementById('formAmount').value);
+                const cost = Number(document.getElementById('formCost').value);
+
+                const batch = db.batch();
+                const txRef = getColRef("transactions").doc();
+                
+                batch.set(txRef, {
+                    description: desc, category: txCategory, amount: amount, cost: cost,
+                    wallet: currentWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                if(txCategory === 'BUY') {
+                    const dirItem = allDirectory.find(d => d.name === desc);
+                    const stockCategory = dirItem ? dirItem.category : 'พระทั่วไป';
+                    let prefix = stockCategory.substring(0, 4);
+                    if(stockCategory.includes('สมเด็จ')) prefix = 'สมเด็จ';
+                    else if(stockCategory.includes('ปิดตา')) prefix = 'ปิดตา';
+                    else if(stockCategory.includes('เหรียญ')) prefix = 'เหรียญ';
+                    else if(stockCategory.includes('กรุ')) prefix = 'กรุ';
+                    else if(stockCategory.includes('รูปหล่อ')) prefix = 'รูปหล่อ';
+                    
+                    const countInCategory = allStock.filter(s => s.category === stockCategory).length + 1;
+                    const autoCode = `${prefix}-${String(countInCategory).padStart(3, '0')}`;
+                    
+                    const stockRef = getColRef("amulet_stock").doc();
+                    batch.set(stockRef, {
+                        code: autoCode, name: desc, category: stockCategory,
+                        cost: amount, price: amount > 0 ? amount * 1.5 : 0, status: 'IN_STOCK', imageUrl: "",
+                        date: selectedDate, // เพิ่มบันทึกวันที่นำเข้าเพื่อง่ายต่อการทำ Report
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                await batch.commit();
+                closeAddModal(); document.getElementById('txForm').reset();
+                const msg = txCategory === 'BUY' ? "ระบบลงบัญชีรายจ่าย และเพิ่มพระเข้าตู้อัตโนมัติพร้อมรันรหัสเรียบร้อยแล้ว" : "ระบบลงบัญชีเรียบร้อย";
+                showCustomAlert("บันทึกสำเร็จ", msg, "success");
+            } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
+            finally { btn.disabled = false; btn.innerText = "บันทึกข้อมูล"; }
+        }
+
+        async function uploadImage(file) {
+            const storageRef = firebase.storage().ref();
+            const fileRef = storageRef.child(`amulets/${Date.now()}_${file.name}`);
+            await fileRef.put(file);
+            return await fileRef.getDownloadURL();
+        }
+
+        async function handleManualStockSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitStock');
+            btn.disabled = true; btn.innerText = "กำลังอัปโหลดข้อมูลและรูปภาพ...";
+            try {
+                let imgUrl = "";
+                const fileInput = document.getElementById('stockImage');
+                if(fileInput.files.length > 0) imgUrl = await uploadImage(fileInput.files[0]);
+
+                await getColRef("amulet_stock").add({
+                    code: document.getElementById('stockCode').value.toUpperCase(), name: document.getElementById('stockName').value,
+                    category: document.getElementById('stockCategory').value, cost: Number(document.getElementById('stockCost').value),
+                    price: Number(document.getElementById('stockPrice').value), status: 'IN_STOCK', imageUrl: imgUrl, 
+                    date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                closeAddStockModal(); document.getElementById('stockForm').reset();
+                showCustomAlert("เพิ่มสต็อกสำเร็จ", "พระเครื่ององค์ใหม่ขึ้นโชว์ในตู้เรียบร้อย", "success");
+            } catch (err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
+            finally { btn.disabled = false; btn.innerText = "บันทึกเข้าตู้พระ"; }
+        }
+
+        // =====================================
+        // 5. CLOUD DIRECTORY
+        // =====================================
+        function seedDirectory() {
+            const batch = db.batch();
+            [{c:"พระสมเด็จยอดนิยม", i:["สมเด็จวัดระฆัง พิมพ์ใหญ่", "สมเด็จบางขุนพรหม พิมพ์ทรงเจดีย์"]}, {c:"เหรียญคณาจารย์ยอดนิยม", i:["เหรียญหลวงพ่อรวย รุ่นชนะจน", "เหรียญหลวงปู่โต๊ะ รุ่นแรก"]}].forEach(cat => { cat.i.forEach(name => { batch.set(getColRef("amulet_directory").doc(), { category: cat.c, name: name }); }); });
+            batch.commit();
+        }
+
+        function renderDirectory(search = "") {
+            const q = search.toLowerCase();
+            const btnManage = document.getElementById('btnManageDirectory');
+            if(isOwner) btnManage.classList.remove('hidden'); else btnManage.classList.add('hidden');
+
+            const filtered = allDirectory.filter(d => (d.name||"").toLowerCase().includes(q) || (d.category||"").toLowerCase().includes(q));
+            const groups = {}; filtered.forEach(d => { if(!groups[d.category]) groups[d.category]=[]; groups[d.category].push(d); });
+            
+            const cont = document.getElementById('directoryContent');
+            if(Object.keys(groups).length === 0) return cont.innerHTML = `<div class="text-center py-10 text-slate-400">ไม่พบข้อมูลพิมพ์พระทรงในทำเนียบ</div>`;
+
+            cont.innerHTML = Object.keys(groups).map(cat => `
+                <div class="space-y-2">
+                    <h4 class="font-bold text-sm text-gold-dark bg-yellow-50 px-3 py-1.5 rounded-lg flex items-center"><i class="ph ph-folder-open mr-2"></i> ${cat}</h4>
+                    <div class="grid grid-cols-1 gap-2">
+                        ${groups[cat].map(item => `
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex justify-between items-center group">
+                                <span class="text-sm font-semibold text-slate-700">${item.name}</span>
+                                <div class="flex gap-2">
+                                    ${isOwner ? `<button onclick="editDirItem('${item.id}', '${item.category}', '${item.name}')" class="text-slate-400 hover:text-amber-600 p-1.5"><i class="ph-bold ph-pencil-simple text-base"></i></button>
+                                                 <button onclick="if(confirm('ต้องการลบพิมพ์พระนี้ออกจากทำเนียบ?')) getColRef('amulet_directory').doc('${item.id}').delete()" class="text-slate-400 hover:text-rose-600 p-1.5"><i class="ph-bold ph-trash text-base"></i></button>` : ''}
+                                    ${pickMode ? `<button onclick="selectDirItem('${item.name}')" class="bg-white border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gold-main hover:text-white transition-all shadow-sm">เลือกพิมพ์นี้</button>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openDirectoryForPicking() { pickMode = true; document.getElementById('directorySearch').value=""; renderDirectory(); closeAddModal(); document.getElementById('directoryModal').classList.remove('hidden'); }
+        function openDirectoryModal() { pickMode = false; document.getElementById('directorySearch').value=""; renderDirectory(); document.getElementById('directoryModal').classList.remove('hidden'); }
+        function closeDirectoryModal() { document.getElementById('directoryModal').classList.add('hidden'); }
+        function selectDirItem(name) { document.getElementById('formDesc').value = name; closeDirectoryModal(); openAddModal(); }
+        
+        function openAddDirModal() { document.getElementById('dirEditId').value=""; document.getElementById('dirCategory').value=""; document.getElementById('dirName').value=""; document.getElementById('dirModalTitle').innerText="เพิ่มพิมพ์พระลงทำเนียบ"; document.getElementById('addDirModal').classList.remove('hidden'); }
+        function closeAddDirModal() { document.getElementById('addDirModal').classList.add('hidden'); }
+        function editDirItem(id, cat, name) { document.getElementById('dirEditId').value=id; document.getElementById('dirCategory').value=cat; document.getElementById('dirName').value=name; document.getElementById('dirModalTitle').innerText="แก้ไขพิมพ์พระ"; document.getElementById('addDirModal').classList.remove('hidden'); }
+        function handleDirSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('dirEditId').value; const data = { category: document.getElementById('dirCategory').value, name: document.getElementById('dirName').value };
+            if(id) getColRef("amulet_directory").doc(id).update(data).then(closeAddDirModal); else getColRef("amulet_directory").add(data).then(closeAddDirModal);
+        }
+
+        function exportAdvancedCSV() {
+            const start = document.getElementById('reportStartDate').value;
+            const end = document.getElementById('reportEndDate').value;
+            
+            if(!start || !end) return showCustomAlert("แจ้งเตือน", "กรุณาเลือกช่วงเวลาให้ครบถ้วน", "info");
+            if(start > end) return showCustomAlert("แจ้งเตือน", "วันที่เริ่มต้น ต้องไม่มากกว่าวันที่สิ้นสุด", "error");
+
+            let csv = "data:text/csv;charset=utf-8,\uFEFF"; // รองรับภาษาไทย
+
+            // === หมวดที่ 1: สรุปบัญชีรับ-จ่าย ทั่วไป ===
+            csv += "=== 1. สรุปรายงานบัญชีรับ-จ่าย (Transactions) ===\n";
+            csv += "วันที่,เวลา,รายการ,หมวดหมู่,ช่องทาง,ประเภท,จำนวนเงิน (บาท),ราคาทุน (บาท),กำไร (บาท)\n";
+            const txInRange = allTransactions.filter(tx => tx.date >= start && tx.date <= end);
+            let sumIncome=0, sumExpense=0, sumProfit=0;
+            
+            txInRange.forEach(tx => {
+                const isIncome = ['SELL','OTHER_INCOME','BOOK', 'AMULET_PAYMENT'].includes(tx.category);
+                const type = isIncome ? "รายรับ" : "รายจ่าย";
+                const time = tx.timestamp ? new Date(tx.timestamp.toDate()).toLocaleTimeString('th-TH') : "";
+                const safeDesc = tx.description ? tx.description.replace(/"/g, '""') : "";
+                const profit = isIncome && (tx.category === 'SELL' || tx.category === 'AMULET_PAYMENT') ? tx.amount - (tx.cost||0) : 0;
+                
+                if(isIncome) { sumIncome += tx.amount; sumProfit += profit; } else sumExpense += tx.amount;
+                csv += `${tx.date},${time},"${safeDesc}",${tx.category},${tx.wallet},${type},${tx.amount},${tx.cost||0},${profit}\n`;
+            });
+            csv += `,,,,รวมรายรับ,${sumIncome},รวมรายจ่าย,${sumExpense},กำไรรวม,${sumProfit}\n\n`;
+
+            // === หมวดที่ 3: สต็อกและการปล่อยเช่า ===
+            csv += "=== 2. สรุปรายงานสต็อกและการปล่อยเช่า (Amulet Stock) ===\n";
+            csv += "รหัส,หมวดหมู่,ชื่อพระ,วันที่เช่าเข้า (ซื้อ),เวลาที่รับเข้า,ราคาทุน (บาท),วันที่ปล่อยเช่า (ขาย),เวลาที่ปล่อย,ช่องทางรับเงิน,ยอดปล่อยเช่า (บาท),กำไร (บาท),สถานะ\n";
+            const stockInRange = allStock.filter(s => {
+                const createDate = s.date || (s.timestamp ? new Date(s.timestamp.toDate()).toISOString().split('T')[0] : "");
+                const soldDate = s.soldDate || "";
+                return (createDate >= start && createDate <= end) || (soldDate >= start && soldDate <= end);
+            });
+            stockInRange.forEach(s => {
+                const safeName = s.name ? s.name.replace(/"/g, '""') : "";
+                const createDate = s.date || (s.timestamp ? new Date(s.timestamp.toDate()).toISOString().split('T')[0] : "");
+                const createTime = s.timestamp ? new Date(s.timestamp.toDate()).toLocaleTimeString('th-TH') : "";
+                const soldDate = s.soldDate || "-";
+                const soldTime = s.soldTime || "-";
+                const statusStr = s.status === 'SOLD' ? 'ปล่อยเช่าแล้ว' : (s.status === 'AVAILABLE' ? 'พร้อมเช่า' : (s.status === 'RESERVED' ? 'มัดจำ/ติดจอง' : 'ผ่อนชำระ'));
+                const sellAmt = s.sellPrice || 0; // ใน V6 ใช้ sellPrice เป็นยอดที่ตกลงเช่า
+                const profit = s.status === 'SOLD' ? (sellAmt - s.cost) : 0;
+                const wallet = "-"; // ใน V6 wallet อยู่ที่ตัว transaction ย่อย
+                csv += `${s.code},"${s.category}","${safeName}",${createDate},${createTime},${s.cost},${soldDate},${soldTime},${wallet},${sellAmt},${profit},${statusStr}\n`;
+            });
+            csv += "\n";
+
+            // === หมวดที่ 4: การจองหนังสือ ===
+            csv += "=== 3. สรุปรายงานการจองหนังสือ (Book Reservations) ===\n";
+            csv += "รหัสจอง,ชื่อผู้จอง,เบอร์โทร,จำนวน (เล่ม),วันที่จอง,สถานะ,ช่องทางชำระเงิน,ยอดชำระ (บาท),วันที่ชำระ,เวลาที่ชำระ\n";
+            const booksInRange = allBooks.filter(b => (b.date >= start && b.date <= end) || (b.paidDate && b.paidDate >= start && b.paidDate <= end));
+            
+            let totalBookQty = 0; let totalBookIncome = 0;
+            booksInRange.forEach(b => {
+                const safeName = b.customerName ? b.customerName.replace(/"/g, '""') : "";
+                const statusStr = b.status === 'PAID' ? 'ชำระเงินแล้ว' : 'รอชำระเงิน';
+                const wallet = b.paymentWallet === 'CASH' ? 'เงินสด' : (b.paymentWallet === 'TRANSFER' ? 'เงินโอน' : '-');
+                const amt = b.paymentAmount || 0;
+                const pDate = b.paidDate || "-";
+                const pTime = b.paidTime || "-";
+                
+                totalBookQty += b.qty;
+                if(b.status === 'PAID') totalBookIncome += amt;
+                
+                csv += `${b.queueNo},"${safeName}",'${b.phone},${b.qty},${b.date},${statusStr},${wallet},${amt},${pDate},${pTime}\n`;
+            });
+            csv += `,,,รวมยอดจอง,${totalBookQty} เล่ม,,,,รวมรับเงิน,${totalBookIncome} บาท\n`;
+
+            // ดาวน์โหลดไฟล์
+            const encodedUri = encodeURI(csv);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Supsiam_Report_${start}_to_${end}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            closeReportModal();
+        }
+
+        // =====================================
+        // 6. BOOK RESERVATION SYSTEM
+        // =====================================
+        function renderBooks() {
+            const q = (document.getElementById('bookSearch').value || "").toLowerCase();
+            let tQty = 0, pQty = 0, paidQty = 0;
+            
+            const filtered = allBooks.filter(b => {
+                const match = (b.customerName||"").toLowerCase().includes(q) || (b.phone||"").toLowerCase().includes(q);
+                if (match) {
+                    tQty += b.qty;
+                    if (b.status === 'PENDING') pQty += b.qty; else paidQty += b.qty;
+                }
+                return match;
+            });
+            
+            document.getElementById('bookTotalQty').innerText = `${tQty} เล่ม`;
+            document.getElementById('bookPendingQty').innerText = `${pQty} เล่ม`;
+            document.getElementById('bookPaidQty').innerText = `${paidQty} เล่ม`;
+            
+            const cont = document.getElementById('bookContainer');
+            if(!filtered.length) return cont.innerHTML = `<div class="text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการรับจอง</div>`;
+            
+            cont.innerHTML = filtered.map(b => {
+                return `<div class="bg-white/95 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-l-4 ${b.status==='PENDING' ? 'border-amber-400' : 'border-emerald-500'}">
+                    <div class="flex-1 w-full">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-sm">${b.queueNo}</span>
+                            <span class="text-xs text-slate-500"><i class="ph-bold ph-calendar-blank"></i> จอง ${b.date}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-base md:text-lg">${b.customerName}</h4>
+                        <p class="text-xs md:text-sm text-slate-500 mb-2"><i class="ph-fill ph-phone-call"></i> ${b.phone}</p>
+                        
+                        <div class="flex flex-wrap items-center gap-2 text-xs md:text-sm font-semibold mt-2">
+                            <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg">จอง ${b.qty} เล่ม</span>
+                            ${b.status === 'PAID' 
+                                ? `<span class="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg"><i class="ph-bold ph-check-circle"></i> ชำระแล้ว ${b.paymentAmount} ฿ (${b.paymentWallet === 'CASH' ? 'เงินสด' : 'โอน'})</span> 
+                                   <span class="text-xs text-slate-400 ml-1">ชำระเมื่อ ${b.paidDate} ${b.paidTime}</span>` 
+                                : `<span class="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-lg"><i class="ph-bold ph-clock"></i> รอชำระเงิน</span>`
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0 justify-end md:justify-start">
+                        ${b.status === 'PENDING' ? `<button onclick="openPayBookModal('${b.id}', '${b.queueNo}', '${b.customerName}')" class="flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm transition-colors text-sm"><i class="ph-bold ph-wallet"></i> รับชำระเงิน</button>` : ''}
+                        ${isOwner ? `<button onclick="if(confirm('ต้องการลบรายการจองนี้?')) getColRef('book_orders').doc('${b.id}').delete()" class="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors bg-slate-50 rounded-xl"><i class="ph-bold ph-trash text-lg"></i></button>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function openAddBookModal() { document.getElementById('addBookModal').classList.remove('hidden'); }
+        function closeAddBookModal() { document.getElementById('addBookModal').classList.add('hidden'); document.getElementById('bookForm').reset(); }
+
+        function handleBookSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitBook'); btn.disabled = true; btn.innerText = "กำลังบันทึก...";
+            
+            const countInDate = allBooks.filter(b => b.date === selectedDate).length + 1;
+            const qStr = `B-${String(countInDate).padStart(3, '0')}`;
+            
+            getColRef("book_orders").add({
+                queueNo: qStr,
+                customerName: document.getElementById('bookCustomerName').value,
+                phone: document.getElementById('bookCustomerPhone').value,
+                qty: Number(document.getElementById('bookQty').value),
+                status: 'PENDING',
+                date: selectedDate,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                closeAddBookModal(); showCustomAlert("บันทึกการจองเรียบร้อย", `รหัสจอง ${qStr}`, "success");
+            }).catch(err => { showCustomAlert("ข้อผิดพลาด", err.message, "error");
+            }).finally(() => { btn.disabled = false; btn.innerText = "บันทึกข้อมูลการจอง"; });
+        }
+
+        function openPayBookModal(id, qNo, name) {
+            document.getElementById('payBookId').value = id;
+            document.getElementById('payBookTitle').value = `ค่าจองหนังสือ ${qNo} (${name})`;
+            document.getElementById('bookPaymentQueue').innerText = qNo;
+            selectBookWallet('TRANSFER'); 
+            document.getElementById('payBookModal').classList.remove('hidden');
+        }
+        function closePayBookModal() { document.getElementById('payBookModal').classList.add('hidden'); document.getElementById('bookPayForm').reset(); }
+
+        function selectBookWallet(t) {
+            currentBookWallet = t;
+            if(t==='TRANSFER'){ document.getElementById('btnBookPayTransfer').className="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnBookPayCash').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
+            else { document.getElementById('btnBookPayCash').className="py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnBookPayTransfer').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
+        }
+
+        async function handleBookPaymentSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitBookPay'); btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
+
+            try {
+                const amt = Number(document.getElementById('payBookAmount').value);
+                const batch = db.batch();
+                
+                batch.set(getColRef("transactions").doc(), { 
+                    description: document.getElementById('payBookTitle').value, 
+                    category: 'BOOK', 
+                    amount: amt, cost: 0, wallet: currentBookWallet, 
+                    date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+                });
+                
+                const currentTime = new Date().toLocaleTimeString('th-TH');
+                batch.update(getColRef("book_orders").doc(document.getElementById('payBookId').value), { 
+                    status: 'PAID', 
+                    paidDate: selectedDate, 
+                    paidTime: currentTime, 
+                    paymentAmount: amt, 
+                    paymentWallet: currentBookWallet 
+                });
+                
+                await batch.commit();
+                closePayBookModal(); showCustomAlert("เสร็จสิ้น", `บันทึกรับเงินค่าจองหนังสือ ${amt} บาท เรียบร้อย`, "success");
+            } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
+            finally { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-check"></i> ยืนยันรับเงิน'; }
+        }
+
+        // =====================================
+        // UI & AUTH
+        // =====================================
+        function openPinModal(){ document.getElementById('pinModal').classList.remove('hidden'); setTimeout(()=>document.getElementById('pinInput').focus(),100); }
+        function closePinModal(){ document.getElementById('pinModal').classList.add('hidden'); document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden'); }
+        
+        function openReportModal() { document.getElementById('reportStartDate').value = selectedDate; document.getElementById('reportEndDate').value = selectedDate; document.getElementById('reportModal').classList.remove('hidden'); }
+        function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
+
+        /* ฟังก์ชันเปิด/ปิด รูปขยาย */
+        function openImageViewer(url) { document.getElementById('viewerImageSrc').src = url; document.getElementById('imageViewerModal').classList.remove('hidden'); }
+        function closeImageViewer() { document.getElementById('imageViewerModal').classList.add('hidden'); setTimeout(() => document.getElementById('viewerImageSrc').src = "", 200); }
+
+        function showCustomAlert(title, msg, type) {
+            document.getElementById('infoTitle').innerText = title; document.getElementById('infoDesc').innerText = msg;
+            const b = document.getElementById('infoIconBox');
+            if(type==="success"){ b.className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-check-circle text-3xl"></i>'; }
+            else if(type==="error"){ b.className="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-warning text-3xl"></i>'; }
+            else { b.className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-info text-3xl"></i>'; }
+            document.getElementById('generalInfoModal').classList.remove('hidden');
+        }
+
+        function verifyPin() {
+            const btn = document.getElementById('btnVerify'); btn.disabled = true; btn.innerHTML = 'ตรวจสอบ...';
+            auth.signInWithEmailAndPassword(document.getElementById('ownerSelect').value, document.getElementById('pinInput').value)
+                .then(() => { isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock(); renderDirectory(); renderBooks(); })
+                .catch((e) => { 
+                    const errorDiv = document.getElementById('pinError');
+                    const errorText = document.getElementById('pinErrorText');
+                    errorDiv.classList.remove('hidden');
+                    if (e.code === 'auth/user-not-found') errorText.innerHTML = "❌ ยังไม่ได้สร้างบัญชีนี้ใน Firebase";
+                    else if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') errorText.innerText = "❌ รหัส PIN ไม่ถูกต้อง";
+                    else if (e.code === 'auth/operation-not-allowed') errorText.innerHTML = "❌ ระบบล็อกอินยังไม่ได้เปิดใช้งาน (ไปเปิดใน Firebase)";
+                    else errorText.innerText = `❌ Error: ${e.message}`;
+                    document.getElementById('pinInput').value=''; 
+                })
+                .finally(() => { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-key"></i> ปลดล็อก'; });
+        }
+
+        function updateUIRole() {
+            if (isOwner) {
+                document.getElementById('roleIcon').innerHTML = '<i class="ph-bold ph-seal-check text-yellow-300"></i>';
+                document.getElementById('roleText').innerText = `สิทธิ์: ${ownersList[auth.currentUser.email].split(' ')[0]}`;
+                document.getElementById('badgeRole').innerText = "โหมดเจ้าของร้าน";
+                document.getElementById('btnLockStatus').onclick = logoutRole;
+                document.getElementById('ownerDashboard').classList.remove('hidden');
+                document.getElementById('btnDownloadReport').classList.remove('hidden');
+            } else {
+                document.getElementById('roleIcon').innerHTML = '<i class="ph-bold ph-lock-key"></i>';
+                document.getElementById('roleText').innerText = "โหมดพนักงาน";
+                document.getElementById('badgeRole').innerText = "โหมดพนักงาน";
+                document.getElementById('btnLockStatus').onclick = openPinModal;
+                document.getElementById('ownerDashboard').classList.add('hidden');
+                document.getElementById('btnDownloadReport').classList.add('hidden');
+            }
+            renderStock(); renderDirectory();
+        }
+        function logoutRole() { auth.signOut().then(() => { isOwner = false; updateUIRole(); renderAll(); renderStock(); renderDirectory(); renderBooks(); }); }
+        
         function openContextAddModal() {
             if(currentActiveTab === 'ledger') openAddModal();
             else if(currentActiveTab === 'stock') openAddStockModal();
@@ -978,7 +1366,7 @@
         }
         function openAddModal() { selectWallet('TRANSFER'); openModal('addModal'); }
         function closeAddModal() { closeModal('addModal'); document.getElementById('txForm').reset(); }
-
+        function handleSearch(v) { searchQuery=v; renderAll(); }
     </script>
 </body>
 </html>
