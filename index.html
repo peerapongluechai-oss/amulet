@@ -147,35 +147,7 @@
         <div id="txContainer" class="space-y-3 md:space-y-4 min-h-[150px]"></div>
     </main>
 
-    <!-- 2. CERTS WORKSPACE -->
-    <div id="certsWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in relative z-10">
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-5 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
-            <i class="ph ph-certificate absolute -right-6 -bottom-6 text-9xl text-white/5"></i>
-            <div class="relative z-10 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl md:text-3xl font-bold heading-font flex items-center gap-2 text-yellow-400"><i class="ph-bold ph-certificate"></i> ระบบงานออกบัตรรับรอง</h2>
-                    <p class="text-xs md:text-sm text-slate-300 mt-1.5 opacity-90">จัดการคิว ถ่ายรูป และสถานะใบรับรองพระแท้</p>
-                </div>
-                <button onclick="openAddCertModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2.5 px-4 rounded-xl shadow-md transition-all text-xs flex items-center gap-1.5"><i class="ph-bold ph-plus"></i> สร้างใบงาน</button>
-            </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <div class="bg-rose-50/80 backdrop-blur-sm p-4 rounded-[2rem] border border-rose-100/50 h-fit">
-                <h3 class="font-bold text-rose-900 mb-4 flex items-center justify-between"><span class="flex items-center gap-1.5"><i class="ph-fill ph-circle text-rose-500"></i> รอดำเนินการ</span><span id="certCountPending" class="bg-rose-200 text-rose-800 text-xs px-2.5 py-0.5 rounded-full">0</span></h3>
-                <div id="certListPending" class="space-y-3 min-h-[100px]"></div>
-            </div>
-            <div class="bg-amber-50/80 backdrop-blur-sm p-4 rounded-[2rem] border border-amber-100/50 h-fit">
-                <h3 class="font-bold text-amber-900 mb-4 flex items-center justify-between"><span class="flex items-center gap-1.5"><i class="ph-fill ph-circle text-amber-500"></i> รอชำระเงิน</span><span id="certCountReady" class="bg-amber-200 text-amber-800 text-xs px-2.5 py-0.5 rounded-full">0</span></h3>
-                <div id="certListReady" class="space-y-3 min-h-[100px]"></div>
-            </div>
-            <div class="bg-emerald-50/80 backdrop-blur-sm p-4 rounded-[2rem] border border-emerald-100/50 h-fit">
-                <h3 class="font-bold text-emerald-900 mb-4 flex items-center justify-between"><span class="flex items-center gap-1.5"><i class="ph-fill ph-circle text-emerald-500"></i> เสร็จสิ้นแล้ว (วันนี้)</span><span id="certCountCompleted" class="bg-emerald-200 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full">0</span></h3>
-                <div id="certListCompleted" class="space-y-3 min-h-[100px]"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. STOCK WORKSPACE -->
+    <!-- 2. STOCK WORKSPACE (เปลี่ยนเป็นหมายเลข 2 แทนงานออกบัตร) -->
     <div id="stockWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in relative z-10">
         <div class="bg-gradient-to-br from-amber-700 to-amber-900 text-white p-5 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden flex justify-between items-center">
             <i class="ph ph-grid-four absolute -left-6 -bottom-6 text-9xl text-white/5"></i>
@@ -200,7 +172,7 @@
         </div>
     </div>
 
-    <!-- 4. BOOKS RESERVATION WORKSPACE (NEW) -->
+    <!-- 3. BOOKS RESERVATION WORKSPACE -->
     <div id="booksWorkspace" class="hidden max-w-5xl mx-auto px-4 md:px-8 mt-6 md:mt-10 pb-28 space-y-6 transition-all duration-300 animate-in fade-in relative z-10">
         <div class="bg-gradient-to-br from-blue-800 to-indigo-900 text-white p-5 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
             <i class="ph ph-book-bookmark absolute -right-6 -bottom-6 text-9xl text-white/5"></i>
@@ -229,27 +201,26 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
+    <!-- BOTTOM NAVIGATION (แก้ไขการแบ่งคอลัมน์จาก 5 เหลือ 3 + 1 ปุ่มกลาง) -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] z-40">
-        <div class="max-w-5xl mx-auto grid grid-cols-5 h-16 md:h-20 relative px-1 md:px-2">
-            <button id="navTab_ledger" onclick="switchTab('ledger')" class="flex flex-col items-center justify-center text-velvet-main transition-colors select-none group">
-                <i class="ph-bold ph-book-open text-xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-xs font-semibold">บัญชีรายรับ</span>
-            </button>
-            <button id="navTab_certs" onclick="switchTab('certs')" class="flex flex-col items-center justify-center text-slate-400 hover:text-amber-600 transition-colors select-none group">
-                <i class="ph-bold ph-certificate text-xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-xs font-semibold">งานออกบัตร</span>
+        <!-- เปลี่ยน grid-cols-5 เป็น grid-cols-4 หรือจัดระยะห่างใหม่ -->
+        <div class="max-w-5xl mx-auto flex justify-between items-center h-16 md:h-20 px-6 md:px-12 relative">
+            <button id="navTab_ledger" onclick="switchTab('ledger')" class="flex flex-col items-center justify-center text-velvet-main transition-colors select-none group w-20">
+                <i class="ph-bold ph-book-open text-2xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[10px] md:text-xs font-semibold">บัญชีรายรับ</span>
             </button>
             
-            <div class="flex justify-center items-center relative -top-3 md:-top-5">
-                <button onclick="openContextAddModal()" class="w-14 h-14 md:w-20 md:h-20 bg-gradient-to-br from-velvet-light to-velvet-main text-white rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(122,16,25,0.4)] border-4 border-white hover:scale-105 active:scale-95 transition-all">
-                    <i class="ph-bold ph-plus text-2xl md:text-4xl"></i>
+            <button id="navTab_stock" onclick="switchTab('stock')" class="flex flex-col items-center justify-center text-slate-400 hover:text-amber-700 transition-colors select-none group w-20">
+                <i class="ph-bold ph-grid-four text-2xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[10px] md:text-xs font-semibold">ตู้พระ/สต็อก</span>
+            </button>
+            
+            <div class="flex justify-center items-center relative -top-4 md:-top-6 mx-2">
+                <button onclick="openContextAddModal()" class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-velvet-light to-velvet-main text-white rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(122,16,25,0.4)] border-4 border-white hover:scale-105 active:scale-95 transition-all">
+                    <i class="ph-bold ph-plus text-3xl md:text-4xl"></i>
                 </button>
             </div>
             
-            <button id="navTab_stock" onclick="switchTab('stock')" class="flex flex-col items-center justify-center text-slate-400 hover:text-amber-700 transition-colors select-none group">
-                <i class="ph-bold ph-grid-four text-xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-xs font-semibold">ตู้พระ/สต็อก</span>
-            </button>
-            <button id="navTab_books" onclick="switchTab('books')" class="flex flex-col items-center justify-center text-slate-400 hover:text-blue-600 transition-colors select-none group">
-                <i class="ph-bold ph-book-bookmark text-xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[9px] md:text-xs font-bold">จองหนังสือ</span>
+            <button id="navTab_books" onclick="switchTab('books')" class="flex flex-col items-center justify-center text-slate-400 hover:text-blue-600 transition-colors select-none group w-20">
+                <i class="ph-bold ph-book-bookmark text-2xl md:text-3xl mb-0.5 group-hover:-translate-y-1 transition-transform"></i><span class="text-[10px] md:text-xs font-bold">จองหนังสือ</span>
             </button>
         </div>
     </nav>
@@ -296,7 +267,7 @@
                     <select id="formCategory" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-velvet-main">
                         <option value="SELL">ปล่อยเช่า (ขาย)</option>
                         <option value="BUY">เช่าเข้า (ซื้อ)</option>
-                        <option value="CERT">ค่าออกบัตรรับรอง</option>
+                        <!-- ลบหมวดค่าออกบัตรรับรองออก -->
                         <option value="BOOK">รายรับจากหนังสือ</option>
                         <option value="OTHER_INCOME">รายรับอื่นๆ</option>
                         <option value="OTHER_EXPENSE">รายจ่ายอื่นๆ</option>
@@ -318,38 +289,6 @@
         </div>
     </div>
 
-    <!-- OPEN CERTIFICATE JOB MODAL -->
-    <div id="addCertModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
-        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 md:p-8 relative">
-            <button onclick="closeAddCertModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
-            <h3 class="text-xl font-bold heading-font text-slate-800 mb-4 flex items-center gap-2"><i class="ph-bold ph-file-plus text-amber-500 text-2xl"></i> เปิดใบงานออกบัตร</h3>
-            <form id="certForm" onsubmit="handleCertSubmit(event)" class="space-y-4">
-                <div><label class="block text-sm font-bold text-slate-500 mb-1">ชื่อลูกค้า</label><input type="text" id="certCustomerName" required class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500"></div>
-                <div><label class="block text-sm font-bold text-slate-500 mb-1">เบอร์โทร</label><input type="tel" id="certCustomerPhone" required class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500"></div>
-                <div><label class="block text-sm font-bold text-slate-500 mb-1">จำนวนพระ (องค์)</label><input type="number" id="certAmuletCount" required min="1" value="1" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-bold text-lg text-center focus:border-amber-500"></div>
-                <button type="submit" class="w-full bg-amber-500 text-slate-900 font-bold py-4 rounded-xl shadow-md mt-2">สร้างคิวงาน</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- CERT PAYMENT MODAL -->
-    <div id="certPaymentModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
-        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 relative text-center">
-            <button onclick="closeCertPaymentModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
-            <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex justify-center items-center mx-auto mb-3"><i class="ph-bold ph-receipt text-3xl"></i></div>
-            <h3 class="text-xl font-bold text-slate-800 mb-1">รับชำระค่างานออกบัตร</h3>
-            <p id="certPaymentQueue" class="text-sm font-bold text-amber-600 mb-4 bg-amber-50 w-fit mx-auto px-3 py-1 rounded-lg">Q-XXXX</p>
-            <form id="certPayForm" onsubmit="handleCertPaymentSubmit(event)" class="space-y-4 text-left">
-                <input type="hidden" id="payCertId"><input type="hidden" id="payCertTitle">
-                <div><label class="block text-sm font-bold text-slate-500 mb-1 text-center">ยอดชำระ (บาท)</label><input type="number" id="payCertAmount" required min="1" class="w-full border-2 border-emerald-200 bg-emerald-50 text-emerald-700 rounded-2xl px-4 py-4 text-2xl text-center font-bold"></div>
-                <div class="grid grid-cols-2 gap-3">
-                    <button type="button" id="btnCertPayTransfer" onclick="selectCertWallet('TRANSFER')" class="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"><i class="ph ph-credit-card text-lg"></i> โอน</button>
-                    <button type="button" id="btnCertPayCash" onclick="selectCertWallet('CASH')" class="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"><i class="ph ph-coins text-lg"></i> เงินสด</button>
-                </div>
-                <button type="submit" id="btnSubmitCertPay" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg mt-2 transition-all">ยืนยันรับเงิน & เสร็จสิ้น</button>
-            </form>
-        </div>
-    </div>
 
     <!-- ========================================== -->
     <!-- NEW: BOOK RESERVATION MODALS               -->
@@ -568,8 +507,9 @@
             return db.collection(colName);
         }
 
-        let allTransactions = [], allCerts = [], allStock = [], allDirectory = [], allBooks = [];
-        let currentWallet = 'TRANSFER', currentCertWallet = 'TRANSFER', currentSellStockWallet = 'TRANSFER', currentBookWallet = 'TRANSFER';
+        // ลบอาร์เรย์ allCerts ออก
+        let allTransactions = [], allStock = [], allDirectory = [], allBooks = [];
+        let currentWallet = 'TRANSFER', currentSellStockWallet = 'TRANSFER', currentBookWallet = 'TRANSFER';
         let isOwner = false, currentActiveTab = 'ledger', selectedDate = new Date().toISOString().split('T')[0];
         let pickMode = false; let searchQuery = ""; 
 
@@ -586,18 +526,16 @@
                 await auth.signInAnonymously();
             } catch (e) { console.warn("Auth init warning:", e.message); }
             
-            // ใช้ onAuthStateChanged เพื่อให้ชัวร์ว่ามี User แล้วจริงๆ ค่อยไปดึงข้อมูล
             auth.onAuthStateChanged((user) => {
                 if (user) {
-                    initRealtimeDatabase(); // ดึงข้อมูล
-                    updateUIRole(); // อัปเดต UI ว่าเป็นพนักงานหรือเจ้าของ
+                    initRealtimeDatabase(); 
+                    updateUIRole(); 
                 }
             });
         }
 
         function initRealtimeDatabase() {
             getColRef("transactions").orderBy("timestamp", "desc").onSnapshot(snap => { allTransactions = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'ledger') renderAll(); });
-            getColRef("cert_orders").orderBy("timestamp", "asc").onSnapshot(snap => { allCerts = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'certs') renderCerts(); });
             getColRef("amulet_stock").orderBy("timestamp", "desc").onSnapshot(snap => { allStock = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'stock') renderStock(); });
             getColRef("amulet_directory").orderBy("category").onSnapshot(snap => { allDirectory = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(allDirectory.length === 0) seedDirectory(); });
             getColRef("book_orders").orderBy("timestamp", "desc").onSnapshot(snap => { allBooks = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'books') renderBooks(); });
@@ -606,19 +544,17 @@
         function changeAppDate(val) {
             selectedDate = val;
             renderAll();
-            renderCerts();
             renderBooks();
         }
 
         function switchTab(tabId) {
             currentActiveTab = tabId;
-            ['ledger', 'certs', 'stock', 'books'].forEach(id => { const ws = document.getElementById(`${id}Workspace`); if(ws) ws.classList.add('hidden'); });
+            ['ledger', 'stock', 'books'].forEach(id => { const ws = document.getElementById(`${id}Workspace`); if(ws) ws.classList.add('hidden'); });
             const targetWs = document.getElementById(`${tabId}Workspace`); if(targetWs) targetWs.classList.remove('hidden');
-            ['ledger', 'certs', 'stock', 'books'].forEach(id => { const el = document.getElementById(`navTab_${id}`); if(el) { el.classList.remove('text-velvet-main', 'text-amber-600', 'text-amber-700', 'text-blue-600'); el.classList.add('text-slate-400'); } });
+            ['ledger', 'stock', 'books'].forEach(id => { const el = document.getElementById(`navTab_${id}`); if(el) { el.classList.remove('text-velvet-main', 'text-amber-700', 'text-blue-600'); el.classList.add('text-slate-400'); } });
             
             const activeEl = document.getElementById(`navTab_${tabId}`);
             if(tabId === 'ledger') { if(activeEl) activeEl.classList.add('text-velvet-main'); document.getElementById('mainHeader').classList.remove('hidden'); renderAll(); }
-            else if(tabId === 'certs') { if(activeEl) activeEl.classList.add('text-amber-600'); document.getElementById('mainHeader').classList.add('hidden'); renderCerts(); }
             else if(tabId === 'stock') { if(activeEl) activeEl.classList.add('text-amber-700'); document.getElementById('mainHeader').classList.add('hidden'); renderStock(); }
             else if(tabId === 'books') { if(activeEl) activeEl.classList.add('text-blue-600'); document.getElementById('mainHeader').classList.add('hidden'); renderBooks(); }
             window.scrollTo(0,0);
@@ -626,18 +562,27 @@
 
         function openContextAddModal() {
             if(currentActiveTab === 'ledger') openAddModal();
-            else if(currentActiveTab === 'certs') openAddCertModal();
             else if(currentActiveTab === 'stock') openAddStockModal();
             else if(currentActiveTab === 'books') openAddBookModal();
         }
 
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function selectWallet(w) { 
+            currentWallet = w; 
+            document.getElementById('btnWalletTransfer').className = w === 'TRANSFER' ? 'py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
+            document.getElementById('btnWalletCash').className = w === 'CASH' ? 'py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
+        }
+        function openAddModal() { selectWallet('TRANSFER'); openModal('addModal'); }
+        function closeAddModal() { closeModal('addModal'); document.getElementById('txForm').reset(); }
+
         // =====================================
-        // 1. SMART LEDGER & AUTO-STOCK 
+        // 1. SMART LEDGER 
         // =====================================
         function renderAll() {
             let tC = 0, tT = 0, dI = 0, dE = 0, dP = 0;
             allTransactions.forEach(tx => {
-                const inc = ['SELL', 'OTHER_INCOME', 'CERT', 'BOOK'].includes(tx.category);
+                const inc = ['SELL', 'OTHER_INCOME', 'BOOK'].includes(tx.category);
                 if (tx.wallet === 'CASH') tC += inc ? tx.amount : -tx.amount; else tT += inc ? tx.amount : -tx.amount;
                 if (tx.date === selectedDate) { if (inc) { dI += tx.amount; dP += (tx.amount - (tx.cost||0)); } else dE += tx.amount; }
             });
@@ -658,9 +603,9 @@
             const cont = document.getElementById('txContainer');
             if(!list.length) return cont.innerHTML = `<div class="text-center py-12 bg-white/70 rounded-3xl border border-slate-100 shadow-sm text-slate-400 font-semibold">ไม่มีรายการบัญชีในวันที่เลือก</div>`;
             
-            const names = {'SELL':'ปล่อยเช่าพระ','BUY':'เช่าเข้าพระ','CERT':'ค่าออกบัตรรับรอง','BOOK':'ค่าจองหนังสือ','OTHER_INCOME':'รายรับอื่นๆ','OTHER_EXPENSE':'รายจ่ายอื่นๆ'};
+            const names = {'SELL':'ปล่อยเช่าพระ','BUY':'เช่าเข้าพระ','BOOK':'ค่าจองหนังสือ','OTHER_INCOME':'รายรับอื่นๆ','OTHER_EXPENSE':'รายจ่ายอื่นๆ'};
             cont.innerHTML = list.map(tx => {
-                const inc = ['SELL','OTHER_INCOME','CERT','BOOK'].includes(tx.category);
+                const inc = ['SELL','OTHER_INCOME','BOOK'].includes(tx.category);
                 return `<div class="bg-white/95 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between ${inc?'border-l-4 border-emerald-500':'border-l-4 border-rose-500'}">
                     <div>
                         <h4 class="font-bold text-slate-800">${tx.description}</h4>
@@ -714,7 +659,7 @@
                     batch.set(stockRef, {
                         code: autoCode, name: desc, category: stockCategory,
                         cost: amount, price: amount > 0 ? amount * 1.5 : 0, status: 'IN_STOCK', imageUrl: "",
-                        date: selectedDate, // เพิ่มบันทึกวันที่นำเข้าเพื่อง่ายต่อการทำ Report
+                        date: selectedDate, 
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
@@ -728,14 +673,14 @@
         }
 
         // =====================================
-        // 2. ADVANCED REPORT (CSV) - อัปเดตเพิ่มหมวดจองหนังสือ
+        // 2. ADVANCED REPORT (CSV) 
         // =====================================
         function openReportModal() {
             document.getElementById('reportStartDate').value = selectedDate;
             document.getElementById('reportEndDate').value = selectedDate;
-            document.getElementById('reportModal').classList.remove('hidden');
+            openModal('reportModal');
         }
-        function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
+        function closeReportModal() { closeModal('reportModal'); }
 
         function exportAdvancedCSV() {
             const start = document.getElementById('reportStartDate').value;
@@ -744,7 +689,7 @@
             if(!start || !end) return showCustomAlert("แจ้งเตือน", "กรุณาเลือกช่วงเวลาให้ครบถ้วน", "info");
             if(start > end) return showCustomAlert("แจ้งเตือน", "วันที่เริ่มต้น ต้องไม่มากกว่าวันที่สิ้นสุด", "error");
 
-            let csv = "data:text/csv;charset=utf-8,\uFEFF"; // รองรับภาษาไทย
+            let csv = "data:text/csv;charset=utf-8,\uFEFF"; 
 
             // === หมวดที่ 1: สรุปบัญชีรับ-จ่าย ทั่วไป ===
             csv += "=== 1. สรุปรายงานบัญชีรับ-จ่าย (Transactions) ===\n";
@@ -753,7 +698,7 @@
             let sumIncome=0, sumExpense=0, sumProfit=0;
             
             txInRange.forEach(tx => {
-                const isIncome = ['SELL','OTHER_INCOME','CERT','BOOK'].includes(tx.category);
+                const isIncome = ['SELL','OTHER_INCOME','BOOK'].includes(tx.category);
                 const type = isIncome ? "รายรับ" : "รายจ่าย";
                 const time = tx.timestamp ? new Date(tx.timestamp.toDate()).toLocaleTimeString('th-TH') : "";
                 const safeDesc = tx.description ? tx.description.replace(/"/g, '""') : "";
@@ -764,20 +709,8 @@
             });
             csv += `,,,,รวมรายรับ,${sumIncome},รวมรายจ่าย,${sumExpense},กำไรรวม,${sumProfit}\n\n`;
 
-            // === หมวดที่ 2: งานออกบัตร ===
-            csv += "=== 2. สรุปรายงานงานออกบัตรรับรอง (Certifications) ===\n";
-            csv += "คิวงาน,ชื่อลูกค้า,เบอร์โทร,จำนวน (องค์),วันที่รับงาน,วันที่เสร็จสิ้น,สถานะ,ช่องทางรับเงิน,ยอดชำระ (บาท)\n";
-            const certsInRange = allCerts.filter(c => (c.date >= start && c.date <= end) || (c.completedDate && c.completedDate >= start && c.completedDate <= end));
-            certsInRange.forEach(c => {
-                const safeName = c.customerName ? c.customerName.replace(/"/g, '""') : "";
-                const amt = c.paymentAmount || 0;
-                const wallet = c.paymentWallet || "-";
-                csv += `${c.queueNo},"${safeName}",'${c.phone},${c.amuletCount},${c.date},${c.completedDate||'-'},${c.status},${wallet},${amt}\n`;
-            });
-            csv += "\n";
-
-            // === หมวดที่ 3: สต็อกและการปล่อยเช่า ===
-            csv += "=== 3. สรุปรายงานสต็อกและการปล่อยเช่า (Amulet Stock) ===\n";
+            // === หมวดที่ 2: สต็อกและการปล่อยเช่า ===
+            csv += "=== 2. สรุปรายงานสต็อกและการปล่อยเช่า (Amulet Stock) ===\n";
             csv += "รหัส,หมวดหมู่,ชื่อพระ,วันที่เช่าเข้า (ซื้อ),เวลาที่รับเข้า,ราคาทุน (บาท),วันที่ปล่อยเช่า (ขาย),เวลาที่ปล่อย,ช่องทางรับเงิน,ยอดปล่อยเช่า (บาท),กำไร (บาท),สถานะ\n";
             const stockInRange = allStock.filter(s => {
                 const createDate = s.date || (s.timestamp ? new Date(s.timestamp.toDate()).toISOString().split('T')[0] : "");
@@ -798,8 +731,8 @@
             });
             csv += "\n";
 
-            // === หมวดที่ 4: การจองหนังสือ (ใหม่) ===
-            csv += "=== 4. สรุปรายงานการจองหนังสือ (Book Reservations) ===\n";
+            // === หมวดที่ 3: การจองหนังสือ ===
+            csv += "=== 3. สรุปรายงานการจองหนังสือ (Book Reservations) ===\n";
             csv += "รหัสจอง,ชื่อผู้จอง,เบอร์โทร,จำนวน (เล่ม),วันที่จอง,สถานะ,ช่องทางชำระเงิน,ยอดชำระ (บาท),วันที่ชำระ,เวลาที่ชำระ\n";
             const booksInRange = allBooks.filter(b => (b.date >= start && b.date <= end) || (b.paidDate && b.paidDate >= start && b.paidDate <= end));
             
@@ -831,67 +764,7 @@
         }
 
         // =====================================
-        // 3. CERTS 
-        // =====================================
-        function renderCerts() {
-            const lP = document.getElementById('certListPending'), lR = document.getElementById('certListReady'), lC = document.getElementById('certListCompleted');
-            let cP=0, cR=0, cC=0, hP="", hR="", hC="";
-
-            allCerts.forEach(c => {
-                const txDateToCheck = c.completedDate || c.date; 
-                if(c.status === 'COMPLETED' && txDateToCheck !== selectedDate) return;
-
-                const h = `<div class="bg-white/95 p-4 rounded-2xl shadow-sm border border-slate-100 mb-2 border-l-4 ${c.status==='PENDING'?'border-rose-400':c.status==='READY'?'border-amber-400':'border-emerald-400'}">
-                    <div class="flex justify-between items-center mb-1"><span class="font-bold bg-slate-100 px-2 py-0.5 rounded text-sm">${c.queueNo}</span><span class="text-xs bg-slate-50 px-2 rounded">${c.amuletCount} องค์</span></div>
-                    <p class="font-bold text-slate-800 truncate">${c.customerName}</p><p class="text-xs text-slate-500 mb-3">${c.phone}</p>
-                    <div class="flex gap-2 text-xs font-bold">
-                        ${c.status==='PENDING' ? `<button onclick="getColRef('cert_orders').doc('${c.id}').update({status:'READY'})" class="bg-amber-50 text-amber-700 flex-1 py-2 rounded-lg border border-amber-200 shadow-sm">ถ่ายรูปเสร็จแล้ว</button>` : ''}
-                        ${c.status==='READY' ? `<button onclick="openCertPaymentModal('${c.id}', '${c.queueNo}', '${c.customerName}')" class="bg-emerald-500 text-white flex-1 py-2 rounded-lg shadow-sm">รับชำระเงิน</button>` : ''}
-                        ${c.status==='COMPLETED' ? `<span class="bg-emerald-50 text-emerald-600 flex-1 py-2 rounded-lg text-center border border-emerald-100"><i class="ph-bold ph-check"></i> เสร็จสิ้นแล้ว</span>` : ''}
-                        ${isOwner ? `<button onclick="if(confirm('ลบคิวนี้?')) getColRef('cert_orders').doc('${c.id}').delete()" class="text-slate-300 hover:text-red-500 px-2"><i class="ph-bold ph-trash"></i></button>`:''}
-                    </div>
-                </div>`;
-                if(c.status==='PENDING'){ hP+=h; cP++; } else if(c.status==='READY'){ hR+=h; cR++; } else { hC+=h; cC++; }
-            });
-            const empty = `<div class="text-center py-8 text-slate-400 text-xs bg-white/40 rounded-2xl border-dashed border border-slate-200">ยังไม่มีคิวงาน</div>`;
-            lP.innerHTML = hP||empty; lR.innerHTML = hR||empty; lC.innerHTML = hC||empty;
-            document.getElementById('certCountPending').innerText = cP; document.getElementById('certCountReady').innerText = cR; document.getElementById('certCountCompleted').innerText = cC;
-        }
-
-        function handleCertSubmit(e) {
-            e.preventDefault();
-            const qStr = `Q-${String(allCerts.filter(c=>c.date===selectedDate).length + 1).padStart(3, '0')}`;
-            getColRef("cert_orders").add({
-                queueNo: qStr, customerName: document.getElementById('certCustomerName').value, phone: document.getElementById('certCustomerPhone').value,
-                amuletCount: Number(document.getElementById('certAmuletCount').value), status: 'PENDING', date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => { closeAddCertModal(); showCustomAlert("สร้างคิวเรียบร้อย", `คิวหมายเลข ${qStr}`, "success"); });
-        }
-
-        function openCertPaymentModal(id, qNo, name) {
-            document.getElementById('payCertId').value = id; document.getElementById('payCertTitle').value = `ค่าออกบัตรคิว ${qNo} (${name})`;
-            document.getElementById('certPaymentQueue').innerText = qNo;
-            selectCertWallet('TRANSFER'); document.getElementById('certPaymentModal').classList.remove('hidden');
-        }
-        function closeCertPaymentModal() { document.getElementById('certPaymentModal').classList.add('hidden'); document.getElementById('certPayForm').reset(); }
-
-        async function handleCertPaymentSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitCertPay');
-            btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
-
-            try {
-                const amt = Number(document.getElementById('payCertAmount').value);
-                const batch = db.batch();
-                batch.set(getColRef("transactions").doc(), { description: document.getElementById('payCertTitle').value, category: 'CERT', amount: amt, cost: 0, wallet: currentCertWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                batch.update(getColRef("cert_orders").doc(document.getElementById('payCertId').value), { status: 'COMPLETED', completedDate: selectedDate, paymentAmount: amt, paymentWallet: currentCertWallet });
-                await batch.commit();
-                closeCertPaymentModal(); showCustomAlert("เสร็จสิ้น", `บันทึกรายรับค่างานออกบัตร ${amt} บาท เรียบร้อย`, "success");
-            } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
-            finally { btn.disabled = false; btn.innerText = "ยืนยันรับเงิน & เสร็จสิ้น"; }
-        }
-
-        // =====================================
-        // 4. STOCK & IMAGE UPLOAD
+        // 3. STOCK & IMAGE UPLOAD
         // =====================================
         function renderStock() {
             const q = (document.getElementById('stockSearch').value || "").toLowerCase();
@@ -902,7 +775,6 @@
             if(!filtered.length) return cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่องในตู้</div>`;
             
             cont.innerHTML = filtered.map(s => {
-                // แก้ไขการส่งพารามิเตอร์รูปภาพเป็น this.src เพื่อป้องกัน Error จากชื่อไฟล์ที่มีเครื่องหมายพิเศษ
                 const imgHtml = s.imageUrl ? `<img src="${s.imageUrl}" onclick="openImageViewer(this.src)" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 cursor-pointer hover:opacity-85 transition-all shadow-sm hover:shadow-md" title="คลิกเพื่อดูรูปขยาย">` : `<div class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300"><i class="ph ph-image text-4xl"></i></div>`;
                 return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border border-amber-200/50 relative overflow-hidden flex flex-col">
                     <div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">อยู่ในตู้</div>
@@ -926,6 +798,9 @@
             }).join('');
         }
 
+        function openAddStockModal() { openModal('addStockModal'); }
+        function closeAddStockModal() { closeModal('addStockModal'); document.getElementById('stockForm').reset(); }
+
         async function uploadImage(file) {
             const storageRef = firebase.storage().ref();
             const fileRef = storageRef.child(`amulets/${Date.now()}_${file.name}`);
@@ -948,7 +823,7 @@
                     price: Number(document.getElementById('stockPrice').value), status: 'IN_STOCK', imageUrl: imgUrl, 
                     date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                closeAddStockModal(); document.getElementById('stockForm').reset();
+                closeAddStockModal(); 
                 showCustomAlert("เพิ่มสต็อกสำเร็จ", "พระเครื่ององค์ใหม่ขึ้นโชว์ในตู้เรียบร้อย", "success");
             } catch (err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
             finally { btn.disabled = false; btn.innerText = "บันทึกเข้าตู้พระ"; }
@@ -959,9 +834,9 @@
             document.getElementById('editStockCode').value = code; document.getElementById('editStockName').value = name;
             document.getElementById('editStockCategory').value = category; document.getElementById('editStockCost').value = cost.toLocaleString() + ' ฿';
             document.getElementById('editStockPrice').value = price.toLocaleString() + ' ฿';
-            document.getElementById('editStockModal').classList.remove('hidden');
+            openModal('editStockModal');
         }
-        function closeEditStockModal() { document.getElementById('editStockModal').classList.add('hidden'); document.getElementById('editStockForm').reset(); }
+        function closeEditStockModal() { closeModal('editStockModal'); document.getElementById('editStockForm').reset(); }
 
         async function handleEditStockSubmit(e) {
             e.preventDefault();
@@ -981,13 +856,13 @@
         function openSellStockModal(id, name, cost, price) {
             document.getElementById('sellStockId').value = id; document.getElementById('sellStockCost').value = cost;
             document.getElementById('sellStockName').innerText = name; document.getElementById('sellStockAmount').value = price;
-            selectSellStockWallet('TRANSFER'); document.getElementById('sellStockModal').classList.remove('hidden');
+            selectSellStockWallet('TRANSFER'); openModal('sellStockModal');
         }
-        function closeSellStockModal() { document.getElementById('sellStockModal').classList.add('hidden'); }
+        function closeSellStockModal() { closeModal('sellStockModal'); }
         function selectSellStockWallet(t) {
             currentSellStockWallet = t;
-            if(t==='TRANSFER'){ document.getElementById('btnSellStockTransfer').className="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnSellStockCash').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
-            else { document.getElementById('btnSellStockCash').className="py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnSellStockTransfer').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
+            document.getElementById('btnSellStockTransfer').className = t === 'TRANSFER' ? 'py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
+            document.getElementById('btnSellStockCash').className = t === 'CASH' ? 'py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
         }
 
         async function handleSellStockSubmit(e) {
@@ -1006,7 +881,7 @@
         }
 
         // =====================================
-        // 5. CLOUD DIRECTORY
+        // 4. CLOUD DIRECTORY
         // =====================================
         function seedDirectory() {
             const batch = db.batch();
@@ -1044,14 +919,14 @@
             `).join('');
         }
 
-        function openDirectoryForPicking() { pickMode = true; document.getElementById('directorySearch').value=""; renderDirectory(); closeAddModal(); document.getElementById('directoryModal').classList.remove('hidden'); }
-        function openDirectoryModal() { pickMode = false; document.getElementById('directorySearch').value=""; renderDirectory(); document.getElementById('directoryModal').classList.remove('hidden'); }
-        function closeDirectoryModal() { document.getElementById('directoryModal').classList.add('hidden'); }
+        function openDirectoryForPicking() { pickMode = true; document.getElementById('directorySearch').value=""; renderDirectory(); closeAddModal(); openModal('directoryModal'); }
+        function openDirectoryModal() { pickMode = false; document.getElementById('directorySearch').value=""; renderDirectory(); openModal('directoryModal'); }
+        function closeDirectoryModal() { closeModal('directoryModal'); }
         function selectDirItem(name) { document.getElementById('formDesc').value = name; closeDirectoryModal(); openAddModal(); }
         
-        function openAddDirModal() { document.getElementById('dirEditId').value=""; document.getElementById('dirCategory').value=""; document.getElementById('dirName').value=""; document.getElementById('dirModalTitle').innerText="เพิ่มพิมพ์พระลงทำเนียบ"; document.getElementById('addDirModal').classList.remove('hidden'); }
-        function closeAddDirModal() { document.getElementById('addDirModal').classList.add('hidden'); }
-        function editDirItem(id, cat, name) { document.getElementById('dirEditId').value=id; document.getElementById('dirCategory').value=cat; document.getElementById('dirName').value=name; document.getElementById('dirModalTitle').innerText="แก้ไขพิมพ์พระ"; document.getElementById('addDirModal').classList.remove('hidden'); }
+        function openAddDirModal() { document.getElementById('dirEditId').value=""; document.getElementById('dirCategory').value=""; document.getElementById('dirName').value=""; document.getElementById('dirModalTitle').innerText="เพิ่มพิมพ์พระลงทำเนียบ"; openModal('addDirModal'); }
+        function closeAddDirModal() { closeModal('addDirModal'); }
+        function editDirItem(id, cat, name) { document.getElementById('dirEditId').value=id; document.getElementById('dirCategory').value=cat; document.getElementById('dirName').value=name; document.getElementById('dirModalTitle').innerText="แก้ไขพิมพ์พระ"; openModal('addDirModal'); }
         function handleDirSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('dirEditId').value; const data = { category: document.getElementById('dirCategory').value, name: document.getElementById('dirName').value };
@@ -1059,7 +934,7 @@
         }
 
         // =====================================
-        // 6. BOOK RESERVATION SYSTEM (NEW)
+        // 5. BOOK RESERVATION SYSTEM
         // =====================================
         function renderBooks() {
             const q = (document.getElementById('bookSearch').value || "").toLowerCase();
@@ -1109,14 +984,13 @@
             }).join('');
         }
 
-        function openAddBookModal() { document.getElementById('addBookModal').classList.remove('hidden'); }
-        function closeAddBookModal() { document.getElementById('addBookModal').classList.add('hidden'); document.getElementById('bookForm').reset(); }
+        function openAddBookModal() { openModal('addBookModal'); }
+        function closeAddBookModal() { closeModal('addBookModal'); document.getElementById('bookForm').reset(); }
 
         function handleBookSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmitBook'); btn.disabled = true; btn.innerText = "กำลังบันทึก...";
             
-            // Format B-001, B-002...
             const countInDate = allBooks.filter(b => b.date === selectedDate).length + 1;
             const qStr = `B-${String(countInDate).padStart(3, '0')}`;
             
@@ -1139,14 +1013,14 @@
             document.getElementById('payBookTitle').value = `ค่าจองหนังสือ ${qNo} (${name})`;
             document.getElementById('bookPaymentQueue').innerText = qNo;
             selectBookWallet('TRANSFER'); 
-            document.getElementById('payBookModal').classList.remove('hidden');
+            openModal('payBookModal');
         }
-        function closePayBookModal() { document.getElementById('payBookModal').classList.add('hidden'); document.getElementById('bookPayForm').reset(); }
+        function closePayBookModal() { closeModal('payBookModal'); document.getElementById('bookPayForm').reset(); }
 
         function selectBookWallet(t) {
             currentBookWallet = t;
-            if(t==='TRANSFER'){ document.getElementById('btnBookPayTransfer').className="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnBookPayCash').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
-            else { document.getElementById('btnBookPayCash').className="py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnBookPayTransfer').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
+            document.getElementById('btnBookPayTransfer').className = t === 'TRANSFER' ? 'py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
+            document.getElementById('btnBookPayCash').className = t === 'CASH' ? 'py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5' : 'py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5';
         }
 
         async function handleBookPaymentSubmit(e) {
@@ -1157,7 +1031,6 @@
                 const amt = Number(document.getElementById('payBookAmount').value);
                 const batch = db.batch();
                 
-                // 1. ลงบันทึกบัญชีรายรับ
                 batch.set(getColRef("transactions").doc(), { 
                     description: document.getElementById('payBookTitle').value, 
                     category: 'BOOK', 
@@ -1165,7 +1038,6 @@
                     date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() 
                 });
                 
-                // 2. อัปเดตสถานะหนังสือว่าจ่ายแล้ว พร้อมลงวันที่และเวลา
                 const currentTime = new Date().toLocaleTimeString('th-TH');
                 batch.update(getColRef("book_orders").doc(document.getElementById('payBookId').value), { 
                     status: 'PAID', 
@@ -1184,12 +1056,12 @@
         // =====================================
         // UI & AUTH
         // =====================================
-        function openPinModal(){ document.getElementById('pinModal').classList.remove('hidden'); setTimeout(()=>document.getElementById('pinInput').focus(),100); }
-        function closePinModal(){ document.getElementById('pinModal').classList.add('hidden'); document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden'); }
+        function openPinModal(){ openModal('pinModal'); setTimeout(()=>document.getElementById('pinInput').focus(),100); }
+        function closePinModal(){ closeModal('pinModal'); document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden'); }
         
         /* ฟังก์ชันเปิด/ปิด รูปขยาย */
-        function openImageViewer(url) { document.getElementById('viewerImageSrc').src = url; document.getElementById('imageViewerModal').classList.remove('hidden'); }
-        function closeImageViewer() { document.getElementById('imageViewerModal').classList.add('hidden'); setTimeout(() => document.getElementById('viewerImageSrc').src = "", 200); }
+        function openImageViewer(url) { document.getElementById('viewerImageSrc').src = url; openModal('imageViewerModal'); }
+        function closeImageViewer() { closeModal('imageViewerModal'); setTimeout(() => document.getElementById('viewerImageSrc').src = "", 200); }
 
         function showCustomAlert(title, msg, type) {
             document.getElementById('infoTitle').innerText = title; document.getElementById('infoDesc').innerText = msg;
@@ -1197,7 +1069,7 @@
             if(type==="success"){ b.className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-check-circle text-3xl"></i>'; }
             else if(type==="error"){ b.className="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-warning text-3xl"></i>'; }
             else { b.className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-info text-3xl"></i>'; }
-            document.getElementById('generalInfoModal').classList.remove('hidden');
+            openModal('generalInfoModal');
         }
 
         function verifyPin() {
