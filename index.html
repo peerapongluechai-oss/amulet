@@ -40,7 +40,7 @@
             position: relative;
         }
         
-        /* ลายน้ำ */
+        /* ลายน้ำที่ 1: รูปสมเด็จโต (ด้านซ้าย) */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: url('images (1).jpg');
@@ -49,6 +49,8 @@
             background-size: min(25vw, 250px) auto; 
             opacity: 0.12; mix-blend-mode: multiply; z-index: 0; pointer-events: none;
         }
+
+        /* ลายน้ำที่ 2: รูปพระพุทธรูป (ด้านขวา) */
         body::after {
             content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: url('edited-image.png');
@@ -342,6 +344,7 @@
             <form id="editStockForm" onsubmit="handleEditStockSubmit(event)" class="space-y-4 text-sm">
                 <input type="hidden" id="editStockId">
                 <input type="hidden" id="editStockOldImage">
+                <input type="hidden" id="editStockOldPrice">
                 <div>
                     <label class="block font-bold text-slate-500 mb-1.5">เปลี่ยนรูปภาพพระเครื่อง (เว้นว่างไว้ถ้าไม่เปลี่ยน)</label>
                     <input type="file" id="editStockImage" accept="image/*" class="w-full border border-slate-200 bg-slate-50 rounded-xl px-4 py-2 text-sm focus:border-amber-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
@@ -356,14 +359,14 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block font-bold text-slate-500 mb-1.5">ราคาทุน <span class="text-xs font-normal text-slate-400">(ห้ามแก้ไข)</span></label><input type="text" id="editStockCost" disabled class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold text-rose-400 bg-slate-50 cursor-not-allowed"></div>
-                    <div><label class="block font-bold text-slate-500 mb-1.5">ราคาเปิดเช่า <span class="text-xs font-normal text-slate-400">(ห้ามแก้ไข)</span></label><input type="text" id="editStockPrice" disabled class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold text-emerald-400 bg-slate-50 cursor-not-allowed"></div>
+                    <div><label class="block font-bold text-slate-500 mb-1.5">ราคาเปิดเช่า</label><input type="number" id="editStockPrice" required min="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 font-semibold focus:border-amber-500 text-emerald-600"></div>
                 </div>
                 <button type="submit" id="btnSubmitEditStock" class="w-full bg-amber-600 text-white font-bold py-4 rounded-xl shadow-md mt-4 transition-all">บันทึกการแก้ไข</button>
             </form>
         </div>
     </div>
 
-    <!-- SELL/INSTALLMENT STOCK MODAL (อัปเกรดเก็บชื่อและเบอร์โทร) -->
+    <!-- SELL/INSTALLMENT STOCK MODAL (เช่า/มัดจำ/ผ่อน) -->
     <div id="sellStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 relative max-h-[95vh] overflow-y-auto">
             <button onclick="closeSellStockModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
@@ -433,7 +436,7 @@
             </div>
 
             <div id="ledgerActionArea" class="p-5 border-t border-slate-200 bg-white shrink-0">
-                <button onclick="handlePayInstallment()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex justify-center items-center gap-2"><i class="ph-bold ph-plus"></i> บันทึกรับเงินเพิ่ม</button>
+                <!-- Action button injected here -->
             </div>
         </div>
     </div>
@@ -497,6 +500,7 @@
             </form>
         </div>
     </div>
+
 
     <!-- DIRECTORY MODAL -->
     <div id="directoryModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
@@ -571,6 +575,7 @@
     <!-- IMAGE VIEWER MODAL (ป็อปอัพดูรูปขยาย พร้อมรายละเอียด) -->
     <div id="imageViewerModal" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[80] flex items-center justify-center p-4 hidden animate-in fade-in" onclick="closeImageViewer()">
         <div class="relative max-w-4xl w-full bg-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row" onclick="event.stopPropagation()">
+            <!-- ปุ่มปิด -->
             <button onclick="closeImageViewer()" class="absolute top-4 right-4 z-10 bg-slate-700/50 hover:bg-slate-700 text-white p-2 rounded-full backdrop-blur-sm transition-all shadow-md">
                 <i class="ph-bold ph-x text-xl"></i>
             </button>
@@ -581,7 +586,7 @@
             </div>
 
             <!-- ฝั่งรายละเอียด (ขวา/ล่าง) -->
-            <div class="w-full md:w-2/5 bg-slate-50 p-6 flex flex-col justify-center border-l border-white/10">
+            <div class="w-full md:w-2/5 bg-slate-50 p-6 flex flex-col border-l border-white/10 overflow-y-auto max-h-[80vh]">
                 <div class="mb-4 flex items-center gap-2">
                     <span id="viewerCode" class="bg-amber-500 text-slate-900 font-bold px-3 py-1 rounded-full text-sm shadow-sm">A-001</span>
                     <span id="viewerCategory" class="text-slate-500 text-sm font-medium bg-slate-200 px-3 py-1 rounded-full">หมวดหมู่</span>
@@ -605,11 +610,19 @@
                         <p class="text-sm text-slate-400 mb-1">ราคาทุน</p>
                         <p class="text-xl font-bold text-slate-400">*** ฿</p>
                     </div>
+
+                    <!-- History กล่องประวัติการปรับราคา -->
+                    <div id="viewerPriceHistoryContainer" class="hidden mt-4 pt-4 border-t border-slate-200/50">
+                        <p class="text-sm font-bold text-slate-500 mb-2 flex items-center gap-1.5"><i class="ph-bold ph-clock-counter-clockwise"></i> ประวัติการปรับราคา</p>
+                        <div id="viewerPriceHistoryList" class="space-y-2 max-h-32 overflow-y-auto pr-1">
+                            <!-- Items history injected here -->
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
-
 
     <script>
         // =====================================
@@ -632,14 +645,17 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(); const auth = firebase.auth();
 
-        function getColRef(colName) { return db.collection(colName); }
+        function getColRef(colName) {
+            return db.collection(colName);
+        }
 
         let allTransactions = [], allStock = [], allDirectory = [], allCourses = [];
         let currentWallet = 'TRANSFER', currentSellStockWallet = 'TRANSFER', currentCourseWallet = 'TRANSFER';
         let isOwner = false, currentActiveTab = 'ledger', selectedDate = new Date().toISOString().split('T')[0];
-        let currentStockTab = 'ALL'; // 'ALL', 'AVAILABLE', 'RESERVED', 'SOLD'
+        let currentStockTab = 'ALL'; 
         let pickMode = false; let searchQuery = ""; 
         let currentLedgerAmulet = null;
+        let currentInstWallet = 'TRANSFER';
 
         const ownersList = { 'peerapong.luechai@gmail.com': 'คุณพี (Admin)', 'partner2@p-supsiam.com': 'หุ้นส่วนท่านที่ 2' };
 
@@ -647,7 +663,7 @@
             document.getElementById('appDatePicker').value = selectedDate;
             initFirebaseAndAuth();
             
-            // เพิ่ม Event แจ้งเตือนเมื่อคีย์ยอดรับน้อยกว่ายอดเต็ม
+            // เช็คยอดรับเงินแบบ Real-time เวลาปล่อยเช่า
             document.getElementById('sellStockAmount').addEventListener('input', function() {
                 const agreed = Number(document.getElementById('sellAgreedPrice').value) || 0;
                 const paid = Number(this.value) || 0;
@@ -661,34 +677,36 @@
         };
 
         async function initFirebaseAndAuth() {
-            try { await auth.signInAnonymously(); } catch (e) { console.warn("Auth init warning:", e.message); }
+            try {
+                await auth.signInAnonymously();
+            } catch (e) { console.warn("Auth init warning:", e.message); }
+            
             auth.onAuthStateChanged((user) => {
-                if (user) { initRealtimeDatabase(); updateUIRole(); }
+                if (user) {
+                    initRealtimeDatabase();
+                    updateUIRole();
+                }
             });
         }
 
-        // ดึงข้อมูลโดยไม่ใช้ orderBy เพื่อป้องกัน Error ข้อมูลเก่าที่ไม่มี Timestamp
         function initRealtimeDatabase() {
             getColRef("transactions").onSnapshot(snap => { 
                 allTransactions = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); 
-                allTransactions.sort((a,b) => (b.timestamp?.toMillis()||0) - (a.timestamp?.toMillis()||0));
                 if(currentActiveTab === 'ledger') renderAll(); 
             });
             
             getColRef("amulet_stock").onSnapshot(snap => { 
                 allStock = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); 
-                allStock.sort((a,b) => (b.timestamp?.toMillis()||0) - (a.timestamp?.toMillis()||0));
                 if(currentActiveTab === 'stock') renderStock(); 
             });
             
-            getColRef("amulet_directory").onSnapshot(snap => { 
+            getColRef("amulet_directory").orderBy("category").onSnapshot(snap => { 
                 allDirectory = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); 
                 if(allDirectory.length === 0) seedDirectory(); 
             });
             
             getColRef("course_orders").onSnapshot(snap => { 
                 allCourses = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); 
-                allCourses.sort((a,b) => (b.timestamp?.toMillis()||0) - (a.timestamp?.toMillis()||0));
                 if(currentActiveTab === 'courses') renderCourses(); 
             });
         }
@@ -715,9 +733,6 @@
             else if(currentActiveTab === 'courses') openAddCourseModal();
         }
 
-        // =====================================
-        // 1. SMART LEDGER & AUTO-STOCK 
-        // =====================================
         function renderAll() {
             let tC = 0, tT = 0, dI = 0, dE = 0, dP = 0;
             allTransactions.forEach(tx => {
@@ -769,6 +784,7 @@
 
         function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
         function closeAddModal() { document.getElementById('addModal').classList.add('hidden'); document.getElementById('txForm').reset(); }
+        
         function selectWallet(t) {
             currentWallet = t;
             if(t==='TRANSFER'){ document.getElementById('btnWalletTransfer').className="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnWalletCash').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
@@ -825,7 +841,49 @@
         }
 
         // =====================================
-        // 4. STOCK & INSTALLMENT SYSTEM
+        // 2. ADVANCED REPORT (CSV)
+        // =====================================
+        function openReportModal() {
+            document.getElementById('reportStartDate').value = selectedDate;
+            document.getElementById('reportEndDate').value = selectedDate;
+            document.getElementById('reportModal').classList.remove('hidden');
+        }
+        function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
+
+        function exportAdvancedCSV() {
+            const start = document.getElementById('reportStartDate').value;
+            const end = document.getElementById('reportEndDate').value;
+            if(!start || !end) return showCustomAlert("แจ้งเตือน", "กรุณาเลือกช่วงเวลาให้ครบถ้วน", "info");
+            
+            let csv = "data:text/csv;charset=utf-8,\uFEFF"; 
+            csv += "=== สรุปรายงานบัญชีรับ-จ่าย (Transactions) ===\n";
+            csv += "วันที่,เวลา,รายการ,หมวดหมู่,ช่องทาง,ประเภท,จำนวนเงิน (บาท),ราคาทุน (บาท),กำไร (บาท)\n";
+            
+            const txInRange = allTransactions.filter(tx => tx.date >= start && tx.date <= end);
+            let sumIncome=0, sumExpense=0, sumProfit=0;
+            
+            txInRange.forEach(tx => {
+                const isIncome = ['SELL','OTHER_INCOME','COURSE', 'INSTALLMENT'].includes(tx.category);
+                const type = isIncome ? "รายรับ" : "รายจ่าย";
+                const time = tx.timestamp ? new Date(tx.timestamp.toDate()).toLocaleTimeString('th-TH') : "";
+                const safeDesc = tx.description ? tx.description.replace(/"/g, '""') : "";
+                const profit = isIncome && tx.category === 'SELL' ? tx.amount - (tx.cost||0) : 0;
+                
+                if(isIncome) { sumIncome += tx.amount; sumProfit += profit; } else sumExpense += tx.amount;
+                csv += `${tx.date},${time},"${safeDesc}",${tx.category},${tx.wallet},${type},${tx.amount},${tx.cost||0},${profit}\n`;
+            });
+            csv += `,,,,รวมรายรับ,${sumIncome},รวมรายจ่าย,${sumExpense},กำไรรวม,${sumProfit}\n\n`;
+
+            const encodedUri = encodeURI(csv);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Supsiam_Report_${start}_to_${end}.csv`);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            closeReportModal();
+        }
+
+        // =====================================
+        // 4. STOCK & IMAGE UPLOAD
         // =====================================
         function setStockTab(tab) {
             currentStockTab = tab;
@@ -846,16 +904,20 @@
             const q = (document.getElementById('stockSearch').value || "").toLowerCase();
             
             let filtered = allStock.filter(s => {
-                if(currentStockTab === 'ALL' && s.status === 'SOLD') return false; 
-                if(currentStockTab === 'AVAILABLE' && s.status !== 'AVAILABLE') return false;
-                if(currentStockTab === 'RESERVED' && s.status !== 'RESERVED') return false;
-                if(currentStockTab === 'SOLD' && s.status !== 'SOLD') return false;
+                const stat = s.status || 'AVAILABLE'; // ให้ข้อมูลเก่าที่ไม่มีสถานะ เป็น AVAILABLE เสมอ
+                if(currentStockTab === 'ALL' && stat === 'SOLD') return false; 
+                if(currentStockTab === 'AVAILABLE' && stat !== 'AVAILABLE') return false;
+                if(currentStockTab === 'RESERVED' && stat !== 'RESERVED') return false;
+                if(currentStockTab === 'SOLD' && stat !== 'SOLD') return false;
                 return ((s.name||"").toLowerCase().includes(q) || (s.code||"").toLowerCase().includes(q) || (s.category||"").toLowerCase().includes(q));
             });
 
             let totalValue = 0;
             if(currentStockTab !== 'SOLD') {
-                allStock.forEach(s => { if(s.status !== 'SOLD') totalValue += (s.price || 0); });
+                allStock.forEach(s => { 
+                    const stat = s.status || 'AVAILABLE';
+                    if(stat !== 'SOLD') totalValue += (s.price || 0); 
+                });
             }
             if(document.getElementById('totalStockCount')) document.getElementById('totalStockCount').innerText = `${filtered.length} องค์`;
             if(document.getElementById('totalStockValue')) document.getElementById('totalStockValue').innerHTML = `${totalValue.toLocaleString()} <span class="text-lg">฿</span>`;
@@ -864,24 +926,25 @@
             if(!filtered.length) return cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่อง</div>`;
             
             cont.innerHTML = filtered.map(s => {
+                const stat = s.status || 'AVAILABLE'; 
                 const safeName = (s.name || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const imgFallback = 'https://via.placeholder.com/400?text=No+Image';
                 const currentImg = s.imageUrl || imgFallback;
                 
+                // ส่งแค่ s.id ไปให้หน้าต่าง Popup แล้วให้มันจัดการดึงข้อมูลที่เหลือเอง (รวมถึงประวัติ)
                 const imgHtml = s.imageUrl 
-                    ? `<img src="${currentImg}" onclick="openImageViewer('${currentImg}', '${s.code}', '${s.category}', '${safeName}', ${s.price}, ${s.cost||0})" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 cursor-pointer hover:opacity-85 transition-all shadow-sm hover:shadow-md" title="คลิกเพื่อดูรายละเอียดขยาย">` 
-                    : `<div onclick="openImageViewer('${imgFallback}', '${s.code}', '${s.category}', '${safeName}', ${s.price}, ${s.cost||0})" class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300 cursor-pointer hover:bg-slate-200 transition-colors"><i class="ph ph-image text-4xl"></i></div>`;
+                    ? `<img src="${currentImg}" onclick="openImageViewer('${s.id}')" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 cursor-pointer hover:opacity-85 transition-all shadow-sm hover:shadow-md" title="คลิกเพื่อดูรายละเอียดขยาย">` 
+                    : `<div onclick="openImageViewer('${s.id}')" class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300 cursor-pointer hover:bg-slate-200 transition-colors"><i class="ph ph-image text-4xl"></i></div>`;
                 
                 let statusBadge = "";
-                if(s.status === 'AVAILABLE') statusBadge = `<div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">พร้อมเช่า</div>`;
-                else if(s.status === 'RESERVED') statusBadge = `<div class="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md"><i class="ph-bold ph-clock"></i> ติดจอง/ผ่อน</div>`;
-                else if(s.status === 'SOLD') statusBadge = `<div class="absolute top-3 right-3 bg-slate-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">ปิดแล้ว</div>`;
+                if(stat === 'AVAILABLE') statusBadge = `<div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">พร้อมเช่า</div>`;
+                else if(stat === 'RESERVED') statusBadge = `<div class="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md"><i class="ph-bold ph-clock"></i> ติดจอง/ผ่อน</div>`;
+                else if(stat === 'SOLD') statusBadge = `<div class="absolute top-3 right-3 bg-slate-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">ปิดแล้ว</div>`;
 
                 let priceSection = "";
-                if (s.status === 'SOLD') {
+                if (stat === 'SOLD') {
                     priceSection = `<div class="bg-slate-50 p-2 rounded-lg col-span-2 text-center"><p class="text-slate-400 mb-0.5">ปิดการขายไปเมื่อ ${s.soldDate||'-'}</p><p class="font-bold text-slate-700">จบที่ ${Number(s.sellAmount||0).toLocaleString()} ฿</p></div>`;
-                } else if (s.status === 'RESERVED') {
-                    // ป้องกัน Error สำหรับพระเก่าที่ติดจองไว้ก่อนมีระบบใหม่
+                } else if (stat === 'RESERVED') {
                     const paid = s.paidAmount || 0;
                     const agreed = s.agreedPrice || s.price;
                     const remain = agreed - paid;
@@ -897,13 +960,13 @@
                 }
 
                 let actionBtn = "";
-                if (s.status === 'AVAILABLE') {
+                if (stat === 'AVAILABLE') {
                     actionBtn = `<button onclick="openSellStockModal('${s.id}', '${safeName}', ${s.cost}, ${s.price})" class="w-full mt-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-handshake"></i> ทำรายการเช่า / มัดจำ</button>`;
-                } else if (s.status === 'RESERVED') {
+                } else if (stat === 'RESERVED') {
                     actionBtn = `<button onclick="openAmuletLedgerModal('${s.id}')" class="w-full mt-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-folder-open"></i> เปิดแฟ้มประวัติ / รับค่างวด</button>`;
                 }
 
-                return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border ${s.status === 'SOLD' ? 'border-slate-200 opacity-80' : 'border-amber-200/50'} relative overflow-hidden flex flex-col">
+                return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border ${stat === 'SOLD' ? 'border-slate-200 opacity-80' : 'border-amber-200/50'} relative overflow-hidden flex flex-col">
                     ${statusBadge}
                     ${imgHtml}
                     <div class="flex items-center gap-2 mb-2"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-xs">${s.code}</span><span class="text-xs text-slate-500 truncate">${s.category}</span></div>
@@ -914,7 +977,7 @@
                     
                     ${actionBtn}
                     
-                    ${isOwner && s.status !== 'SOLD' ? `
+                    ${isOwner && stat !== 'SOLD' ? `
                         <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100">
                             <button onclick="openEditStockModal('${s.id}', '${s.code}', '${safeName}', '${s.category}', ${s.cost}, ${s.price}, '${s.imageUrl||''}')" class="flex-1 bg-slate-100 text-slate-600 font-bold py-2 rounded-xl text-xs hover:bg-slate-200 transition-colors"><i class="ph-bold ph-pencil-simple"></i> แก้ไข</button>
                             <button onclick="if(confirm('ต้องการลบสต็อกองค์นี้ออกจากระบบ?')) getColRef('amulet_stock').doc('${s.id}').delete()" class="flex-1 bg-rose-50 text-rose-600 font-bold py-2 rounded-xl text-xs hover:bg-rose-100 transition-colors"><i class="ph-bold ph-trash"></i> ลบ</button>
@@ -954,9 +1017,13 @@
         }
 
         function openEditStockModal(id, code, name, category, cost, price, imageUrl) {
-            document.getElementById('editStockId').value = id; document.getElementById('editStockOldImage').value = imageUrl;
-            document.getElementById('editStockCode').value = code; document.getElementById('editStockName').value = name;
-            document.getElementById('editStockCategory').value = category; document.getElementById('editStockCost').value = cost;
+            document.getElementById('editStockId').value = id; 
+            document.getElementById('editStockOldImage').value = imageUrl || '';
+            document.getElementById('editStockOldPrice').value = price; 
+            document.getElementById('editStockCode').value = code; 
+            document.getElementById('editStockName').value = name;
+            document.getElementById('editStockCategory').value = category; 
+            document.getElementById('editStockCost').value = cost;
             document.getElementById('editStockPrice').value = price;
             document.getElementById('editStockModal').classList.remove('hidden');
         }
@@ -964,19 +1031,42 @@
 
         async function handleEditStockSubmit(e) {
             e.preventDefault();
-            const btn = document.getElementById('btnSubmitEditStock'); btn.disabled = true; btn.innerText = "กำลังอัปโหลด...";
+            const btn = document.getElementById('btnSubmitEditStock'); btn.disabled = true; btn.innerText = "กำลังอัปโหลดการแก้ไข...";
             try {
                 const id = document.getElementById('editStockId').value;
                 let imgUrl = document.getElementById('editStockOldImage').value;
+                const oldPrice = Number(document.getElementById('editStockOldPrice').value);
+                const newPrice = Number(document.getElementById('editStockPrice').value);
+                
                 const fileInput = document.getElementById('editStockImage');
                 if(fileInput.files.length > 0) imgUrl = await uploadImage(fileInput.files[0]);
 
-                await getColRef("amulet_stock").doc(id).update({ name: document.getElementById('editStockName').value, category: document.getElementById('editStockCategory').value, imageUrl: imgUrl });
-                closeEditStockModal(); showCustomAlert("แก้ไขสำเร็จ", "อัปเดตข้อมูลพระเครื่องในตู้เรียบร้อย", "success");
+                let updateData = { 
+                    name: document.getElementById('editStockName').value, 
+                    category: document.getElementById('editStockCategory').value, 
+                    imageUrl: imgUrl,
+                    price: newPrice
+                };
+
+                // ถ้าราคาเปลี่ยน ให้บันทึกลงประวัติด้วย
+                if (oldPrice !== newPrice) {
+                    updateData.priceHistory = firebase.firestore.FieldValue.arrayUnion({
+                        date: selectedDate,
+                        time: new Date().toLocaleTimeString('th-TH'),
+                        oldPrice: oldPrice,
+                        newPrice: newPrice
+                    });
+                }
+
+                await getColRef("amulet_stock").doc(id).update(updateData);
+                closeEditStockModal(); showCustomAlert("แก้ไขสำเร็จ", "อัปเดตข้อมูลและราคาพระเครื่องเรียบร้อย", "success");
             } catch (err) { showCustomAlert("ข้อผิดพลาด", err.message, "error"); } 
             finally { btn.disabled = false; btn.innerText = "บันทึกการแก้ไข"; }
         }
 
+        // =====================================
+        // SELL / INSTALLMENT
+        // =====================================
         function openSellStockModal(id, name, cost, price) {
             document.getElementById('sellStockId').value = id; 
             document.getElementById('sellStockCost').value = cost;
@@ -1019,14 +1109,12 @@
 
                 const batch = db.batch();
                 
-                // บันทึกลงบัญชีรายรับ
                 batch.set(getColRef("transactions").doc(), { 
                     description: descStr, category: catStr, 
                     amount: paid, cost: isFullPay ? cost : 0, 
                     wallet: currentSellStockWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() 
                 });
 
-                // อัปเดตตู้พระ พร้อมเก็บประวัติการจ่ายเงินรอบแรก
                 const stockUpdate = {
                     status: status,
                     customerName: custName,
@@ -1066,7 +1154,8 @@
             
             const custName = s.customerName || "ไม่ได้ระบุชื่อ";
             const custPhone = s.customerPhone || "ไม่มีเบอร์โทร";
-            const agreed = s.agreedPrice || s.price || 0; // Fallback สำหรับพระเก่า
+            
+            const agreed = s.agreedPrice || s.price || 0; 
             const paid = s.paidAmount || 0;
             const remain = agreed - paid;
 
@@ -1105,21 +1194,18 @@
         }
         function closeAmuletLedgerModal() { document.getElementById('amuletLedgerModal').classList.add('hidden'); currentLedgerAmulet = null; }
 
-        let currentInstWallet = 'TRANSFER';
-        
         function handlePayInstallment() {
             const s = currentLedgerAmulet;
             const agreed = s.agreedPrice || s.price || 0;
             const paid = s.paidAmount || 0;
             const remain = agreed - paid;
             
-            // ดึงชื่อเก่ามากรอกรอไว้ เพื่อให้แก้ไขได้
             document.getElementById('payInstCustName').value = s.customerName && s.customerName !== 'ไม่ได้ระบุชื่อ' ? s.customerName : '';
             document.getElementById('payInstCustPhone').value = s.customerPhone && s.customerPhone !== 'ไม่มีเบอร์โทร' ? s.customerPhone : '';
             
             document.getElementById('payInstRemainText').innerText = `ยอดคงเหลือ: ${remain.toLocaleString()} ฿`;
             document.getElementById('payInstAmount').max = remain;
-            document.getElementById('payInstAmount').value = remain; // แนะนำยอดคงเหลือทั้งหมด
+            document.getElementById('payInstAmount').value = remain; 
             
             selectInstWallet('TRANSFER');
             document.getElementById('payInstallmentModal').classList.remove('hidden');
@@ -1152,10 +1238,9 @@
                  return;
             }
 
-            const isFullNow = ((s.paidAmount||0) + payAmt) >= s.agreedPrice;
+            const isFullNow = ((s.paidAmount||0) + payAmt) >= agreed;
             const batch = db.batch();
 
-            // 1. ลงบัญชีรับเงิน
             batch.set(getColRef("transactions").doc(), { 
                 description: `ค่างวด: ${s.name} (${newName})`, 
                 category: isFullNow ? 'SELL' : 'INSTALLMENT', 
@@ -1163,14 +1248,12 @@
                 wallet: currentInstWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() 
             });
 
-            // 2. อัปเดตประวัติการจ่ายเงิน
             const newPayments = [...(s.payments||[])];
             newPayments.push({
                 date: selectedDate, time: new Date().toLocaleTimeString('th-TH'),
                 amount: payAmt, wallet: currentInstWallet, type: 'INSTALLMENT'
             });
 
-            // 3. อัปเดตตู้พระ
             const stockUpdate = {
                 agreedPrice: agreed,
                 paidAmount: paid + payAmt,
@@ -1182,7 +1265,7 @@
                 stockUpdate.status = 'SOLD';
                 stockUpdate.soldDate = selectedDate;
                 stockUpdate.soldTime = new Date().toLocaleTimeString('th-TH');
-                stockUpdate.sellAmount = s.agreedPrice;
+                stockUpdate.sellAmount = agreed;
             }
 
             try {
@@ -1190,7 +1273,6 @@
                 await batch.commit();
                 closePayInstallmentModal();
                 
-                // รีเฟรชหน้าต่างประวัติให้โชว์ข้อมูลใหม่ทันที
                 currentLedgerAmulet = {...s, ...stockUpdate}; 
                 openAmuletLedgerModal(s.id); 
                 
@@ -1256,53 +1338,191 @@
         }
 
         // =====================================
-        // 6. REPORT (CSV Export)
+        // 6. COURSE RESERVATION SYSTEM (จองอบรม)
         // =====================================
-        function openReportModal() {
-            document.getElementById('reportStartDate').value = selectedDate;
-            document.getElementById('reportEndDate').value = selectedDate;
-            document.getElementById('reportModal').classList.remove('hidden');
-        }
-        function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
-
-        function exportAdvancedCSV() {
-            const start = document.getElementById('reportStartDate').value;
-            const end = document.getElementById('reportEndDate').value;
-            if(!start || !end) return showCustomAlert("แจ้งเตือน", "กรุณาเลือกช่วงเวลาให้ครบถ้วน", "info");
+        function renderCourses() {
+            const q = (document.getElementById('courseSearch').value || "").toLowerCase();
+            let tQty = 0, pQty = 0, paidQty = 0;
             
-            let csv = "data:text/csv;charset=utf-8,\uFEFF"; 
-            csv += "=== สรุปรายงานบัญชีรับ-จ่าย (Transactions) ===\n";
-            csv += "วันที่,เวลา,รายการ,หมวดหมู่,ช่องทาง,ประเภท,จำนวนเงิน (บาท),ราคาทุน (บาท),กำไร (บาท)\n";
-            
-            const txInRange = allTransactions.filter(tx => tx.date >= start && tx.date <= end);
-            let sumIncome=0, sumExpense=0, sumProfit=0;
-            
-            txInRange.forEach(tx => {
-                const isIncome = ['SELL','OTHER_INCOME','COURSE', 'INSTALLMENT'].includes(tx.category);
-                const type = isIncome ? "รายรับ" : "รายจ่าย";
-                const time = tx.timestamp ? new Date(tx.timestamp.toDate()).toLocaleTimeString('th-TH') : "";
-                const safeDesc = tx.description ? tx.description.replace(/"/g, '""') : "";
-                const profit = isIncome && tx.category === 'SELL' ? tx.amount - (tx.cost||0) : 0;
-                
-                if(isIncome) { sumIncome += tx.amount; sumProfit += profit; } else sumExpense += tx.amount;
-                csv += `${tx.date},${time},"${safeDesc}",${tx.category},${tx.wallet},${type},${tx.amount},${tx.cost||0},${profit}\n`;
+            const filtered = allCourses.filter(c => {
+                const match = (c.customerName||"").toLowerCase().includes(q) || (c.phone||"").toLowerCase().includes(q);
+                if (match) {
+                    tQty += c.qty;
+                    if (c.status === 'PENDING') pQty += c.qty; else paidQty += c.qty;
+                }
+                return match;
             });
-            csv += `,,,,รวมรายรับ,${sumIncome},รวมรายจ่าย,${sumExpense},กำไรรวม,${sumProfit}\n\n`;
+            
+            document.getElementById('courseTotalQty').innerText = `${tQty} ที่`;
+            document.getElementById('coursePendingQty').innerText = `${pQty} ที่`;
+            document.getElementById('coursePaidQty').innerText = `${paidQty} ที่`;
+            
+            const cont = document.getElementById('courseContainer');
+            if(!filtered.length) return cont.innerHTML = `<div class="text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการรับจอง</div>`;
+            
+            cont.innerHTML = filtered.map(c => {
+                return `<div class="bg-white/95 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-l-4 ${c.status==='PENDING' ? 'border-amber-400' : 'border-emerald-500'}">
+                    <div class="flex-1 w-full">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-sm">${c.queueNo}</span>
+                            <span class="text-xs text-slate-500"><i class="ph-bold ph-calendar-blank"></i> จอง ${c.date}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-base md:text-lg">${c.customerName}</h4>
+                        <p class="text-xs md:text-sm text-slate-500 mb-2"><i class="ph-fill ph-phone-call"></i> ${c.phone}</p>
+                        
+                        <div class="flex flex-wrap items-center gap-2 text-xs md:text-sm font-semibold mt-2">
+                            <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg">จอง ${c.qty} ที่นั่ง</span>
+                            ${c.status === 'PAID' 
+                                ? `<span class="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-lg"><i class="ph-bold ph-check-circle"></i> ชำระแล้ว ${c.paymentAmount} ฿ (${c.paymentWallet === 'CASH' ? 'เงินสด' : 'โอน'})</span> 
+                                   <span class="text-xs text-slate-400 ml-1">ชำระเมื่อ ${c.paidDate} ${c.paidTime}</span>` 
+                                : `<span class="bg-amber-50 text-amber-600 px-2.5 py-1 rounded-lg"><i class="ph-bold ph-clock"></i> รอชำระเงิน</span>`
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0 justify-end md:justify-start">
+                        ${c.status === 'PENDING' ? `<button onclick="openPayCourseModal('${c.id}', '${c.queueNo}', '${c.customerName}')" class="flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm transition-colors text-sm"><i class="ph-bold ph-wallet"></i> รับชำระเงิน</button>` : ''}
+                        ${isOwner ? `<button onclick="if(confirm('ต้องการลบรายการจองนี้?')) getColRef('course_orders').doc('${c.id}').delete()" class="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors bg-slate-50 rounded-xl"><i class="ph-bold ph-trash text-lg"></i></button>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
 
-            const encodedUri = encodeURI(csv);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Supsiam_Report_${start}_to_${end}.csv`);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            closeReportModal();
+        function openAddCourseModal() { document.getElementById('addCourseModal').classList.remove('hidden'); }
+        function closeAddCourseModal() { document.getElementById('addCourseModal').classList.add('hidden'); document.getElementById('courseForm').reset(); }
+
+        function handleCourseSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitCourse'); btn.disabled = true; btn.innerText = "กำลังบันทึก...";
+            
+            const countInDate = allCourses.filter(c => c.date === selectedDate).length + 1;
+            const qStr = `C-${String(countInDate).padStart(3, '0')}`;
+            
+            getColRef("course_orders").add({
+                queueNo: qStr,
+                customerName: document.getElementById('courseCustomerName').value,
+                phone: document.getElementById('courseCustomerPhone').value,
+                qty: Number(document.getElementById('courseQty').value),
+                status: 'PENDING',
+                date: selectedDate,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                closeAddCourseModal(); showCustomAlert("บันทึกการจองเรียบร้อย", `รหัสจอง ${qStr}`, "success");
+            }).catch(err => { showCustomAlert("ข้อผิดพลาด", err.message, "error");
+            }).finally(() => { btn.disabled = false; btn.innerText = "บันทึกข้อมูลจองคอร์ส"; });
+        }
+
+        function openPayCourseModal(id, qNo, name) {
+            document.getElementById('payCourseId').value = id;
+            document.getElementById('payCourseTitle').value = `ค่าจองอบรม ${qNo} (${name})`;
+            document.getElementById('coursePaymentQueue').innerText = qNo;
+            selectCourseWallet('TRANSFER'); 
+            document.getElementById('payCourseModal').classList.remove('hidden');
+        }
+        function closePayCourseModal() { document.getElementById('payCourseModal').classList.add('hidden'); document.getElementById('coursePayForm').reset(); }
+
+        function selectCourseWallet(t) {
+            currentCourseWallet = t;
+            if(t==='TRANSFER'){ document.getElementById('btnCoursePayTransfer').className="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnCoursePayCash').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
+            else { document.getElementById('btnCoursePayCash').className="py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5"; document.getElementById('btnCoursePayTransfer').className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; }
+        }
+
+        async function handleCoursePaymentSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitCoursePay'); btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
+
+            try {
+                const amt = Number(document.getElementById('payCourseAmount').value);
+                const batch = db.batch();
+                
+                batch.set(getColRef("transactions").doc(), { 
+                    description: document.getElementById('payCourseTitle').value, 
+                    category: 'COURSE', 
+                    amount: amt, cost: 0, wallet: currentCourseWallet, 
+                    date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+                });
+                
+                const currentTime = new Date().toLocaleTimeString('th-TH');
+                batch.update(getColRef("course_orders").doc(document.getElementById('payCourseId').value), { 
+                    status: 'PAID', 
+                    paidDate: selectedDate, 
+                    paidTime: currentTime, 
+                    paymentAmount: amt, 
+                    paymentWallet: currentCourseWallet 
+                });
+                
+                await batch.commit();
+                closePayCourseModal(); showCustomAlert("เสร็จสิ้น", `บันทึกรับเงินค่าจองคอร์ส ${amt} บาท เรียบร้อย`, "success");
+            } catch(err) { showCustomAlert("เกิดข้อผิดพลาด", err.message, "error"); } 
+            finally { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-check"></i> ยืนยันรับเงิน'; }
         }
 
         // =====================================
-        // UI & AUTH SETTINGS
+        // UI & AUTH & IMAGE VIEWER
         // =====================================
         function openPinModal(){ document.getElementById('pinModal').classList.remove('hidden'); setTimeout(()=>document.getElementById('pinInput').focus(),100); }
         function closePinModal(){ document.getElementById('pinModal').classList.add('hidden'); document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden'); }
         
+        /* ฟังก์ชันเปิด/ปิด รูปขยาย พร้อมรายละเอียด */
+        function openImageViewer(id) {
+            const s = allStock.find(x => x.id === id);
+            if(!s) return;
+
+            const imgFallback = 'https://via.placeholder.com/400?text=No+Image';
+            document.getElementById('viewerImageSrc').src = s.imageUrl || imgFallback;
+            document.getElementById('viewerCode').innerText = s.code;
+            document.getElementById('viewerCategory').innerText = s.category;
+            document.getElementById('viewerName').innerText = s.name;
+            document.getElementById('viewerPrice').innerText = Number(s.price).toLocaleString() + ' ฿';
+            
+            // เช็คสิทธิ์การมองเห็นราคาทุน
+            if (isOwner) {
+                document.getElementById('viewerCostContainer').classList.remove('hidden');
+                document.getElementById('viewerCostHidden').classList.add('hidden');
+                document.getElementById('viewerCost').innerText = Number(s.cost || 0).toLocaleString() + ' ฿';
+            } else {
+                document.getElementById('viewerCostContainer').classList.add('hidden');
+                document.getElementById('viewerCostHidden').classList.remove('hidden');
+            }
+
+            // แสดงประวัติการปรับราคา (ถ้ามี)
+            const historyContainer = document.getElementById('viewerPriceHistoryContainer');
+            const historyList = document.getElementById('viewerPriceHistoryList');
+            if (s.priceHistory && s.priceHistory.length > 0) {
+                historyContainer.classList.remove('hidden');
+                // เรียงจากใหม่ไปเก่า (reverse)
+                historyList.innerHTML = s.priceHistory.slice().reverse().map(h => `
+                    <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
+                        <div class="text-[10px] md:text-xs text-slate-400 font-medium"><i class="ph-fill ph-calendar-blank"></i> ${h.date} ${h.time}</div>
+                        <div class="text-xs md:text-sm font-bold flex items-center">
+                            <span class="text-slate-400 line-through mr-1.5">${Number(h.oldPrice).toLocaleString()}</span>
+                            <i class="ph-bold ph-arrow-right text-slate-300 mx-1.5"></i>
+                            <span class="text-emerald-600">${Number(h.newPrice).toLocaleString()} ฿</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                historyContainer.classList.add('hidden');
+                historyList.innerHTML = '';
+            }
+            
+            document.getElementById('imageViewerModal').classList.remove('hidden'); 
+        }
+        
+        function closeImageViewer() { 
+            document.getElementById('imageViewerModal').classList.add('hidden'); 
+            setTimeout(() => document.getElementById('viewerImageSrc').src = "", 200); 
+        }
+
+        function showCustomAlert(title, msg, type) {
+            document.getElementById('infoTitle').innerText = title; document.getElementById('infoDesc').innerText = msg;
+            const b = document.getElementById('infoIconBox');
+            if(type==="success"){ b.className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-check-circle text-3xl"></i>'; }
+            else if(type==="error"){ b.className="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-warning text-3xl"></i>'; }
+            else { b.className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-info text-3xl"></i>'; }
+            document.getElementById('generalInfoModal').classList.remove('hidden');
+        }
+
         function verifyPin() {
             const btn = document.getElementById('btnVerify'); btn.disabled = true; btn.innerHTML = 'ตรวจสอบ...';
             auth.signInWithEmailAndPassword(document.getElementById('ownerSelect').value, document.getElementById('pinInput').value)
@@ -1338,40 +1558,8 @@
             }
             renderStock(); renderDirectory();
         }
-        
         function logoutRole() { auth.signOut().then(() => { isOwner = false; updateUIRole(); renderAll(); renderStock(); renderDirectory(); renderCourses(); }); }
         function handleSearch(v) { searchQuery=v; renderAll(); }
-        
-        function showCustomAlert(title, msg, type) {
-            document.getElementById('infoTitle').innerText = title; document.getElementById('infoDesc').innerText = msg;
-            const b = document.getElementById('infoIconBox');
-            if(type==="success"){ b.className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-check-circle text-3xl"></i>'; }
-            else if(type==="error"){ b.className="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-warning text-3xl"></i>'; }
-            else { b.className="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"; b.innerHTML='<i class="ph-bold ph-info text-3xl"></i>'; }
-            document.getElementById('generalInfoModal').classList.remove('hidden');
-        }
-
-        // =====================================
-        // IMAGE VIEWER
-        // =====================================
-        function openImageViewer(url, code, category, name, price, cost) {
-            document.getElementById('viewerImageSrc').src = url;
-            document.getElementById('viewerCode').innerText = code;
-            document.getElementById('viewerCategory').innerText = category;
-            document.getElementById('viewerName').innerText = name;
-            document.getElementById('viewerPrice').innerText = Number(price).toLocaleString() + ' ฿';
-            
-            if (isOwner) {
-                document.getElementById('viewerCostContainer').classList.remove('hidden');
-                document.getElementById('viewerCostHidden').classList.add('hidden');
-                document.getElementById('viewerCost').innerText = Number(cost).toLocaleString() + ' ฿';
-            } else {
-                document.getElementById('viewerCostContainer').classList.add('hidden');
-                document.getElementById('viewerCostHidden').classList.remove('hidden');
-            }
-            document.getElementById('imageViewerModal').classList.remove('hidden'); 
-        }
-        function closeImageViewer() { document.getElementById('imageViewerModal').classList.add('hidden'); setTimeout(() => document.getElementById('viewerImageSrc').src = "", 200); }
     </script>
 </body>
 </html>
