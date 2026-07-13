@@ -995,10 +995,15 @@
             if(!s) return;
             currentLedgerAmulet = s;
             
-            document.getElementById('ledgerAmuletName').innerText = `${s.code} - ${s.name} (${s.customerName})`;
-            document.getElementById('ledgerTotalPrice').innerText = (s.agreedPrice||0).toLocaleString() + ' ฿';
-            document.getElementById('ledgerPaidAmount').innerText = (s.paidAmount||0).toLocaleString() + ' ฿';
-            const remain = (s.agreedPrice||0) - (s.paidAmount||0);
+            // เพิ่มระบบ Fallback: ดักจับข้อมูลเก่าที่ไม่มีชื่อหรือราคา
+            const custName = s.customerName || "ไม่ได้ระบุชื่อ";
+            const agreed = s.agreedPrice || s.price || 0;
+            const paid = s.paidAmount || 0;
+            const remain = agreed - paid;
+
+            document.getElementById('ledgerAmuletName').innerText = `${s.code} - ${s.name} (${custName})`;
+            document.getElementById('ledgerTotalPrice').innerText = agreed.toLocaleString() + ' ฿';
+            document.getElementById('ledgerPaidAmount').innerText = paid.toLocaleString() + ' ฿';
             document.getElementById('ledgerRemainAmount').innerText = remain.toLocaleString() + ' ฿';
 
             const histList = document.getElementById('ledgerHistoryList');
@@ -1033,7 +1038,11 @@
 
         async function handlePayInstallment() {
             const s = currentLedgerAmulet;
-            const remain = (s.agreedPrice||0) - (s.paidAmount||0);
+            
+            // เพิ่มระบบ Fallback สำหรับตอนบันทึกค่างวด
+            const agreed = s.agreedPrice || s.price || 0;
+            const paid = s.paidAmount || 0;
+            const remain = agreed - paid;
             
             const amountStr = prompt(`กรุณาระบุจำนวนเงินค่างวดที่ได้รับ (ยอดคงเหลือ ${remain.toLocaleString()} ฿):`);
             if(!amountStr) return;
@@ -1061,8 +1070,11 @@
                 amount: payAmt, wallet: wallet, type: 'INSTALLMENT'
             });
 
+            // อัปเดตข้อมูลเก่าให้กลายเป็นระบบใหม่โดยอัตโนมัติ
             const stockUpdate = {
-                paidAmount: (s.paidAmount||0) + payAmt,
+                agreedPrice: agreed,
+                paidAmount: paid + payAmt,
+                customerName: s.customerName || "ไม่ได้ระบุชื่อ",
                 payments: newPayments
             };
             if (isFullNow) {
