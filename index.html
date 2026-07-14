@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- ป้องกันการจำ Cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>บัญชีร้าน ป.ทรัพย์สยาม Pro</title>
     
     <!-- Tailwind CSS -->
@@ -72,6 +76,11 @@
     </style>
 </head>
 <body class="bg-amber-50/10 min-h-screen pb-28 text-slate-800">
+
+    <!-- REFRESH BUTTON (ปุ่มฉุกเฉิน) -->
+    <button onclick="window.location.reload(true)" class="fixed top-4 right-4 bg-white/50 backdrop-blur border border-slate-200 text-slate-400 p-2 rounded-full z-50 hover:bg-white transition-all shadow-sm group">
+        <i class="ph-bold ph-arrows-clockwise text-xl group-hover:rotate-180 transition-transform duration-500"></i>
+    </button>
 
     <header id="mainHeader" class="bg-gradient-to-b from-velvet-dark to-velvet-main text-white px-4 md:px-8 pt-6 pb-28 rounded-b-[32px] md:rounded-b-[48px] shadow-lg relative transition-all duration-300 z-10">
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -289,6 +298,7 @@
                         <option value="SELL">ปล่อยเช่า (รายรับ)</option>
                         <option value="BUY">เช่าเข้า (รายจ่าย)</option>
                         <option value="COURSE">รายรับจากค่าอบรม</option>
+                        <option value="INSTALLMENT">รายรับค่างวด/มัดจำ</option>
                         <option value="OTHER_INCOME">รายรับอื่นๆ</option>
                         <option value="OTHER_EXPENSE">รายจ่ายอื่นๆ</option>
                     </select>
@@ -469,6 +479,7 @@
         </div>
     </div>
 
+
     <!-- COURSE RESERVATION MODALS (อบรม) -->
     <div id="addCourseModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 md:p-8 relative">
@@ -566,7 +577,7 @@
 
     <!-- Alert Modal -->
     <div id="generalInfoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 hidden animate-in fade-in">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-6 relative text-center shadow-2xl">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 relative text-center shadow-2xl border-t-4 border-slate-900" style="border-top-color: var(--alert-color, #1e293b);">
             <div id="infoIconBox"></div><h3 id="infoTitle" class="text-lg font-bold text-slate-800 mb-2"></h3><p id="infoDesc" class="text-sm text-slate-500 mb-6"></p>
             <button onclick="document.getElementById('generalInfoModal').classList.add('hidden')" class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl">ตกลง</button>
         </div>
@@ -626,7 +637,7 @@
 
     <script>
         // =====================================
-        // FIREBASE CONFIGURATION
+        // FIREBASE CONFIGURATION & AUTH (HARD BYPASS)
         // =====================================
         let firebaseConfig;
         if (typeof __firebase_config !== 'undefined' && __firebase_config) {
@@ -643,7 +654,8 @@
         }
         
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(); const auth = firebase.auth();
+        const db = firebase.firestore(); 
+        const auth = firebase.auth();
 
         function getColRef(colName) {
             return db.collection(colName);
@@ -661,54 +673,62 @@
 
         window.onload = function() {
             document.getElementById('appDatePicker').value = selectedDate;
-            initFirebaseAndAuth();
             
-            // เช็คยอดรับเงินแบบ Real-time เวลาปล่อยเช่า
-            document.getElementById('sellStockAmount').addEventListener('input', function() {
-                const agreed = Number(document.getElementById('sellAgreedPrice').value) || 0;
-                const paid = Number(this.value) || 0;
-                const warning = document.getElementById('sellStatusWarning');
-                if (paid > 0 && paid < agreed) {
-                    warning.classList.remove('hidden');
-                } else {
-                    warning.classList.add('hidden');
-                }
-            });
-        };
-
-        async function initFirebaseAndAuth() {
-            try {
-                await auth.signInAnonymously();
-            } catch (e) { console.warn("Auth init warning:", e.message); }
+            // 🔥 ทะลวงฐานข้อมูลทันที โดยไม่ต้องรอ Auth โหลด
+            initRealtimeDatabase();
             
+            // โหลด Auth ตามหลัง เพื่อเช็คสิทธิ์ Owner
             auth.onAuthStateChanged((user) => {
                 if (user) {
-                    initRealtimeDatabase();
-                    updateUIRole();
+                    // ถ้าเคยล็อคอิน PIN ค้างไว้ ก็ให้อัปเดต UI
+                    if(ownersList[user.email]) {
+                        isOwner = true;
+                        updateUIRole();
+                    }
                 }
             });
-        }
+
+            // เช็คยอดรับเงินแบบ Real-time เวลาปล่อยเช่า
+            const sellAmtInput = document.getElementById('sellStockAmount');
+            if(sellAmtInput) {
+                sellAmtInput.addEventListener('input', function() {
+                    const agreed = Number(document.getElementById('sellAgreedPrice').value) || 0;
+                    const paid = Number(this.value) || 0;
+                    const warning = document.getElementById('sellStatusWarning');
+                    if (paid > 0 && paid < agreed) {
+                        warning.classList.remove('hidden');
+                    } else {
+                        warning.classList.add('hidden');
+                    }
+                });
+            }
+        };
 
         function initRealtimeDatabase() {
+            console.log("Connecting directly to Database...");
+            // ดึงบัญชี
             getColRef("transactions").onSnapshot(snap => { 
                 allTransactions = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); 
                 if(currentActiveTab === 'ledger') renderAll(); 
-            });
+            }, err => console.error("Tx Error:", err));
             
+            // ดึงตู้พระ
             getColRef("amulet_stock").onSnapshot(snap => { 
                 allStock = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); 
                 if(currentActiveTab === 'stock') renderStock(); 
-            });
+            }, err => console.error("Stock Error:", err));
             
+            // ดึงทำเนียบ
             getColRef("amulet_directory").orderBy("category").onSnapshot(snap => { 
                 allDirectory = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); 
                 if(allDirectory.length === 0) seedDirectory(); 
-            });
+            }, err => console.error("Dir Error:", err));
             
+            // ดึงจองอบรม
             getColRef("course_orders").onSnapshot(snap => { 
                 allCourses = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); 
                 if(currentActiveTab === 'courses') renderCourses(); 
-            });
+            }, err => console.error("Course Error:", err));
         }
 
         function changeAppDate(val) { selectedDate = val; renderAll(); renderCourses(); }
@@ -734,52 +754,65 @@
         }
 
         function renderAll() {
-            let tC = 0, tT = 0, dI = 0, dE = 0, dP = 0;
-            allTransactions.forEach(tx => {
-                const inc = ['SELL', 'OTHER_INCOME', 'COURSE', 'INSTALLMENT'].includes(tx.category);
-                if (tx.wallet === 'CASH') tC += inc ? tx.amount : -tx.amount; else tT += inc ? tx.amount : -tx.amount;
-                if (tx.date === selectedDate) { 
-                    if (inc) { 
-                        dI += tx.amount; 
-                        if(tx.category === 'SELL') dP += (tx.amount - (tx.cost||0)); 
-                    } else dE += tx.amount; 
+            try {
+                let tC = 0, tT = 0, dI = 0, dE = 0, dP = 0;
+                allTransactions.forEach(tx => {
+                    const inc = ['SELL', 'OTHER_INCOME', 'COURSE', 'INSTALLMENT'].includes(tx.category);
+                    const txAmt = Number(tx.amount || 0);
+                    const txCost = Number(tx.cost || 0);
+                    if (tx.wallet === 'CASH') tC += inc ? txAmt : -txAmt; else tT += inc ? txAmt : -txAmt;
+                    if (tx.date === selectedDate) { 
+                        if (inc) { 
+                            dI += txAmt; 
+                            if(tx.category === 'SELL') dP += (txAmt - txCost); 
+                        } else dE += txAmt; 
+                    }
+                });
+                
+                const format = (v) => Number(v||0).toLocaleString('th-TH');
+                if (isOwner) {
+                    const elAsset = document.getElementById('totalAssetValue'); if(elAsset) elAsset.innerText = format(tC + tT) + ' ฿';
+                    const elTrans = document.getElementById('totalTransferValue'); if(elTrans) elTrans.innerText = format(tT) + ' ฿';
+                    const elCash = document.getElementById('totalCashValue'); if(elCash) elCash.innerText = format(tC) + ' ฿';
+                    const elProfit = document.getElementById('profitText'); if(elProfit) elProfit.innerText = '+' + format(dP) + ' ฿';
                 }
-            });
-            
-            const format = (v) => v.toLocaleString('th-TH');
-            if (isOwner) {
-                document.getElementById('totalAssetValue').innerText = format(tC + tT) + ' ฿';
-                document.getElementById('totalTransferValue').innerText = format(tT) + ' ฿';
-                document.getElementById('totalCashValue').innerText = format(tC) + ' ฿';
-                document.getElementById('profitText').innerText = '+' + format(dP) + ' ฿';
-            }
-            document.getElementById('dailyIncomeText').innerText = format(dI) + ' ฿';
-            document.getElementById('dailyExpenseText').innerText = format(dE) + ' ฿';
+                const elDIncome = document.getElementById('dailyIncomeText'); if(elDIncome) elDIncome.innerText = format(dI) + ' ฿';
+                const elDExpense = document.getElementById('dailyExpenseText'); if(elDExpense) elDExpense.innerText = format(dE) + ' ฿';
 
-            const sq = (searchQuery || "").toLowerCase();
-            const list = allTransactions.filter(tx => tx.date === selectedDate && ((tx.description||"").toLowerCase().includes(sq) || (tx.category||"").toLowerCase().includes(sq)));
-            document.getElementById('txCountBadge').innerText = `${list.length} รายการ`;
-            const cont = document.getElementById('txContainer');
-            if(!list.length) return cont.innerHTML = `<div class="text-center py-12 bg-white/70 rounded-3xl border border-slate-100 shadow-sm text-slate-400 font-semibold">ไม่มีรายการบัญชีในวันที่เลือก</div>`;
-            
-            const names = {'SELL':'ปล่อยเช่าพระ','BUY':'เช่าเข้าพระ','COURSE':'ค่าอบรม','INSTALLMENT':'ค่างวด/มัดจำ','OTHER_INCOME':'รายรับอื่นๆ','OTHER_EXPENSE':'รายจ่ายอื่นๆ'};
-            cont.innerHTML = list.map(tx => {
-                const inc = ['SELL','OTHER_INCOME','COURSE', 'INSTALLMENT'].includes(tx.category);
-                return `<div class="bg-white/95 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between ${inc?'border-l-4 border-emerald-500':'border-l-4 border-rose-500'}">
-                    <div>
-                        <h4 class="font-bold text-slate-800">${tx.description}</h4>
-                        <div class="flex items-center gap-2 mt-1 text-[11px] md:text-xs">
-                            <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${names[tx.category]||'ทั่วไป'}</span>
-                            <span class="text-slate-400">${tx.wallet==='CASH'?'เงินสด':'โอน'}</span>
-                            ${isOwner && !inc && tx.category !== 'OTHER_EXPENSE' ? `<span class="text-rose-600 bg-rose-50 px-2 py-0.5 rounded font-bold border border-rose-100">ทุน ${format(tx.cost||0)}</span>` : ''}
+                const sq = (searchQuery || "").toLowerCase();
+                const list = allTransactions.filter(tx => tx.date === selectedDate && (String(tx.description||"").toLowerCase().includes(sq) || String(tx.category||"").toLowerCase().includes(sq)));
+                
+                const elBadge = document.getElementById('txCountBadge'); if(elBadge) elBadge.innerText = `${list.length} รายการ`;
+                
+                const cont = document.getElementById('txContainer');
+                if(!cont) return;
+                
+                if(!list.length) {
+                    cont.innerHTML = `<div class="text-center py-12 bg-white/70 rounded-3xl border border-slate-100 shadow-sm text-slate-400 font-semibold">ไม่มีรายการบัญชีในวันที่เลือก</div>`;
+                    return;
+                }
+                
+                const names = {'SELL':'ปล่อยเช่าพระ','BUY':'เช่าเข้าพระ','COURSE':'ค่าอบรม','INSTALLMENT':'ค่างวด/มัดจำ','OTHER_INCOME':'รายรับอื่นๆ','OTHER_EXPENSE':'รายจ่ายอื่นๆ'};
+                cont.innerHTML = list.map(tx => {
+                    const inc = ['SELL','OTHER_INCOME','COURSE', 'INSTALLMENT'].includes(tx.category);
+                    return `<div class="bg-white/95 p-4 md:p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between ${inc?'border-l-4 border-emerald-500':'border-l-4 border-rose-500'}">
+                        <div>
+                            <h4 class="font-bold text-slate-800">${tx.description}</h4>
+                            <div class="flex items-center gap-2 mt-1 text-[11px] md:text-xs">
+                                <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${names[tx.category]||'ทั่วไป'}</span>
+                                <span class="text-slate-400">${tx.wallet==='CASH'?'เงินสด':'โอน'}</span>
+                                ${isOwner && !inc && tx.category !== 'OTHER_EXPENSE' ? `<span class="text-rose-600 bg-rose-50 px-2 py-0.5 rounded font-bold border border-rose-100">ทุน ${format(tx.cost)}</span>` : ''}
+                            </div>
                         </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <p class="font-bold text-lg md:text-xl ${inc?'text-emerald-600':'text-slate-800'}">${inc?'+':'-'}${format(tx.amount)}</p>
-                        ${isOwner ? `<button onclick="if(confirm('ลบรายการบัญชีนี้? (การลบที่นี่จะไม่กระทบยอดในตู้พระ)')) getColRef('transactions').doc('${tx.id}').delete()" class="text-slate-300 hover:text-red-500 pt-1"><i class="ph-bold ph-trash text-lg"></i></button>`:''}
-                    </div>
-                </div>`;
-            }).join('');
+                        <div class="text-right shrink-0">
+                            <p class="font-bold text-lg md:text-xl ${inc?'text-emerald-600':'text-slate-800'}">${inc?'+':'-'}${format(tx.amount)}</p>
+                            ${isOwner ? `<button onclick="if(confirm('ลบรายการบัญชีนี้? (การลบที่นี่จะไม่กระทบยอดในตู้พระ)')) getColRef('transactions').doc('${tx.id}').delete()" class="text-slate-300 hover:text-red-500 pt-1"><i class="ph-bold ph-trash text-lg"></i></button>`:''}
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                console.error("Render Ledger Error:", err);
+            }
         }
 
         function openAddModal() { document.getElementById('addModal').classList.remove('hidden'); }
@@ -840,9 +873,6 @@
             finally { btn.disabled = false; btn.innerText = "บันทึกข้อมูล"; }
         }
 
-        // =====================================
-        // 2. ADVANCED REPORT (CSV)
-        // =====================================
         function openReportModal() {
             document.getElementById('reportStartDate').value = selectedDate;
             document.getElementById('reportEndDate').value = selectedDate;
@@ -867,9 +897,9 @@
                 const type = isIncome ? "รายรับ" : "รายจ่าย";
                 const time = tx.timestamp ? new Date(tx.timestamp.toDate()).toLocaleTimeString('th-TH') : "";
                 const safeDesc = tx.description ? tx.description.replace(/"/g, '""') : "";
-                const profit = isIncome && tx.category === 'SELL' ? tx.amount - (tx.cost||0) : 0;
+                const profit = isIncome && tx.category === 'SELL' ? Number(tx.amount||0) - Number(tx.cost||0) : 0;
                 
-                if(isIncome) { sumIncome += tx.amount; sumProfit += profit; } else sumExpense += tx.amount;
+                if(isIncome) { sumIncome += Number(tx.amount||0); sumProfit += profit; } else sumExpense += Number(tx.amount||0);
                 csv += `${tx.date},${time},"${safeDesc}",${tx.category},${tx.wallet},${type},${tx.amount},${tx.cost||0},${profit}\n`;
             });
             csv += `,,,,รวมรายรับ,${sumIncome},รวมรายจ่าย,${sumExpense},กำไรรวม,${sumProfit}\n\n`;
@@ -882,9 +912,6 @@
             closeReportModal();
         }
 
-        // =====================================
-        // 4. STOCK & IMAGE UPLOAD
-        // =====================================
         function setStockTab(tab) {
             currentStockTab = tab;
             ['ALL', 'AVAILABLE', 'RESERVED', 'SOLD'].forEach(t => {
@@ -901,90 +928,113 @@
         }
 
         function renderStock() {
-            const q = (document.getElementById('stockSearch').value || "").toLowerCase();
-            
-            let filtered = allStock.filter(s => {
-                const stat = s.status || 'AVAILABLE'; // ให้ข้อมูลเก่าที่ไม่มีสถานะ เป็น AVAILABLE เสมอ
-                if(currentStockTab === 'ALL' && stat === 'SOLD') return false; 
-                if(currentStockTab === 'AVAILABLE' && stat !== 'AVAILABLE') return false;
-                if(currentStockTab === 'RESERVED' && stat !== 'RESERVED') return false;
-                if(currentStockTab === 'SOLD' && stat !== 'SOLD') return false;
-                return ((s.name||"").toLowerCase().includes(q) || (s.code||"").toLowerCase().includes(q) || (s.category||"").toLowerCase().includes(q));
-            });
-
-            let totalValue = 0;
-            if(currentStockTab !== 'SOLD') {
-                allStock.forEach(s => { 
-                    const stat = s.status || 'AVAILABLE';
-                    if(stat !== 'SOLD') totalValue += (s.price || 0); 
+            try {
+                const q = (document.getElementById('stockSearch').value || "").toLowerCase();
+                
+                let filtered = allStock.filter(s => {
+                    const stat = s.status || 'AVAILABLE'; 
+                    if(currentStockTab === 'ALL' && stat === 'SOLD') return false; 
+                    if(currentStockTab === 'AVAILABLE' && stat !== 'AVAILABLE') return false;
+                    if(currentStockTab === 'RESERVED' && stat !== 'RESERVED') return false;
+                    if(currentStockTab === 'SOLD' && stat !== 'SOLD') return false;
+                    
+                    const sName = String(s.name || "").toLowerCase();
+                    const sCode = String(s.code || "").toLowerCase();
+                    const sCat = String(s.category || "").toLowerCase();
+                    
+                    return (sName.includes(q) || sCode.includes(q) || sCat.includes(q));
                 });
-            }
-            if(document.getElementById('totalStockCount')) document.getElementById('totalStockCount').innerText = `${filtered.length} องค์`;
-            if(document.getElementById('totalStockValue')) document.getElementById('totalStockValue').innerHTML = `${totalValue.toLocaleString()} <span class="text-lg">฿</span>`;
-            
-            const cont = document.getElementById('stockContainer');
-            if(!filtered.length) return cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่อง</div>`;
-            
-            cont.innerHTML = filtered.map(s => {
-                const stat = s.status || 'AVAILABLE'; 
-                const safeName = (s.name || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const imgFallback = 'https://via.placeholder.com/400?text=No+Image';
-                const currentImg = s.imageUrl || imgFallback;
-                
-                // ส่งแค่ s.id ไปให้หน้าต่าง Popup แล้วให้มันจัดการดึงข้อมูลที่เหลือเอง (รวมถึงประวัติ)
-                const imgHtml = s.imageUrl 
-                    ? `<img src="${currentImg}" onclick="openImageViewer('${s.id}')" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 cursor-pointer hover:opacity-85 transition-all shadow-sm hover:shadow-md" title="คลิกเพื่อดูรายละเอียดขยาย">` 
-                    : `<div onclick="openImageViewer('${s.id}')" class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300 cursor-pointer hover:bg-slate-200 transition-colors"><i class="ph ph-image text-4xl"></i></div>`;
-                
-                let statusBadge = "";
-                if(stat === 'AVAILABLE') statusBadge = `<div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">พร้อมเช่า</div>`;
-                else if(stat === 'RESERVED') statusBadge = `<div class="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md"><i class="ph-bold ph-clock"></i> ติดจอง/ผ่อน</div>`;
-                else if(stat === 'SOLD') statusBadge = `<div class="absolute top-3 right-3 bg-slate-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">ปิดแล้ว</div>`;
 
-                let priceSection = "";
-                if (stat === 'SOLD') {
-                    priceSection = `<div class="bg-slate-50 p-2 rounded-lg col-span-2 text-center"><p class="text-slate-400 mb-0.5">ปิดการขายไปเมื่อ ${s.soldDate||'-'}</p><p class="font-bold text-slate-700">จบที่ ${Number(s.sellAmount||0).toLocaleString()} ฿</p></div>`;
-                } else if (stat === 'RESERVED') {
-                    const paid = s.paidAmount || 0;
-                    const agreed = s.agreedPrice || s.price;
-                    const remain = agreed - paid;
-                    priceSection = `
-                        <div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาที่ตกลง</p><p class="font-bold text-slate-700">${agreed.toLocaleString()} ฿</p></div>
-                        <div class="bg-rose-50 p-2 rounded-lg"><p class="text-rose-400 mb-0.5">ยอดคงเหลือ</p><p class="font-bold text-rose-600">${remain.toLocaleString()} ฿</p></div>
-                    `;
-                } else {
-                    priceSection = `
-                        <div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาเปิดเช่า</p><p class="font-bold text-emerald-600">${s.price.toLocaleString()} ฿</p></div>
-                        ${isOwner ? `<div class="bg-rose-50 p-2 rounded-lg"><p class="text-rose-400 mb-0.5">ราคาทุน</p><p class="font-bold text-rose-600">${(s.cost||0).toLocaleString()} ฿</p></div>` : `<div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาทุน</p><p class="font-bold text-slate-400">*** ฿</p></div>`}
-                    `;
+                let totalValue = 0;
+                if(currentStockTab !== 'SOLD') {
+                    allStock.forEach(s => { 
+                        const stat = s.status || 'AVAILABLE';
+                        if(stat !== 'SOLD') totalValue += Number(s.price || 0); 
+                    });
                 }
+                
+                const countEl = document.getElementById('totalStockCount');
+                if (countEl) countEl.innerHTML = `${filtered.length} <span class="text-lg">องค์</span>`;
+                
+                const valEl = document.getElementById('totalStockValue');
+                if (valEl) valEl.innerHTML = `${totalValue.toLocaleString('th-TH')} <span class="text-lg">฿</span>`;
+                
+                const cont = document.getElementById('stockContainer');
+                if (!cont) return;
 
-                let actionBtn = "";
-                if (stat === 'AVAILABLE') {
-                    actionBtn = `<button onclick="openSellStockModal('${s.id}', '${safeName}', ${s.cost}, ${s.price})" class="w-full mt-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-handshake"></i> ทำรายการเช่า / มัดจำ</button>`;
-                } else if (stat === 'RESERVED') {
-                    actionBtn = `<button onclick="openAmuletLedgerModal('${s.id}')" class="w-full mt-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-folder-open"></i> เปิดแฟ้มประวัติ / รับค่างวด</button>`;
+                if(!filtered.length) {
+                    cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 bg-white/40 rounded-3xl text-slate-400 font-semibold border-dashed border border-slate-200">ไม่พบรายการพระเครื่อง</div>`;
+                    return;
                 }
+                
+                cont.innerHTML = filtered.map(s => {
+                    const stat = s.status || 'AVAILABLE'; 
+                    const safeName = (s.name || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const imgFallback = 'https://placehold.co/400x400/eeeeee/999999?text=No+Image';
+                    const currentImg = s.imageUrl || imgFallback;
+                    
+                    const costNum = Number(s.cost || 0);
+                    const priceNum = Number(s.price || 0);
+                    const agreedNum = Number(s.agreedPrice || s.price || 0);
+                    const paidNum = Number(s.paidAmount || 0);
+                    const remainNum = agreedNum - paidNum;
+                    const sellAmountNum = Number(s.sellAmount || 0);
+                    
+                    const imgHtml = s.imageUrl 
+                        ? `<img src="${currentImg}" onclick="openImageViewer('${s.id}')" class="w-full h-40 object-cover rounded-xl mb-3 border border-slate-100 cursor-pointer hover:opacity-85 transition-all shadow-sm hover:shadow-md" title="คลิกเพื่อดูรายละเอียดขยาย">` 
+                        : `<div onclick="openImageViewer('${s.id}')" class="w-full h-40 bg-slate-100 rounded-xl mb-3 flex items-center justify-center text-slate-300 cursor-pointer hover:bg-slate-200 transition-colors"><i class="ph ph-image text-4xl"></i></div>`;
+                    
+                    let statusBadge = "";
+                    if(stat === 'AVAILABLE') statusBadge = `<div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">พร้อมเช่า</div>`;
+                    else if(stat === 'RESERVED') statusBadge = `<div class="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md"><i class="ph-bold ph-clock"></i> ติดจอง/ผ่อน</div>`;
+                    else if(stat === 'SOLD') statusBadge = `<div class="absolute top-3 right-3 bg-slate-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">ปิดแล้ว</div>`;
 
-                return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border ${stat === 'SOLD' ? 'border-slate-200 opacity-80' : 'border-amber-200/50'} relative overflow-hidden flex flex-col">
-                    ${statusBadge}
-                    ${imgHtml}
-                    <div class="flex items-center gap-2 mb-2"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-xs">${s.code}</span><span class="text-xs text-slate-500 truncate">${s.category}</span></div>
-                    <h4 class="font-bold text-slate-800 mb-3 line-clamp-2 leading-snug">${s.name}</h4>
-                    <div class="mt-auto grid grid-cols-2 gap-2 text-xs">
-                        ${priceSection}
-                    </div>
-                    
-                    ${actionBtn}
-                    
-                    ${isOwner && stat !== 'SOLD' ? `
-                        <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100">
-                            <button onclick="openEditStockModal('${s.id}', '${s.code}', '${safeName}', '${s.category}', ${s.cost}, ${s.price}, '${s.imageUrl||''}')" class="flex-1 bg-slate-100 text-slate-600 font-bold py-2 rounded-xl text-xs hover:bg-slate-200 transition-colors"><i class="ph-bold ph-pencil-simple"></i> แก้ไข</button>
-                            <button onclick="if(confirm('ต้องการลบสต็อกองค์นี้ออกจากระบบ?')) getColRef('amulet_stock').doc('${s.id}').delete()" class="flex-1 bg-rose-50 text-rose-600 font-bold py-2 rounded-xl text-xs hover:bg-rose-100 transition-colors"><i class="ph-bold ph-trash"></i> ลบ</button>
+                    let priceSection = "";
+                    if (stat === 'SOLD') {
+                        priceSection = `<div class="bg-slate-50 p-2 rounded-lg col-span-2 text-center"><p class="text-slate-400 mb-0.5">ปิดการขายไปเมื่อ ${s.soldDate||'-'}</p><p class="font-bold text-slate-700">จบที่ ${sellAmountNum.toLocaleString('th-TH')} ฿</p></div>`;
+                    } else if (stat === 'RESERVED') {
+                        priceSection = `
+                            <div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาที่ตกลง</p><p class="font-bold text-slate-700">${agreedNum.toLocaleString('th-TH')} ฿</p></div>
+                            <div class="bg-rose-50 p-2 rounded-lg"><p class="text-rose-400 mb-0.5">ยอดคงเหลือ</p><p class="font-bold text-rose-600">${remainNum.toLocaleString('th-TH')} ฿</p></div>
+                        `;
+                    } else {
+                        priceSection = `
+                            <div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาเปิดเช่า</p><p class="font-bold text-emerald-600">${priceNum.toLocaleString('th-TH')} ฿</p></div>
+                            ${isOwner ? `<div class="bg-rose-50 p-2 rounded-lg"><p class="text-rose-400 mb-0.5">ราคาทุน</p><p class="font-bold text-rose-600">${costNum.toLocaleString('th-TH')} ฿</p></div>` : `<div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาทุน</p><p class="font-bold text-slate-400">*** ฿</p></div>`}
+                        `;
+                    }
+
+                    let actionBtn = "";
+                    if (stat === 'AVAILABLE') {
+                        actionBtn = `<button onclick="openSellStockModal('${s.id}', '${safeName}', ${costNum}, ${priceNum})" class="w-full mt-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-handshake"></i> ทำรายการเช่า / มัดจำ</button>`;
+                    } else if (stat === 'RESERVED') {
+                        actionBtn = `<button onclick="openAmuletLedgerModal('${s.id}')" class="w-full mt-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-folder-open"></i> เปิดแฟ้มประวัติ / รับค่างวด</button>`;
+                    }
+
+                    return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border ${stat === 'SOLD' ? 'border-slate-200 opacity-80' : 'border-amber-200/50'} relative overflow-hidden flex flex-col">
+                        ${statusBadge}
+                        ${imgHtml}
+                        <div class="flex items-center gap-2 mb-2"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-xs">${s.code||'ไม่มีรหัส'}</span><span class="text-xs text-slate-500 truncate">${s.category||'ทั่วไป'}</span></div>
+                        <h4 class="font-bold text-slate-800 mb-3 line-clamp-2 leading-snug">${s.name||'ไม่มีชื่อ'}</h4>
+                        <div class="mt-auto grid grid-cols-2 gap-2 text-xs">
+                            ${priceSection}
                         </div>
-                    ` : ''}
-                </div>`;
-            }).join('');
+                        
+                        ${actionBtn}
+                        
+                        ${isOwner && stat !== 'SOLD' ? `
+                            <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100">
+                                <button onclick="openEditStockModal('${s.id}', '${s.code||''}', '${safeName}', '${s.category||''}', ${costNum}, ${priceNum}, '${s.imageUrl||''}')" class="flex-1 bg-slate-100 text-slate-600 font-bold py-2 rounded-xl text-xs hover:bg-slate-200 transition-colors"><i class="ph-bold ph-pencil-simple"></i> แก้ไข</button>
+                                <button onclick="if(confirm('ต้องการลบสต็อกองค์นี้ออกจากระบบ?')) getColRef('amulet_stock').doc('${s.id}').delete()" class="flex-1 bg-rose-50 text-rose-600 font-bold py-2 rounded-xl text-xs hover:bg-rose-100 transition-colors"><i class="ph-bold ph-trash"></i> ลบ</button>
+                            </div>
+                        ` : ''}
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                console.error("Render Stock Error:", err);
+                const cont = document.getElementById('stockContainer');
+                if(cont) cont.innerHTML = `<div class="col-span-1 md:col-span-3 text-center text-rose-500 py-10 bg-rose-50 rounded-3xl border border-rose-200"><i class="ph-bold ph-warning-circle text-4xl mb-2"></i><br/>พบปัญหาในการแสดงผลตู้พระ: ${err.message}</div>`;
+            }
         }
 
         async function uploadImage(file) {
@@ -1025,6 +1075,18 @@
             document.getElementById('editStockCategory').value = category; 
             document.getElementById('editStockCost').value = cost;
             document.getElementById('editStockPrice').value = price;
+            
+            // สิทธิ์เจ้าของเท่านั้นที่แก้ราคาได้
+            if (isOwner) {
+                document.getElementById('editStockPrice').disabled = false;
+                document.getElementById('editStockPrice').classList.remove('bg-slate-50', 'cursor-not-allowed');
+                document.getElementById('editStockPrice').classList.add('focus:border-amber-500');
+            } else {
+                document.getElementById('editStockPrice').disabled = true;
+                document.getElementById('editStockPrice').classList.add('bg-slate-50', 'cursor-not-allowed');
+                document.getElementById('editStockPrice').classList.remove('focus:border-amber-500');
+            }
+            
             document.getElementById('editStockModal').classList.remove('hidden');
         }
         function closeEditStockModal() { document.getElementById('editStockModal').classList.add('hidden'); document.getElementById('editStockForm').reset(); }
@@ -1048,7 +1110,6 @@
                     price: newPrice
                 };
 
-                // ถ้าราคาเปลี่ยน ให้บันทึกลงประวัติด้วย
                 if (oldPrice !== newPrice) {
                     updateData.priceHistory = firebase.firestore.FieldValue.arrayUnion({
                         date: selectedDate,
@@ -1064,9 +1125,6 @@
             finally { btn.disabled = false; btn.innerText = "บันทึกการแก้ไข"; }
         }
 
-        // =====================================
-        // SELL / INSTALLMENT
-        // =====================================
         function openSellStockModal(id, name, cost, price) {
             document.getElementById('sellStockId').value = id; 
             document.getElementById('sellStockCost').value = cost;
@@ -1155,15 +1213,15 @@
             const custName = s.customerName || "ไม่ได้ระบุชื่อ";
             const custPhone = s.customerPhone || "ไม่มีเบอร์โทร";
             
-            const agreed = s.agreedPrice || s.price || 0; 
-            const paid = s.paidAmount || 0;
+            const agreed = Number(s.agreedPrice || s.price || 0); 
+            const paid = Number(s.paidAmount || 0);
             const remain = agreed - paid;
 
-            document.getElementById('ledgerAmuletName').innerText = `${s.code} - ${s.name} (${custName})`;
+            document.getElementById('ledgerAmuletName').innerText = `${s.code||'N/A'} - ${s.name||'ไม่ระบุชื่อ'} (${custName})`;
             document.getElementById('ledgerCustomerPhone').innerHTML = `<i class="ph-fill ph-phone"></i> <span>${custPhone}</span>`;
-            document.getElementById('ledgerTotalPrice').innerText = agreed.toLocaleString() + ' ฿';
-            document.getElementById('ledgerPaidAmount').innerText = paid.toLocaleString() + ' ฿';
-            document.getElementById('ledgerRemainAmount').innerText = remain.toLocaleString() + ' ฿';
+            document.getElementById('ledgerTotalPrice').innerText = agreed.toLocaleString('th-TH') + ' ฿';
+            document.getElementById('ledgerPaidAmount').innerText = paid.toLocaleString('th-TH') + ' ฿';
+            document.getElementById('ledgerRemainAmount').innerText = remain.toLocaleString('th-TH') + ' ฿';
 
             const histList = document.getElementById('ledgerHistoryList');
             if (s.payments && s.payments.length > 0) {
@@ -1174,7 +1232,7 @@
                             <p class="text-[11px] text-slate-500">${p.date} • ${p.time}</p>
                         </div>
                         <div class="text-right">
-                            <p class="font-bold text-emerald-600">+${Number(p.amount).toLocaleString()} ฿</p>
+                            <p class="font-bold text-emerald-600">+${Number(p.amount||0).toLocaleString('th-TH')} ฿</p>
                             <p class="text-[10px] text-slate-400">${p.wallet==='CASH'?'เงินสด':'โอน'}</p>
                         </div>
                     </div>
@@ -1187,7 +1245,7 @@
             if (remain <= 0) {
                 actionArea.innerHTML = `<div class="bg-emerald-50 text-emerald-700 text-center py-3 rounded-xl font-bold"><i class="ph-bold ph-check-circle"></i> ชำระครบเต็มจำนวนแล้ว</div>`;
             } else {
-                actionArea.innerHTML = `<button onclick="handlePayInstallment()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex justify-center items-center gap-2"><i class="ph-bold ph-plus"></i> บันทึกรับค่างวด (ยอดเหลือ ${remain.toLocaleString()})</button>`;
+                actionArea.innerHTML = `<button onclick="handlePayInstallment()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-md transition-all flex justify-center items-center gap-2"><i class="ph-bold ph-plus"></i> บันทึกรับค่างวด (ยอดเหลือ ${remain.toLocaleString('th-TH')})</button>`;
             }
             
             document.getElementById('amuletLedgerModal').classList.remove('hidden');
@@ -1196,14 +1254,14 @@
 
         function handlePayInstallment() {
             const s = currentLedgerAmulet;
-            const agreed = s.agreedPrice || s.price || 0;
-            const paid = s.paidAmount || 0;
+            const agreed = Number(s.agreedPrice || s.price || 0);
+            const paid = Number(s.paidAmount || 0);
             const remain = agreed - paid;
             
             document.getElementById('payInstCustName').value = s.customerName && s.customerName !== 'ไม่ได้ระบุชื่อ' ? s.customerName : '';
             document.getElementById('payInstCustPhone').value = s.customerPhone && s.customerPhone !== 'ไม่มีเบอร์โทร' ? s.customerPhone : '';
             
-            document.getElementById('payInstRemainText').innerText = `ยอดคงเหลือ: ${remain.toLocaleString()} ฿`;
+            document.getElementById('payInstRemainText').innerText = `ยอดคงเหลือ: ${remain.toLocaleString('th-TH')} ฿`;
             document.getElementById('payInstAmount').max = remain;
             document.getElementById('payInstAmount').value = remain; 
             
@@ -1228,8 +1286,8 @@
             const newName = document.getElementById('payInstCustName').value || "ไม่ได้ระบุชื่อ";
             const newPhone = document.getElementById('payInstCustPhone').value || "ไม่มีเบอร์โทร";
             
-            const agreed = s.agreedPrice || s.price || 0;
-            const paid = s.paidAmount || 0;
+            const agreed = Number(s.agreedPrice || s.price || 0);
+            const paid = Number(s.paidAmount || 0);
             const remain = agreed - paid;
             
             if(payAmt > remain) {
@@ -1238,13 +1296,13 @@
                  return;
             }
 
-            const isFullNow = ((s.paidAmount||0) + payAmt) >= agreed;
+            const isFullNow = (paid + payAmt) >= agreed;
             const batch = db.batch();
 
             batch.set(getColRef("transactions").doc(), { 
-                description: `ค่างวด: ${s.name} (${newName})`, 
+                description: `ค่างวด: ${s.name||'ไม่ระบุชื่อ'} (${newName})`, 
                 category: isFullNow ? 'SELL' : 'INSTALLMENT', 
-                amount: payAmt, cost: isFullNow ? (s.cost||0) : 0, 
+                amount: payAmt, cost: isFullNow ? Number(s.cost||0) : 0, 
                 wallet: currentInstWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() 
             });
 
@@ -1463,41 +1521,37 @@
         function openPinModal(){ document.getElementById('pinModal').classList.remove('hidden'); setTimeout(()=>document.getElementById('pinInput').focus(),100); }
         function closePinModal(){ document.getElementById('pinModal').classList.add('hidden'); document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden'); }
         
-        /* ฟังก์ชันเปิด/ปิด รูปขยาย พร้อมรายละเอียด */
         function openImageViewer(id) {
             const s = allStock.find(x => x.id === id);
             if(!s) return;
 
-            const imgFallback = 'https://via.placeholder.com/400?text=No+Image';
+            const imgFallback = 'https://placehold.co/400x400/eeeeee/999999?text=No+Image';
             document.getElementById('viewerImageSrc').src = s.imageUrl || imgFallback;
-            document.getElementById('viewerCode').innerText = s.code;
-            document.getElementById('viewerCategory').innerText = s.category;
-            document.getElementById('viewerName').innerText = s.name;
-            document.getElementById('viewerPrice').innerText = Number(s.price).toLocaleString() + ' ฿';
+            document.getElementById('viewerCode').innerText = s.code || 'N/A';
+            document.getElementById('viewerCategory').innerText = s.category || 'ทั่วไป';
+            document.getElementById('viewerName').innerText = s.name || 'ไม่ระบุชื่อ';
+            document.getElementById('viewerPrice').innerText = Number(s.price||0).toLocaleString('th-TH') + ' ฿';
             
-            // เช็คสิทธิ์การมองเห็นราคาทุน
             if (isOwner) {
                 document.getElementById('viewerCostContainer').classList.remove('hidden');
                 document.getElementById('viewerCostHidden').classList.add('hidden');
-                document.getElementById('viewerCost').innerText = Number(s.cost || 0).toLocaleString() + ' ฿';
+                document.getElementById('viewerCost').innerText = Number(s.cost||0).toLocaleString('th-TH') + ' ฿';
             } else {
                 document.getElementById('viewerCostContainer').classList.add('hidden');
                 document.getElementById('viewerCostHidden').classList.remove('hidden');
             }
 
-            // แสดงประวัติการปรับราคา (ถ้ามี)
             const historyContainer = document.getElementById('viewerPriceHistoryContainer');
             const historyList = document.getElementById('viewerPriceHistoryList');
             if (s.priceHistory && s.priceHistory.length > 0) {
                 historyContainer.classList.remove('hidden');
-                // เรียงจากใหม่ไปเก่า (reverse)
                 historyList.innerHTML = s.priceHistory.slice().reverse().map(h => `
                     <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
                         <div class="text-[10px] md:text-xs text-slate-400 font-medium"><i class="ph-fill ph-calendar-blank"></i> ${h.date} ${h.time}</div>
                         <div class="text-xs md:text-sm font-bold flex items-center">
-                            <span class="text-slate-400 line-through mr-1.5">${Number(h.oldPrice).toLocaleString()}</span>
+                            <span class="text-slate-400 line-through mr-1.5">${Number(h.oldPrice||0).toLocaleString('th-TH')}</span>
                             <i class="ph-bold ph-arrow-right text-slate-300 mx-1.5"></i>
-                            <span class="text-emerald-600">${Number(h.newPrice).toLocaleString()} ฿</span>
+                            <span class="text-emerald-600">${Number(h.newPrice||0).toLocaleString('th-TH')} ฿</span>
                         </div>
                     </div>
                 `).join('');
@@ -1558,7 +1612,13 @@
             }
             renderStock(); renderDirectory();
         }
-        function logoutRole() { auth.signOut().then(() => { isOwner = false; updateUIRole(); renderAll(); renderStock(); renderDirectory(); renderCourses(); }); }
+        function logoutRole() { 
+            auth.signOut().then(() => { 
+                isOwner = false; 
+                updateUIRole(); 
+                renderAll(); renderStock(); renderDirectory(); renderCourses(); 
+            }); 
+        }
         function handleSearch(v) { searchQuery=v; renderAll(); }
     </script>
 </body>
