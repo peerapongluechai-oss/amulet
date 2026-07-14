@@ -932,7 +932,7 @@
                 const q = (document.getElementById('stockSearch').value || "").toLowerCase();
                 
                 let filtered = allStock.filter(s => {
-                    const stat = s.status || 'AVAILABLE'; 
+                    const stat = s.status || 'AVAILABLE'; // 👈 หัวใจสำคัญ: ถ้าไม่มีสถานะ ให้ถือว่าพร้อมเช่า
                     if(currentStockTab === 'ALL' && stat === 'SOLD') return false; 
                     if(currentStockTab === 'AVAILABLE' && stat !== 'AVAILABLE') return false;
                     if(currentStockTab === 'RESERVED' && stat !== 'RESERVED') return false;
