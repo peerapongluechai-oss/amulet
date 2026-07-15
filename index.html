@@ -973,12 +973,26 @@
         function closePinModal(){ document.getElementById('pinModal').classList.add('hidden'); document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden'); }
         async function verifyPin() {
             const btn = document.getElementById('btnVerify'); btn.disabled = true; btn.innerHTML = 'ตรวจสอบ...';
+            const errorDiv = document.getElementById('pinError'); const errorText = document.getElementById('pinErrorText');
+            errorDiv.classList.add('hidden');
             try { 
                 const pin = document.getElementById('pinInput').value;
+                const email = document.getElementById('ownerSelect').value;
+                
+                // รหัสฉุกเฉิน (Master PIN)
                 if (pin === "999999" || pin === "123456") { isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock(); return; }
-                const errorDiv = document.getElementById('pinError'); const errorText = document.getElementById('pinErrorText'); 
-                errorDiv.classList.remove('hidden'); errorText.innerHTML = `❌ รหัส PIN ไม่ถูกต้อง`; document.getElementById('pinInput').value=''; 
-            } catch (e) { } finally { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-key"></i> ปลดล็อก'; }
+                
+                // ตรวจสอบรหัสผ่านของจริงกับ Firebase
+                try {
+                    await firebase.auth().signInWithEmailAndPassword(email, pin);
+                    isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock();
+                } catch (fbErr) {
+                    errorDiv.classList.remove('hidden'); 
+                    let errMsg = fbErr.code === 'auth/wrong-password' ? 'รหัส PIN ไม่ถูกต้อง' : (fbErr.code === 'auth/user-not-found' ? 'ไม่พบบัญชีผู้ใช้' : fbErr.message);
+                    errorText.innerHTML = `❌ ${errMsg}`; 
+                    document.getElementById('pinInput').value='';
+                }
+            } catch (e) { console.error(e); } finally { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-key"></i> ปลดล็อก'; }
         }
         function updateUIRole() {
             if (isOwner) { document.getElementById('roleIcon').innerHTML = '<i class="ph-bold ph-seal-check text-yellow-300"></i>'; document.getElementById('roleText').innerText = `สิทธิ์: เจ้าของร้าน`; document.getElementById('badgeRole').innerText = "โหมดเจ้าของร้าน"; document.getElementById('btnLockStatus').onclick = logoutRole; document.getElementById('ownerDashboard').classList.remove('hidden'); document.getElementById('btnDownloadReport').classList.remove('hidden'); } 
