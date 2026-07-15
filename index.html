@@ -1237,15 +1237,22 @@
         async function verifyPin() {
             const btn = document.getElementById('btnVerify'); btn.disabled = true; btn.innerHTML = 'ตรวจสอบ...';
             try { 
-                // Hardcoded UI verification for Owner Mode (Bypassing Firebase Auth)
-                const inputPin = document.getElementById('pinInput').value;
-                if(inputPin === "123456" || inputPin === "654321") { // Add your real PINs here
-                    isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock();
-                } else {
-                     throw new Error("PIN Incorrect");
-                }
+                const email = document.getElementById('ownerSelect').value;
+                const pin = document.getElementById('pinInput').value;
+                
+                // เอาระบบตรวจสอบรหัสผ่านของจริง (Firebase Auth) กลับมาใช้
+                await firebase.auth().signInWithEmailAndPassword(email, pin);
+                
+                isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock();
             } 
-            catch (e) { const errorDiv = document.getElementById('pinError'); const errorText = document.getElementById('pinErrorText'); errorDiv.classList.remove('hidden'); errorText.innerText = "❌ รหัส PIN ไม่ถูกต้อง"; document.getElementById('pinInput').value=''; } 
+            catch (e) { 
+                console.error("Login Error:", e);
+                const errorDiv = document.getElementById('pinError'); 
+                const errorText = document.getElementById('pinErrorText'); 
+                errorDiv.classList.remove('hidden'); 
+                errorText.innerText = "❌ รหัส PIN ไม่ถูกต้อง"; 
+                document.getElementById('pinInput').value=''; 
+            } 
             finally { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-key"></i> ปลดล็อก'; }
         }
         function updateUIRole() {
