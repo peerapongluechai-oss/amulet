@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>บัญชีร้าน ป.ทรัพย์สยาม Pro V7.2</title>
+    <title>บัญชีร้าน ป.ทรัพย์สยาม Pro V7.3</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -192,22 +192,22 @@
             <div class="relative z-10 flex justify-between items-center">
                 <div>
                     <h2 class="text-xl md:text-3xl font-bold heading-font flex items-center gap-2 text-blue-200"><i class="ph-bold ph-users-three"></i> ระบบรับจองคอร์สอบรม</h2>
-                    <p class="text-xs md:text-sm text-blue-100 mt-1.5 opacity-90">จัดการคิวจอง จำนวนที่นั่ง และสถานะการชำระเงิน</p>
+                    <p class="text-xs md:text-sm text-blue-100 mt-1.5 opacity-90">จัดการคิวจองและสถานะการชำระเงิน แยกตามแต่ละคอร์ส</p>
                 </div>
                 <button onclick="openContextAddModal()" class="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2.5 px-3 md:px-4 rounded-xl shadow-md transition-all text-xs flex items-center gap-1.5 shrink-0"><i class="ph-bold ph-plus"></i> เพิ่มที่นั่ง</button>
             </div>
             
             <div class="relative z-10 mt-6 grid grid-cols-3 gap-2 md:gap-4 border-t border-white/10 pt-4">
-                <div class="bg-white/10 p-2 md:p-3 rounded-xl border border-white/10 text-center"><p class="text-blue-200/80 text-[10px] md:text-xs mb-0.5">ที่นั่งรวม</p><p id="courseTotalQty" class="text-lg md:text-2xl font-bold">0 ที่</p></div>
+                <div class="bg-white/10 p-2 md:p-3 rounded-xl border border-white/10 text-center"><p class="text-blue-200/80 text-[10px] md:text-xs mb-0.5">ที่นั่งรวมทั้งหมด</p><p id="courseTotalQty" class="text-lg md:text-2xl font-bold">0 ที่</p></div>
                 <div class="bg-white/10 p-2 md:p-3 rounded-xl border border-white/10 text-center"><p class="text-blue-200/80 text-[10px] md:text-xs mb-0.5">รอชำระเงิน</p><p id="coursePendingQty" class="text-lg md:text-2xl font-bold text-amber-300">0 ที่</p></div>
                 <div class="bg-white/10 p-2 md:p-3 rounded-xl border border-white/10 text-center"><p class="text-blue-200/80 text-[10px] md:text-xs mb-0.5">ชำระแล้ว</p><p id="coursePaidQty" class="text-lg md:text-2xl font-bold text-emerald-300">0 ที่</p></div>
             </div>
         </div>
         <div class="relative flex items-center">
             <i class="ph-bold ph-magnifying-glass absolute left-6 text-slate-400 text-lg md:text-xl"></i>
-            <input type="text" id="courseSearch" oninput="renderCourses()" placeholder="ค้นหาชื่อผู้จอง หรือ เบอร์โทร..." class="w-full bg-white/95 border border-slate-200 rounded-2xl md:rounded-3xl pl-14 pr-6 py-3.5 md:py-4 text-sm md:text-base focus:outline-none focus:border-blue-500 shadow-sm"/>
+            <input type="text" id="courseSearch" oninput="renderCourses()" placeholder="ค้นหาชื่อผู้จอง, เบอร์โทร หรือ ชื่อคอร์ส..." class="w-full bg-white/95 border border-slate-200 rounded-2xl md:rounded-3xl pl-14 pr-6 py-3.5 md:py-4 text-sm md:text-base focus:outline-none focus:border-blue-500 shadow-sm"/>
         </div>
-        <div id="courseContainer" class="space-y-3 min-h-[300px]"></div>
+        <div id="courseContainer" class="space-y-4 min-h-[300px]"></div>
     </div>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] z-40">
@@ -232,16 +232,6 @@
                 <div id="pinError" class="text-sm text-red-600 bg-red-50 p-3 rounded-xl hidden"><span id="pinErrorText"></span></div>
                 <button id="btnVerify" onclick="verifyPin()" class="w-full bg-velvet-main text-white font-bold py-3.5 rounded-xl flex justify-center items-center gap-2"><i class="ph-bold ph-key"></i> ปลดล็อก</button>
             </div>
-        </div>
-    </div>
-
-    <div id="errorRadarModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4 hidden animate-in zoom-in">
-        <div class="bg-white w-full max-w-md rounded-3xl p-6 relative text-center shadow-2xl border-t-8 border-rose-600">
-            <div class="w-20 h-20 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse"><i class="ph-bold ph-warning text-4xl"></i></div>
-            <h3 class="text-xl font-bold text-slate-800 mb-2">เรดาร์ตรวจพบข้อผิดพลาด!</h3>
-            <p id="errorRadarMsg" class="text-sm text-rose-600 font-medium mb-4 bg-rose-50 p-3 rounded-xl border border-rose-100"></p>
-            <p class="text-xs text-slate-500 mb-6">โปรดตรวจสอบว่าหน้า Rules ของ Firestore เปลี่ยนเป็น<br><code>allow read, write: if true;</code> และกด Publish แล้วหรือไม่</p>
-            <button onclick="document.getElementById('errorRadarModal').classList.add('hidden')" class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl hover:bg-slate-800 transition-colors">รับทราบ</button>
         </div>
     </div>
 
@@ -549,8 +539,60 @@
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 relative text-center shadow-2xl"><div id="infoIconBox"></div><h3 id="infoTitle" class="text-lg font-bold text-slate-800 mb-2"></h3><p id="infoDesc" class="text-sm text-slate-500 mb-6"></p><button onclick="document.getElementById('generalInfoModal').classList.add('hidden')" class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl">ตกลง</button></div>
     </div>
     
-    <div id="addCourseModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden"><div class="bg-white w-full max-w-md rounded-3xl p-6 relative"><button onclick="closeAddCourseModal()" class="absolute top-4 right-4 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button><h3 class="text-xl font-bold mb-4 text-blue-600">สร้างคิวจอง</h3><form id="courseForm" onsubmit="handleCourseSubmit(event)" class="space-y-4"><div><input type="text" id="courseCustomerName" required placeholder="ชื่อผู้จอง" class="w-full border rounded-xl px-4 py-3"></div><div><input type="tel" id="courseCustomerPhone" required placeholder="เบอร์โทร" class="w-full border rounded-xl px-4 py-3"></div><div><input type="number" id="courseQty" required min="1" value="1" placeholder="จำนวนที่นั่ง" class="w-full border rounded-xl px-4 py-3 text-center"></div><button type="submit" id="btnSubmitCourse" class="w-full bg-blue-500 text-white font-bold py-4 rounded-xl mt-2">บันทึกคิว</button></form></div></div>
-    <div id="payCourseModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden"><div class="bg-white w-full max-w-md rounded-3xl p-6 relative text-center"><button onclick="closePayCourseModal()" class="absolute top-4 right-4 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button><h3 class="text-xl font-bold mb-2">รับชำระค่าคอร์ส</h3><p id="coursePaymentQueue" class="text-amber-600 font-bold bg-amber-50 mx-auto w-fit px-3 py-1 rounded-lg mb-4"></p><form id="coursePayForm" onsubmit="handleCoursePaymentSubmit(event)" class="space-y-4 text-left"><input type="hidden" id="payCourseId"><input type="hidden" id="payCourseTitle"><div><input type="number" id="payCourseAmount" required min="1" placeholder="ยอดรับชำระ" class="w-full border-2 border-emerald-200 bg-emerald-50 rounded-2xl px-4 py-4 text-2xl text-center font-bold"></div><div class="grid grid-cols-2 gap-3"><button type="button" id="btnCoursePayTransfer" onclick="selectCourseWallet('TRANSFER')" class="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold"><i class="ph ph-credit-card"></i> โอน</button><button type="button" id="btnCoursePayCash" onclick="selectCourseWallet('CASH')" class="py-3 rounded-xl border-2 border-slate-200 font-bold"><i class="ph ph-coins"></i> เงินสด</button></div><button type="submit" id="btnSubmitCoursePay" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl mt-2">ยืนยันรับเงิน</button></form></div></div>
+    <!-- ฟอร์มเพิ่มคิวจองคอร์ส V7.3 -->
+    <div id="addCourseModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 relative border-t-8 border-blue-500">
+            <button onclick="closeAddCourseModal()" class="absolute top-4 right-4 bg-slate-100 text-slate-400 p-2 rounded-full"><i class="ph ph-x"></i></button>
+            <h3 class="text-xl font-bold mb-4 text-blue-600 flex items-center gap-2"><i class="ph-bold ph-chalkboard-teacher text-2xl"></i> สร้างคิวจองคอร์ส</h3>
+            <form id="courseForm" onsubmit="handleCourseSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">ชื่อคอร์ส / รุ่น (หรือหัวข้ออบรม)</label>
+                    <input type="text" id="courseNameInput" required placeholder="เช่น อบรมดูพระสมเด็จ รุ่น 1" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">วันที่จัดอบรม</label>
+                    <input type="date" id="courseEventDateInput" required class="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-600 focus:border-blue-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">ชื่อผู้จอง</label>
+                        <input type="text" id="courseCustomerName" required placeholder="ชื่อ-นามสกุล" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">เบอร์โทร</label>
+                        <input type="tel" id="courseCustomerPhone" required placeholder="08X-XXX-XXXX" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">จำนวนที่นั่งที่ต้องการจอง</label>
+                    <input type="number" id="courseQty" required min="1" value="1" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-center text-lg font-bold text-blue-800 bg-blue-50 focus:border-blue-500">
+                </div>
+                <button type="submit" id="btnSubmitCourse" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl mt-2 transition-colors">บันทึกคิวจอง</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ฟอร์มรับเงินค่าคอร์ส V7.3 -->
+    <div id="payCourseModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 relative text-center border-t-8 border-emerald-500">
+            <button onclick="closePayCourseModal()" class="absolute top-4 right-4 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
+            <h3 class="text-xl font-bold mb-2 flex items-center justify-center gap-2 text-slate-800"><i class="ph-bold ph-money text-emerald-500 text-2xl"></i> รับชำระค่าคอร์ส</h3>
+            <p id="coursePaymentQueue" class="text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 mx-auto w-fit px-3 py-1 rounded-lg mb-4"></p>
+            <form id="coursePayForm" onsubmit="handleCoursePaymentSubmit(event)" class="space-y-4 text-left">
+                <input type="hidden" id="payCourseId">
+                <input type="hidden" id="payCourseTitle">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1 text-center">ยอดเงินที่รับชำระ</label>
+                    <input type="number" id="payCourseAmount" required min="1" placeholder="ระบุจำนวนเงิน..." class="w-full border-2 border-emerald-200 bg-emerald-50 rounded-2xl px-4 py-4 text-2xl text-center font-bold text-emerald-800">
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-2">
+                    <button type="button" id="btnCoursePayTransfer" onclick="selectCourseWallet('TRANSFER')" class="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold"><i class="ph ph-credit-card"></i> โอน</button>
+                    <button type="button" id="btnCoursePayCash" onclick="selectCourseWallet('CASH')" class="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold"><i class="ph ph-coins"></i> เงินสด</button>
+                </div>
+                <button type="submit" id="btnSubmitCoursePay" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl mt-2 transition-colors">ยืนยันบันทึกรับเงิน</button>
+            </form>
+        </div>
+    </div>
 
     <script>
         let firebaseConfig;
@@ -572,12 +614,15 @@
 
         window.onload = function() {
             document.getElementById('appDatePicker').value = selectedDate;
-            try { initDatabaseListeners(); console.log("App Initialized in Bypass Auth Mode (V7.2)"); } 
+            try { initDatabaseListeners(); console.log("App Initialized in Bypass Auth Mode (V7.3)"); } 
             catch (error) { showRadarError(`เกิดข้อผิดพลาดในการตั้งค่าแอป: ${error.message}`); }
         };
 
         function hardRefresh() { window.location.reload(true); }
-        function showRadarError(msg) { document.getElementById('errorRadarMsg').innerHTML = msg; document.getElementById('errorRadarModal').classList.remove('hidden'); }
+        function showRadarError(msg) { 
+            console.error(msg);
+            showCustomAlert("ระบบตรวจพบข้อผิดพลาด!", msg, "error"); 
+        }
 
         function initDatabaseListeners() {
             getColRef("transactions").onSnapshot(snap => { allTransactions = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'ledger') renderAll(); }, err => showRadarError(`ดึงข้อมูลบัญชีล้มเหลว: ${err.message}`));
@@ -979,8 +1024,10 @@
                 const pin = document.getElementById('pinInput').value;
                 const email = document.getElementById('ownerSelect').value;
                 
-                // รหัสฉุกเฉิน (Master PIN)
-                if (pin === "999999" || pin === "123456") { isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock(); return; }
+                // รหัสฉุกเฉิน (Master PIN) เข้าได้แน่นอน 100%
+                if (pin === "999999" || pin === "123456") { 
+                    isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock(); return; 
+                }
                 
                 // ตรวจสอบรหัสผ่านของจริงกับ Firebase
                 try {
@@ -988,8 +1035,7 @@
                     isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock();
                 } catch (fbErr) {
                     errorDiv.classList.remove('hidden'); 
-                    let errMsg = fbErr.code === 'auth/wrong-password' ? 'รหัส PIN ไม่ถูกต้อง' : (fbErr.code === 'auth/user-not-found' ? 'ไม่พบบัญชีผู้ใช้' : fbErr.message);
-                    errorText.innerHTML = `❌ ${errMsg}`; 
+                    errorText.innerHTML = `❌ ระบบปฏิเสธ: ${fbErr.code} <br><span class="text-xs text-slate-500">${fbErr.message}</span>`; 
                     document.getElementById('pinInput').value='';
                 }
             } catch (e) { console.error(e); } finally { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-key"></i> ปลดล็อก'; }
@@ -997,9 +1043,9 @@
         function updateUIRole() {
             if (isOwner) { document.getElementById('roleIcon').innerHTML = '<i class="ph-bold ph-seal-check text-yellow-300"></i>'; document.getElementById('roleText').innerText = `สิทธิ์: เจ้าของร้าน`; document.getElementById('badgeRole').innerText = "โหมดเจ้าของร้าน"; document.getElementById('btnLockStatus').onclick = logoutRole; document.getElementById('ownerDashboard').classList.remove('hidden'); document.getElementById('btnDownloadReport').classList.remove('hidden'); } 
             else { document.getElementById('roleIcon').innerHTML = '<i class="ph-bold ph-lock-key"></i>'; document.getElementById('roleText').innerText = "โหมดพนักงาน"; document.getElementById('badgeRole').innerText = "โหมดพนักงาน"; document.getElementById('btnLockStatus').onclick = openPinModal; document.getElementById('ownerDashboard').classList.add('hidden'); document.getElementById('btnDownloadReport').classList.add('hidden'); }
-            renderStock();
+            renderStock(); renderCourses();
         }
-        async function logoutRole() { isOwner = false; updateUIRole(); renderAll(); renderStock(); }
+        async function logoutRole() { isOwner = false; updateUIRole(); renderAll(); renderStock(); renderCourses(); }
 
         function openReportModal() { document.getElementById('reportStartDate').value = selectedDate; document.getElementById('reportEndDate').value = selectedDate; document.getElementById('reportModal').classList.remove('hidden'); }
         function closeReportModal() { document.getElementById('reportModal').classList.add('hidden'); }
@@ -1038,12 +1084,197 @@
         function editDirItem(id, cat, name) { document.getElementById('dirEditId').value=id; document.getElementById('dirCategory').value=cat; document.getElementById('dirName').value=name; document.getElementById('addDirModal').classList.remove('hidden'); }
         function handleDirSubmit(e) { e.preventDefault(); const id = document.getElementById('dirEditId').value; const data = { category: document.getElementById('dirCategory').value, name: document.getElementById('dirName').value }; if(id) getColRef("amulet_directory").doc(id).update(data).then(closeAddDirModal); else getColRef("amulet_directory").add(data).then(closeAddDirModal); }
 
-        function renderCourses() { const q = (document.getElementById('courseSearch').value || "").toLowerCase(); let tQty=0,pQty=0,paidQty=0; const filtered = allCourses.filter(c => { const m = (c.customerName||"").toLowerCase().includes(q) || (c.phone||"").toLowerCase().includes(q); if (m) { tQty+=c.qty; if (c.status==='PENDING') pQty+=c.qty; else paidQty+=c.qty; } return m; }); document.getElementById('courseTotalQty').innerText = `${tQty} ที่`; document.getElementById('coursePendingQty').innerText = `${pQty} ที่`; document.getElementById('coursePaidQty').innerText = `${paidQty} ที่`; const cont = document.getElementById('courseContainer'); if(!filtered.length) return cont.innerHTML = `<div class="text-center py-10 bg-white/40 rounded-3xl text-slate-400">ไม่พบรายการ</div>`; cont.innerHTML = filtered.map(c => `<div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 ${c.status==='PENDING'?'border-amber-400':'border-emerald-500'}"><div class="flex justify-between items-start"><div><span class="font-bold bg-slate-100 text-slate-600 px-2 rounded text-sm">${c.queueNo}</span><h4 class="font-bold text-slate-800 text-lg mt-1">${c.customerName}</h4><p class="text-xs text-slate-500"><i class="ph-fill ph-phone-call"></i> ${c.phone}</p><div class="mt-2 text-xs font-semibold"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded">จอง ${c.qty} ที่นั่ง</span> ${c.status==='PAID'?`<span class="bg-emerald-50 text-emerald-600 px-2 py-1 rounded">ชำระแล้ว ${c.paymentAmount} ฿</span>`:`<span class="bg-amber-50 text-amber-600 px-2 py-1 rounded">รอชำระเงิน</span>`}</div></div><div class="flex gap-2">${c.status==='PENDING'?`<button onclick="openPayCourseModal('${c.id}', '${c.queueNo}', '${c.customerName}')" class="bg-emerald-500 text-white font-bold py-2 px-3 rounded-xl text-xs">รับชำระ</button>`:''}${isOwner?`<button onclick="getColRef('course_orders').doc('${c.id}').delete()" class="text-slate-400 hover:text-red-500"><i class="ph-bold ph-trash"></i></button>`:''}</div></div></div>`).join(''); }
-        function openAddCourseModal() { document.getElementById('addCourseModal').classList.remove('hidden'); } function closeAddCourseModal() { document.getElementById('addCourseModal').classList.add('hidden'); document.getElementById('courseForm').reset(); }
-        function handleCourseSubmit(e) { e.preventDefault(); const cNum = allCourses.filter(c=>c.date===selectedDate).length+1; const qNo = `C-${String(cNum).padStart(3,'0')}`; getColRef("course_orders").add({ queueNo: qNo, customerName: document.getElementById('courseCustomerName').value, phone: document.getElementById('courseCustomerPhone').value, qty: Number(document.getElementById('courseQty').value), status: 'PENDING', date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() }).then(() => { closeAddCourseModal(); showCustomAlert("สำเร็จ", `รหัสจอง ${qNo}`, "success"); }); }
-        function openPayCourseModal(id, qNo, name) { document.getElementById('payCourseId').value = id; document.getElementById('payCourseTitle').value = `ค่าคอร์ส ${qNo} (${name})`; document.getElementById('coursePaymentQueue').innerText = qNo; selectCourseWallet('TRANSFER'); document.getElementById('payCourseModal').classList.remove('hidden'); } function closePayCourseModal() { document.getElementById('payCourseModal').classList.add('hidden'); document.getElementById('coursePayForm').reset(); }
-        function selectCourseWallet(t) { currentCourseWallet=t; document.getElementById('btnCoursePayTransfer').className = t==='TRANSFER'?"py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold":"py-3 rounded-xl border-2 border-slate-200"; document.getElementById('btnCoursePayCash').className = t==='CASH'?"py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold":"py-3 rounded-xl border-2 border-slate-200"; }
-        function handleCoursePaymentSubmit(e) { e.preventDefault(); const amt = Number(document.getElementById('payCourseAmount').value); const batch = db.batch(); batch.set(getColRef("transactions").doc(),{ description: document.getElementById('payCourseTitle').value, category: 'COURSE', amount: amt, cost: 0, wallet: currentCourseWallet, date: selectedDate, timestamp: firebase.firestore.FieldValue.serverTimestamp() }); batch.update(getColRef("course_orders").doc(document.getElementById('payCourseId').value), { status: 'PAID', paidDate: selectedDate, paidTime: new Date().toLocaleTimeString('th-TH'), paymentAmount: amt, paymentWallet: currentCourseWallet }); batch.commit().then(()=>{ closePayCourseModal(); showCustomAlert("สำเร็จ", "รับเงินเรียบร้อย", "success"); }); }
+        // ==========================================
+        // COURSE SYSTEM V7.3 (อัปเกรดระบบจัดกลุ่มคอร์ส)
+        // ==========================================
+        function renderCourses() { 
+            const q = (document.getElementById('courseSearch').value || "").toLowerCase(); 
+            let tQty=0, pQty=0, paidQty=0; 
+            
+            // 1. ค้นหาและกรองข้อมูล
+            const filtered = allCourses.filter(c => { 
+                const m = (c.customerName||"").toLowerCase().includes(q) || 
+                          (c.phone||"").toLowerCase().includes(q) ||
+                          (c.courseName||"").toLowerCase().includes(q); 
+                if (m) { 
+                    tQty += c.qty; 
+                    if (c.status==='PENDING') pQty += c.qty; 
+                    else paidQty += c.qty; 
+                } 
+                return m; 
+            }); 
+            
+            // อัปเดตตัวเลขสรุปรวมด้านบน
+            document.getElementById('courseTotalQty').innerText = `${tQty} ที่`; 
+            document.getElementById('coursePendingQty').innerText = `${pQty} ที่`; 
+            document.getElementById('coursePaidQty').innerText = `${paidQty} ที่`; 
+            
+            const cont = document.getElementById('courseContainer'); 
+            if(!filtered.length) {
+                cont.innerHTML = `<div class="text-center py-10 bg-white/40 rounded-3xl text-slate-400 border border-dashed border-slate-200">ไม่พบรายการจอง</div>`;
+                return;
+            }
+
+            // 2. จัดกลุ่มข้อมูลตาม "ชื่อคอร์ส"
+            const groups = {};
+            filtered.forEach(c => {
+                const key = c.courseName || "คอร์สทั่วไป (ไม่ได้ระบุชื่อ)";
+                if(!groups[key]) {
+                    groups[key] = { items: [], totalSeats: 0, date: c.courseEventDate };
+                }
+                groups[key].items.push(c);
+                groups[key].totalSeats += c.qty;
+            });
+
+            // 3. สร้าง HTML แยกกล่องตามคอร์ส
+            cont.innerHTML = Object.keys(groups).map(courseName => {
+                const g = groups[courseName];
+                const displayDate = g.date ? `<i class="ph-bold ph-calendar-blank"></i> วันที่อบรม: ${g.date}` : '';
+                
+                // หัวกล่องคอร์ส
+                let html = `
+                <div class="bg-blue-50/50 border border-blue-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
+                    <div class="flex justify-between items-end mb-4 pb-3 border-b border-blue-200/50 pr-4">
+                        <div>
+                            <h3 class="text-base md:text-lg font-bold text-blue-900">${courseName}</h3>
+                            <p class="text-xs text-blue-600 mt-1 flex items-center gap-1">${displayDate}</p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <span class="bg-white border border-blue-100 text-blue-800 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">
+                                รวม ${g.totalSeats} ที่นั่ง
+                            </span>
+                        </div>
+                    </div>
+                    <div class="space-y-3 pr-4">
+                `;
+
+                // รายชื่อคนในคอร์ส
+                html += g.items.map(c => {
+                    const safeCourseName = (c.courseName||'').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    return `
+                    <div class="bg-white p-3 rounded-xl shadow-sm border-l-4 ${c.status==='PENDING'?'border-amber-400':'border-emerald-500'} flex justify-between items-center transition-all hover:shadow-md">
+                        <div>
+                            <span class="font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px]">${c.queueNo}</span>
+                            <h4 class="font-bold text-slate-800 text-sm mt-1.5">${c.customerName}</h4>
+                            <p class="text-[10px] md:text-xs text-slate-500 mt-0.5"><i class="ph-fill ph-phone-call"></i> ${c.phone}</p>
+                            <div class="mt-2 text-[10px] md:text-xs font-semibold flex flex-wrap gap-1">
+                                <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded">จอง ${c.qty} ที่</span> 
+                                ${c.status==='PAID' ? `<span class="bg-emerald-50 text-emerald-600 px-2 py-1 rounded">ชำระแล้ว ${c.paymentAmount} ฿</span>` : `<span class="bg-amber-50 text-amber-600 px-2 py-1 rounded animate-pulse">รอชำระเงิน</span>`}
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 items-end shrink-0 pl-2">
+                            ${c.status==='PENDING' ? `<button onclick="openPayCourseModal('${c.id}', '${c.queueNo}', '${c.customerName}', '${safeCourseName}')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded-lg text-xs shadow-sm transition-colors flex items-center gap-1"><i class="ph-bold ph-money"></i> รับเงิน</button>` : ''}
+                            ${isOwner ? `<button onclick="if(confirm('ยืนยันที่จะลบรายการจองของ ${c.customerName} ออกจากระบบ?')) getColRef('course_orders').doc('${c.id}').delete()" class="text-slate-300 hover:text-red-500 text-xs p-1 transition-colors"><i class="ph-bold ph-trash text-base"></i></button>` : ''}
+                        </div>
+                    </div>
+                `}).join('');
+
+                html += `</div></div>`;
+                return html;
+            }).join('');
+        }
+
+        function openAddCourseModal() { 
+            // ตั้งค่าวันที่จัดอบรมเริ่มต้นให้เป็นวันนี้
+            document.getElementById('courseEventDateInput').value = selectedDate;
+            document.getElementById('addCourseModal').classList.remove('hidden'); 
+        } 
+        
+        function closeAddCourseModal() { 
+            document.getElementById('addCourseModal').classList.add('hidden'); 
+            document.getElementById('courseForm').reset(); 
+        }
+
+        function handleCourseSubmit(e) { 
+            e.preventDefault(); 
+            const btn = document.getElementById('btnSubmitCourse');
+            btn.disabled = true; btn.innerText = "กำลังบันทึก...";
+            
+            const cNum = allCourses.filter(c=>c.date===selectedDate).length+1; 
+            const qNo = `C-${String(cNum).padStart(3,'0')}`; 
+            
+            // ดึงค่า ชื่อคอร์ส และ วันที่จัดอบรม
+            const cName = document.getElementById('courseNameInput').value;
+            const cEventDate = document.getElementById('courseEventDateInput').value;
+
+            getColRef("course_orders").add({ 
+                queueNo: qNo, 
+                courseName: cName,
+                courseEventDate: cEventDate,
+                customerName: document.getElementById('courseCustomerName').value, 
+                phone: document.getElementById('courseCustomerPhone').value, 
+                qty: Number(document.getElementById('courseQty').value), 
+                status: 'PENDING', 
+                date: selectedDate, 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            }).then(() => { 
+                closeAddCourseModal(); 
+                showCustomAlert("บันทึกจองสำเร็จ", `รหัสจอง: ${qNo}\nคอร์ส: ${cName}`, "success"); 
+                btn.disabled = false; btn.innerText = "บันทึกคิวจอง";
+            }).catch(err => {
+                showCustomAlert("ข้อผิดพลาด", err.message, "error");
+                btn.disabled = false; btn.innerText = "บันทึกคิวจอง";
+            }); 
+        }
+
+        function openPayCourseModal(id, qNo, name, courseName) { 
+            document.getElementById('payCourseId').value = id; 
+            // เอาชื่อคอร์ส ไปใส่ในคำอธิบายบัญชีด้วย
+            const descName = courseName ? `ค่าคอร์ส: ${courseName} [${qNo}] (${name})` : `ค่าคอร์ส [${qNo}] (${name})`;
+            document.getElementById('payCourseTitle').value = descName; 
+            
+            document.getElementById('coursePaymentQueue').innerHTML = `<i class="ph-bold ph-ticket"></i> รหัสจอง: ${qNo}`; 
+            selectCourseWallet('TRANSFER'); 
+            document.getElementById('payCourseModal').classList.remove('hidden'); 
+        } 
+        
+        function closePayCourseModal() { 
+            document.getElementById('payCourseModal').classList.add('hidden'); 
+            document.getElementById('coursePayForm').reset(); 
+        }
+
+        function selectCourseWallet(t) { 
+            currentCourseWallet=t; 
+            document.getElementById('btnCoursePayTransfer').className = t==='TRANSFER'?"py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5":"py-3 rounded-xl border-2 border-slate-200 text-slate-500 font-bold flex justify-center gap-1.5"; 
+            document.getElementById('btnCoursePayCash').className = t==='CASH'?"py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5":"py-3 rounded-xl border-2 border-slate-200 text-slate-500 font-bold flex justify-center gap-1.5"; 
+        }
+
+        function handleCoursePaymentSubmit(e) { 
+            e.preventDefault(); 
+            const btn = document.getElementById('btnSubmitCoursePay');
+            btn.disabled = true; btn.innerText = "กำลังประมวลผล...";
+
+            const amt = Number(document.getElementById('payCourseAmount').value); 
+            const batch = db.batch(); 
+            
+            batch.set(getColRef("transactions").doc(),{ 
+                description: document.getElementById('payCourseTitle').value, 
+                category: 'COURSE', 
+                amount: amt, 
+                cost: 0, 
+                wallet: currentCourseWallet, 
+                date: selectedDate, 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            }); 
+            
+            batch.update(getColRef("course_orders").doc(document.getElementById('payCourseId').value), { 
+                status: 'PAID', 
+                paidDate: selectedDate, 
+                paidTime: new Date().toLocaleTimeString('th-TH'), 
+                paymentAmount: amt, 
+                paymentWallet: currentCourseWallet 
+            }); 
+            
+            batch.commit().then(()=>{ 
+                closePayCourseModal(); 
+                showCustomAlert("สำเร็จ", "บันทึกรับเงินเข้าบัญชีเรียบร้อย", "success"); 
+                btn.disabled = false; btn.innerHTML = "ยืนยันบันทึกรับเงิน";
+            }).catch(err => {
+                showCustomAlert("ข้อผิดพลาด", err.message, "error");
+                btn.disabled = false; btn.innerHTML = "ยืนยันบันทึกรับเงิน";
+            }); 
+        }
     </script>
 </body>
 </html>
