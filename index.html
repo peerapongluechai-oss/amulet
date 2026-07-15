@@ -71,6 +71,25 @@
         
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* สไตล์สำหรับปฏิทิน บังคับให้ตัวหนังสือและไอคอนเป็นสีทอง */
+        input.date-picker-dark {
+            color: #fde047;
+            font-weight: 600;
+        }
+        
+        /* ท่าไม้ตาย: พลิกสีไอคอนสีดำ ให้กลายเป็นสีเหลืองทองด้วย CSS Filter */
+        input.date-picker-dark::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: invert(80%) sepia(100%) saturate(300%) hue-rotate(350deg); 
+            opacity: 0.9;
+        }
+        
+        input.date-picker-dark::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            transition: all 0.2s;
+        }
     </style>
 </head>
 <body class="bg-amber-50/10 min-h-screen pb-28 text-slate-800">
@@ -92,9 +111,10 @@
                     <span id="roleText">โหมดพนักงาน</span>
                 </button>
                 
-                <div class="bg-velvet-dark/40 px-3 md:px-5 py-1.5 md:py-2.5 rounded-full text-xs md:text-sm font-medium text-amber-100 border border-amber-500/20 flex items-center flex-1 md:flex-none">
-                    <i class="ph ph-calendar-blank mr-1.5 md:text-lg"></i> 
-                    <input type="date" id="appDatePicker" onchange="changeAppDate(this.value)" class="bg-transparent text-amber-100 outline-none cursor-pointer w-full" />
+                <!-- กล่องปฏิทินที่ปรับสีให้สว่างขึ้น -->
+                <div class="bg-velvet-dark/60 hover:bg-velvet-light transition-all px-3 md:px-5 py-1.5 md:py-2.5 rounded-full text-xs md:text-sm font-medium border border-gold-main/30 flex items-center flex-1 md:flex-none">
+                    <i class="ph-bold ph-calendar-blank mr-2 text-amber-200 md:text-lg"></i> 
+                    <input type="date" id="appDatePicker" onchange="changeAppDate(this.value)" class="bg-transparent outline-none cursor-pointer w-full date-picker-dark" />
                 </div>
             </div>
         </div>
