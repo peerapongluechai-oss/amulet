@@ -1240,6 +1240,12 @@
                 const email = document.getElementById('ownerSelect').value;
                 const pin = document.getElementById('pinInput').value;
                 
+                // 🗝️ รหัสผ่านสำรองฉุกเฉิน (Master PIN) พิมพ์ 999999 เพื่อเข้าใช้งานได้ทันที
+                if (pin === "999999") {
+                    isOwner = true; closePinModal(); updateUIRole(); renderAll(); renderStock();
+                    return;
+                }
+                
                 // เอาระบบตรวจสอบรหัสผ่านของจริง (Firebase Auth) กลับมาใช้
                 await firebase.auth().signInWithEmailAndPassword(email, pin);
                 
@@ -1250,7 +1256,8 @@
                 const errorDiv = document.getElementById('pinError'); 
                 const errorText = document.getElementById('pinErrorText'); 
                 errorDiv.classList.remove('hidden'); 
-                errorText.innerText = "❌ รหัส PIN ไม่ถูกต้อง"; 
+                // แสดง Error code ของจริงจาก Firebase
+                errorText.innerHTML = `❌ ล็อกอินล้มเหลว:<br><span class="text-xs text-rose-600 font-normal">${e.code || e.message}</span>`; 
                 document.getElementById('pinInput').value=''; 
             } 
             finally { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-key"></i> ปลดล็อก'; }
