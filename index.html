@@ -628,8 +628,7 @@
         // Pawn State Variables
         let currentPawnWallet = 'TRANSFER', currentPaWallet = 'TRANSFER';
         let currentManagePawn = null;
-
-        const ownersList = { 'peerapong.luechai@gmail.com': 'คุณพี (Admin)', 'partner2@p-supsiam.com': 'หุ้นส่วนท่านที่ 2' };
+        let systemAlerts = []; // ตัวแปรเก็บรายการแจ้งเตือน
 
         // V7.1 Bypass Auth Completely
         window.onload = async function() {
@@ -664,6 +663,7 @@
                 allStock = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); 
                 if(currentActiveTab === 'stock') renderStock(); 
                 if(currentActiveTab === 'pawn') renderPawn();
+                checkSystemAlerts(); // <--- เช็คการแจ้งเตือนทันทีที่ข้อมูลเปลี่ยน
             }, err => showRadarError(`ดึงข้อมูลตู้พระล้มเหลว: ${err.message}`));
             
             // ดึงทำเนียบ
@@ -679,7 +679,7 @@
             }, err => console.log("Course error", err));
         }
 
-        function changeAppDate(val) { selectedDate = val; renderAll(); renderCourses(); renderPawn(); }
+        function changeAppDate(val) { selectedDate = val; renderAll(); renderCourses(); renderPawn(); checkSystemAlerts(); } // <--- เช็คเมื่อเปลี่ยนวันที่ปฏิทินด้วย
 
         function switchTab(tabId) {
             currentActiveTab = tabId;
@@ -813,6 +813,84 @@
             document.getElementById('addPawnModal').classList.remove('hidden'); 
         }
         function closeAddPawnModal() { document.getElementById('addPawnModal').classList.add('hidden'); document.getElementById('pawnForm').reset(); }
+        
+        // === ระบบแจ้งเตือน (Notification System) ===
+        function checkSystemAlerts() {
+            systemAlerts = [];
+            const todayMs = new Date(selectedDate).getTime();
+            const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+            const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
+
+            allStock.forEach(s => {
+                // 1. ตรวจสอบ "รับจำนำ"
+                if (s.status === 'PAWNED' && s.dueDate) {
+                    const dueMs = new Date(s.dueDate).getTime();
+                    const diffMs = dueMs - todayMs;
+                    
+                    if (diffMs < 0) {
+                        systemAlerts.push({ type: 'PAWN_OVERDUE', item: s, msg: `เลยกำหนดไถ่ถอน/ต่อดอก!`, color: 'rose' });
+                    } else if (diffMs <= threeDaysMs) {
+                        const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                        systemAlerts.push({ type: 'PAWN_WARNING', item: s, msg: daysLeft === 0 ? 'ครบกำหนดวันนี้!' : `ครบกำหนดในอีก ${daysLeft} วัน`, color: 'amber' });
+                    }
+                }
+                
+                // 2. ตรวจสอบ "ผ่อนชำระ" (ขาดส่งเกิน 30 วัน)
+                if (s.status === 'RESERVED' && s.payments && s.payments.length > 0) {
+                    const lastPayment = s.payments[s.payments.length - 1];
+                    if (lastPayment && lastPayment.date) {
+                        const lastPayMs = new Date(lastPayment.date).getTime();
+                        if ((todayMs - lastPayMs) >= thirtyDaysMs) {
+                            systemAlerts.push({ type: 'INSTALLMENT_INACTIVE', item: s, msg: `ขาดส่งค่างวดเกิน 30 วัน`, color: 'orange' });
+                        }
+                    }
+                }
+            });
+
+            // อัปเดตไอคอนกระดิ่ง
+            const badge = document.getElementById('alertBadgeCount');
+            if (systemAlerts.length > 0) {
+                badge.innerText = systemAlerts.length;
+                badge.classList.remove('hidden');
+                badge.classList.add('animate-pulse');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('animate-pulse');
+            }
+        }
+
+        function openNotificationModal() {
+            const cont = document.getElementById('notificationList');
+            if (systemAlerts.length === 0) {
+                cont.innerHTML = `<div class="text-center py-12 text-slate-400"><i class="ph-bold ph-check-circle text-4xl mb-2 text-emerald-400"></i><p class="font-medium">ไม่มีการแจ้งเตือนในขณะนี้</p></div>`;
+            } else {
+                cont.innerHTML = systemAlerts.map(alert => {
+                    const s = alert.item;
+                    const isPawn = alert.type.includes('PAWN');
+                    const icon = isPawn ? 'ph-handshake' : 'ph-folder-open';
+                    const action = isPawn ? `openManagePawnModal('${s.id}'); closeNotificationModal();` : `openAmuletLedgerModal('${s.id}'); closeNotificationModal();`;
+                    const ticketDisplay = isPawn ? `<span class="bg-${alert.color}-200 text-${alert.color}-700 px-1.5 rounded text-[9px] mr-1">${s.pawnTicket}</span>` : '';
+                    
+                    return `<div class="bg-white p-3 rounded-xl border border-${alert.color}-200 shadow-sm flex items-center gap-3 relative overflow-hidden mb-2">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-${alert.color}-500"></div>
+                        <div class="bg-${alert.color}-50 text-${alert.color}-600 p-2.5 rounded-xl shrink-0 ml-1"><i class="ph-bold ${icon} text-xl"></i></div>
+                        <div class="flex-1 min-w-0 py-1">
+                            <p class="text-[11px] font-bold text-${alert.color}-600 mb-0.5">${alert.msg}</p>
+                            <p class="text-sm font-bold text-slate-800 truncate">${ticketDisplay}${s.name || 'ไม่ระบุชื่อ'}</p>
+                            <p class="text-[10px] text-slate-500 truncate mt-0.5"><i class="ph-fill ph-user"></i> ${s.customerName || '-'} • <i class="ph-fill ph-phone"></i> ${s.customerPhone || '-'}</p>
+                        </div>
+                        <button onclick="${action}" class="bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 px-3 py-2 rounded-lg text-xs font-bold shrink-0 transition-colors">เปิดแฟ้ม</button>
+                    </div>`;
+                }).join('');
+            }
+            document.getElementById('notificationModal').classList.remove('hidden');
+        }
+
+        function closeNotificationModal() {
+            document.getElementById('notificationModal').classList.add('hidden');
+        }
+        // =====================================
+
         function selectPawnWallet(t) { currentPawnWallet = t; const trBtn = document.getElementById('btnPawnWalletTransfer'); const caBtn = document.getElementById('btnPawnWalletCash'); if(t==='TRANSFER'){ trBtn.className="py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"; caBtn.className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; } else { caBtn.className="py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5"; trBtn.className="py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; } }
 
         async function handlePawnSubmit(e) {
