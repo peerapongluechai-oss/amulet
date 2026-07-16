@@ -37,7 +37,7 @@
 
 <body class="bg-slate-50 text-slate-800 selection:bg-amber-200">
 
-    <!-- 📱 Main App Wrapper (เต็มจอ 100% ตามที่ต้องการ) -->
+    <!-- 📱 Main App Wrapper (เต็มจอ 100% ตามที่คุณพีต้องการ) -->
     <div class="w-full bg-amber-50/20 min-h-screen relative flex flex-col pb-24 overflow-x-hidden">
         
         <!-- Notification Bell -->
@@ -362,6 +362,36 @@
         </div>
     </div>
 
+    <!-- BUY BACK MODAL (รับเช่าคืน) -->
+    <div id="buyBackModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden animate-in zoom-in-95">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 relative border-t-8 border-blue-500 shadow-2xl">
+            <button onclick="closeBuyBackModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
+            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="ph-bold ph-arrows-left-right text-blue-500 text-2xl"></i> รับเช่าคืน (นำกลับเข้าตู้)</h3>
+            <p id="bbAmuletName" class="text-sm font-semibold text-slate-500 mb-4 pb-3 border-b border-slate-100"></p>
+            <form onsubmit="handleBuyBackSubmit(event)" class="space-y-4">
+                <input type="hidden" id="bbStockId">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-blue-50 p-3 rounded-xl border border-blue-200">
+                        <label class="block text-xs font-bold text-blue-700 mb-1">ราคารับซื้อคืน (ต้นทุน)</label>
+                        <input type="number" id="bbCost" required min="0" class="w-full bg-transparent text-lg font-bold text-blue-800 focus:outline-none border-b border-blue-300 pb-1">
+                    </div>
+                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+                        <label class="block text-xs font-bold text-emerald-700 mb-1">ตั้งราคาเปิดเช่าใหม่</label>
+                        <input type="number" id="bbPrice" required min="0" class="w-full bg-transparent text-lg font-bold text-emerald-800 focus:outline-none border-b border-emerald-300 pb-1">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-600 mb-2">ช่องทางจ่ายเงินให้ลูกค้า</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" id="btnBbTransfer" onclick="selectBbWallet('TRANSFER')" class="py-2.5 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"><i class="ph ph-credit-card text-lg"></i> โอน</button>
+                        <button type="button" id="btnBbCash" onclick="selectBbWallet('CASH')" class="py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"><i class="ph ph-coins text-lg"></i> เงินสด</button>
+                    </div>
+                </div>
+                <button type="submit" id="btnSubmitBb" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl mt-2 transition-colors">ยืนยันทำรายการรับเช่าคืน</button>
+            </form>
+        </div>
+    </div>
+
     <!-- AMULET LEDGER MODAL (แฟ้มประวัติผ่อน) -->
     <div id="amuletLedgerModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden animate-in zoom-in-95">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 relative shadow-2xl flex flex-col max-h-[90vh]">
@@ -402,36 +432,6 @@
                     </div>
                 </div>
                 <button type="submit" id="btnSubmitInst" class="w-full bg-emerald-500 text-white font-bold py-3.5 rounded-xl mt-2 shadow-md">ยืนยันบันทึกรับค่างวด</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- BUY BACK MODAL (รับเช่าคืน) -->
-    <div id="buyBackModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden animate-in zoom-in-95">
-        <div class="bg-white w-full max-w-md rounded-3xl p-6 relative border-t-8 border-blue-500 shadow-2xl">
-            <button onclick="closeBuyBackModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
-            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="ph-bold ph-arrows-left-right text-blue-500 text-2xl"></i> รับเช่าคืน (นำกลับเข้าตู้)</h3>
-            <p id="bbAmuletName" class="text-sm font-semibold text-slate-500 mb-4 pb-3 border-b border-slate-100"></p>
-            <form onsubmit="handleBuyBackSubmit(event)" class="space-y-4">
-                <input type="hidden" id="bbStockId">
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-blue-50 p-3 rounded-xl border border-blue-200">
-                        <label class="block text-xs font-bold text-blue-700 mb-1">ราคารับซื้อคืน (ต้นทุน)</label>
-                        <input type="number" id="bbCost" required min="0" class="w-full bg-transparent text-lg font-bold text-blue-800 focus:outline-none border-b border-blue-300 pb-1">
-                    </div>
-                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
-                        <label class="block text-xs font-bold text-emerald-700 mb-1">ตั้งราคาเปิดเช่าใหม่</label>
-                        <input type="number" id="bbPrice" required min="0" class="w-full bg-transparent text-lg font-bold text-emerald-800 focus:outline-none border-b border-emerald-300 pb-1">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-slate-600 mb-2">ช่องทางจ่ายเงินให้ลูกค้า</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button type="button" id="btnBbTransfer" onclick="selectBbWallet('TRANSFER')" class="py-2.5 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5"><i class="ph ph-credit-card text-lg"></i> โอน</button>
-                        <button type="button" id="btnBbCash" onclick="selectBbWallet('CASH')" class="py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"><i class="ph ph-coins text-lg"></i> เงินสด</button>
-                    </div>
-                </div>
-                <button type="submit" id="btnSubmitBb" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl mt-2 transition-colors">ยืนยันทำรายการรับเช่าคืน</button>
             </form>
         </div>
     </div>
@@ -569,9 +569,10 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIG (แก้ไข API Key ให้ถูกต้องแล้ว) ---
+        // --- FIREBASE CONFIG ---
+        // (อัปเดต API Key ให้ถูกต้องเป๊ะๆ 100% แล้วครับคุณพี)
         const firebaseConfig = {
-            apiKey: "AIzaSyAwQFWL7zniKTnT2INT93iHOlCuT97hC7g",
+            apiKey: "AIzaSyAmQFwL7zniKTnT2INT93iHOlCuT97hC7g",
             authDomain: "myfamilyproject-ecff4.firebaseapp.com",
             projectId: "myfamilyproject-ecff4",
             storageBucket: "myfamilyproject-ecff4.appspot.com",
@@ -616,7 +617,7 @@
             unsubTxs = getColRef("transactions").orderBy("timestamp", "desc").onSnapshot(snap => {
                 allTransactions = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
                 if(currentTab === 'ACCOUNT') renderAccount();
-            }, err => { console.error(err); showCustomAlert("การเชื่อมต่อฐานข้อมูลล้มเหลว", err.message, "error"); });
+            }, err => { console.error(err); showCustomAlert("ดึงข้อมูลบัญชีล้มเหลว", err.message, "error"); });
 
             unsubStock = getColRef("amulet_stock").orderBy("timestamp", "desc").onSnapshot(snap => {
                 allStock = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
@@ -746,6 +747,7 @@
             }
         }
 
+        // --- STREAMING_CHUNK:Rendering UI Logic ---
         // --- RENDER ACCOUNT ---
         function renderAccount() {
             const list = document.getElementById('accList'); const term = document.getElementById('searchInput').value.toLowerCase();
@@ -945,6 +947,7 @@
             if(list) list.innerHTML = html;
         }
 
+        // --- STREAMING_CHUNK:Event Listeners & Form Submissions ---
         // --- ACTION HANDLERS ---
         function filterItems() { renderAll(); }
         function openMainActionModal() { const m=document.getElementById('mainActionModal'); if(m) m.classList.remove('hidden'); }
@@ -981,14 +984,29 @@
         // Sell Modal
         function openSellStockModal(id, name, cost, price) {
             currentSellStkId = id; currentSellCost = cost; const s = allStock.find(x=>x.id===id);
-            document.getElementById('sellStkCode').innerText = s.code; document.getElementById('sellStkName').innerText = name;
-            if(isOwner) { document.getElementById('sellStkCost').innerText = `ทุน: ${cost.toLocaleString()} ฿`; document.getElementById('sellStkCost').classList.remove('hidden'); } else { document.getElementById('sellStkCost').classList.add('hidden'); }
-            document.getElementById('sellStkPrice').value = price; document.getElementById('sellAgreedPrice').value = price; document.getElementById('sellPaidAmount').value = price; document.getElementById('sellCusName').value = ''; document.getElementById('sellCusPhone').value = '';
-            document.getElementById('sellAgreedPrice').oninput = checkInstAlert; document.getElementById('sellPaidAmount').oninput = checkInstAlert; checkInstAlert();
-            document.getElementById('sellStockModal').classList.remove('hidden');
+            if(document.getElementById('sellStkCode')) document.getElementById('sellStkCode').innerText = s.code; 
+            if(document.getElementById('sellStkName')) document.getElementById('sellStkName').innerText = name;
+            
+            const costEl = document.getElementById('sellStkCost');
+            if(costEl) {
+                if(isOwner) { costEl.innerText = `ทุน: ${cost.toLocaleString()} ฿`; costEl.classList.remove('hidden'); } 
+                else { costEl.classList.add('hidden'); }
+            }
+            
+            if(document.getElementById('sellStkPrice')) document.getElementById('sellStkPrice').value = price; 
+            if(document.getElementById('sellAgreedPrice')) document.getElementById('sellAgreedPrice').value = price; 
+            if(document.getElementById('sellPaidAmount')) document.getElementById('sellPaidAmount').value = price; 
+            if(document.getElementById('sellCusName')) document.getElementById('sellCusName').value = ''; 
+            if(document.getElementById('sellCusPhone')) document.getElementById('sellCusPhone').value = '';
+            
+            if(document.getElementById('sellAgreedPrice')) document.getElementById('sellAgreedPrice').oninput = checkInstAlert; 
+            if(document.getElementById('sellPaidAmount')) document.getElementById('sellPaidAmount').oninput = checkInstAlert; 
+            checkInstAlert();
+            
+            if(document.getElementById('sellStockModal')) document.getElementById('sellStockModal').classList.remove('hidden');
         }
-        function checkInstAlert() { const agreed = Number(document.getElementById('sellAgreedPrice').value)||0; const paid = Number(document.getElementById('sellPaidAmount').value)||0; if(paid < agreed) document.getElementById('installmentAlert').classList.remove('hidden'); else document.getElementById('installmentAlert').classList.add('hidden'); }
-        function closeSellStockModal() { document.getElementById('sellStockModal').classList.add('hidden'); }
+        function checkInstAlert() { const agreed = Number(document.getElementById('sellAgreedPrice')?.value)||0; const paid = Number(document.getElementById('sellPaidAmount')?.value)||0; const alertEl = document.getElementById('installmentAlert'); if(alertEl) { if(paid < agreed) alertEl.classList.remove('hidden'); else alertEl.classList.add('hidden'); } }
+        function closeSellStockModal() { const m=document.getElementById('sellStockModal'); if(m) m.classList.add('hidden'); }
         function selectSellWallet(w) { currentSellWallet=w; document.getElementById('btnSellWalletTr').className="py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; document.getElementById('btnSellWalletCa').className="py-2.5 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; if(w==='TRANSFER') document.getElementById('btnSellWalletTr').classList.add('border-blue-500','text-blue-700','bg-blue-50'); else document.getElementById('btnSellWalletCa').classList.add('border-emerald-500','text-emerald-700','bg-emerald-50'); }
         async function submitSellStock(e) {
             e.preventDefault(); const btn = document.getElementById('btnSubmitSell'); btn.disabled = true; btn.innerText = "กำลังบันทึก...";
@@ -1008,17 +1026,22 @@
         // Ledger
         function openAmuletLedgerModal(id) {
             const s = allStock.find(x=>x.id===id); if(!s) return; currentLedgerAmulet = s;
-            document.getElementById('alCode').innerText = s.code; document.getElementById('alName').innerText = s.name; document.getElementById('alCustomer').innerHTML = `<i class="ph-fill ph-user"></i> ${s.customerName||'-'} • <i class="ph-fill ph-phone"></i> ${s.customerPhone||'-'}`;
+            if(document.getElementById('alCode')) document.getElementById('alCode').innerText = s.code; 
+            if(document.getElementById('alName')) document.getElementById('alName').innerText = s.name; 
+            if(document.getElementById('alCustomer')) document.getElementById('alCustomer').innerHTML = `<i class="ph-fill ph-user"></i> ${s.customerName||'-'} • <i class="ph-fill ph-phone"></i> ${s.customerPhone||'-'}`;
             const agreed = Number(s.agreedPrice)||0; const paid = Number(s.paidAmount)||0; const rem = agreed - paid;
-            document.getElementById('alAgreedPrice').innerText = agreed.toLocaleString('th-TH'); document.getElementById('alRemaining').innerText = rem.toLocaleString('th-TH');
-            document.getElementById('alProgress').style.width = `${agreed > 0 ? (paid/agreed)*100 : 0}%`;
+            if(document.getElementById('alAgreedPrice')) document.getElementById('alAgreedPrice').innerText = agreed.toLocaleString('th-TH'); 
+            if(document.getElementById('alRemaining')) document.getElementById('alRemaining').innerText = rem.toLocaleString('th-TH');
+            if(document.getElementById('alProgress')) document.getElementById('alProgress').style.width = `${agreed > 0 ? (paid/agreed)*100 : 0}%`;
             const hList = document.getElementById('alHistoryList');
-            if(s.payments && s.payments.length > 0) { hList.innerHTML = s.payments.slice().reverse().map(p => `<div class="flex justify-between items-center bg-white p-2 rounded-lg border border-slate-100"><span>${p.date} <span class="text-[10px] text-slate-400">(${p.type==='DEPOSIT'?'มัดจำ':'ค่างวด'})</span></span><span class="font-bold text-emerald-600">+${Number(p.amount).toLocaleString()} ฿</span></div>`).join(''); } else { hList.innerHTML = `<p class="text-slate-400 text-center py-2 text-xs">ไม่มีประวัติ</p>`; }
-            document.getElementById('amuletLedgerModal').classList.remove('hidden');
+            if(hList) {
+                if(s.payments && s.payments.length > 0) { hList.innerHTML = s.payments.slice().reverse().map(p => `<div class="flex justify-between items-center bg-white p-2 rounded-lg border border-slate-100"><span>${p.date} <span class="text-[10px] text-slate-400">(${p.type==='DEPOSIT'?'มัดจำ':'ค่างวด'})</span></span><span class="font-bold text-emerald-600">+${Number(p.amount).toLocaleString()} ฿</span></div>`).join(''); } else { hList.innerHTML = `<p class="text-slate-400 text-center py-2 text-xs">ไม่มีประวัติ</p>`; }
+            }
+            if(document.getElementById('amuletLedgerModal')) document.getElementById('amuletLedgerModal').classList.remove('hidden');
         }
-        function closeAmuletLedgerModal() { document.getElementById('amuletLedgerModal').classList.add('hidden'); }
-        function openPayInstallmentModal() { if(!currentLedgerAmulet) return; const rem = Number(currentLedgerAmulet.agreedPrice) - Number(currentLedgerAmulet.paidAmount); document.getElementById('piRemaining').innerText = rem.toLocaleString('th-TH') + ' ฿'; document.getElementById('piAmount').value = ''; document.getElementById('piAmount').max = rem; document.getElementById('payInstModal').classList.remove('hidden'); }
-        function closePayInstallmentModal() { document.getElementById('payInstModal').classList.add('hidden'); }
+        function closeAmuletLedgerModal() { const m=document.getElementById('amuletLedgerModal'); if(m) m.classList.add('hidden'); }
+        function openPayInstallmentModal() { if(!currentLedgerAmulet) return; const rem = Number(currentLedgerAmulet.agreedPrice) - Number(currentLedgerAmulet.paidAmount); if(document.getElementById('piRemaining')) document.getElementById('piRemaining').innerText = rem.toLocaleString('th-TH') + ' ฿'; if(document.getElementById('piAmount')) { document.getElementById('piAmount').value = ''; document.getElementById('piAmount').max = rem; } if(document.getElementById('payInstModal')) document.getElementById('payInstModal').classList.remove('hidden'); }
+        function closePayInstallmentModal() { const m=document.getElementById('payInstModal'); if(m) m.classList.add('hidden'); }
         function selectInstWallet(w) { currentInstWallet=w; document.getElementById('btnInstWalletTr').className="py-2 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1"; document.getElementById('btnInstWalletCa').className="py-2 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1"; if(w==='TRANSFER') document.getElementById('btnInstWalletTr').classList.add('border-blue-500','text-blue-700','bg-blue-50'); else document.getElementById('btnInstWalletCa').classList.add('border-emerald-500','text-emerald-700','bg-emerald-50'); }
         async function submitPayInstallment(e) {
             e.preventDefault(); const btn = document.getElementById('btnSubmitInst'); btn.disabled = true; btn.innerHTML = "กำลังบันทึก...";
@@ -1064,9 +1087,11 @@
         function openManagePawnModal(id) {
             const p = allPawn.find(x => x.id === id); if(!p) return; currentManagePawn = p;
             document.getElementById('mpTicket').innerText = p.pawnTicket; document.getElementById('mpName').innerText = p.name; document.getElementById('mpCustomer').innerHTML = `<i class="ph-fill ph-user"></i> ${p.customerName||'-'} • <i class="ph-fill ph-phone"></i> ${p.customerPhone||'-'}`; 
-            // คืนค่ากล่องกลับเป็นเวอร์ชัน 7.3 (2 กล่อง: เงินต้น และ วันกำหนดชำระ)
+            
+            // คืนค่ากล่องกลับเป็นเวอร์ชัน 7.3 ดั้งเดิม (2 กล่อง: เงินต้น และ วันกำหนดชำระ)
             document.getElementById('mpPrincipal').innerText = Number(p.pawnPrincipal||0).toLocaleString('th-TH');
             const today = new Date(selectedDate).getTime(); const dueTime = new Date(p.dueDate).getTime(); document.getElementById('mpDueDate').className = dueTime < today ? "font-bold text-rose-600 text-lg" : "font-bold text-slate-700 text-lg"; document.getElementById('mpDueDate').innerText = p.dueDate;
+            
             const hList = document.getElementById('mpHistoryList');
             if(p.pawnHistory && p.pawnHistory.length > 0) { hList.innerHTML = p.pawnHistory.slice().reverse().map(h => `<div class="flex justify-between items-center bg-white p-2 rounded-lg border border-slate-100"><span>${h.date} <span class="text-[10px] text-slate-400">(${h.type==='RENEW'?'ต่อดอก':'ไถ่ถอน'})</span></span><span class="font-bold ${h.type==='RENEW'?'text-amber-600':'text-emerald-600'}">+${Number(h.amount).toLocaleString()} ฿</span></div>`).join(''); } else { hList.innerHTML = `<p class="text-slate-400 text-center py-2 text-xs">ยังไม่มีประวัติ</p>`; }
             document.getElementById('managePawnModal').classList.remove('hidden');
