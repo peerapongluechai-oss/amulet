@@ -222,6 +222,7 @@
         </div>
     </nav>
 
+    <!-- Modal พื้นฐานทั้งหมด -->
     <div id="pinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 relative">
             <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
@@ -241,6 +242,21 @@
             <button onclick="closeNotificationModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full z-10"><i class="ph ph-x"></i></button>
             <h3 class="text-xl font-bold heading-font text-slate-800 mb-4 flex items-center gap-2"><i class="ph-bold ph-bell-ringing text-amber-500"></i> ศูนย์การแจ้งเตือน</h3>
             <div id="notificationList" class="flex-1 overflow-y-auto space-y-3 bg-slate-50 p-2 rounded-2xl border border-slate-100"></div>
+        </div>
+    </div>
+
+    <!-- CUSTOM CONFIRM MODAL (ปรับแต่งใหม่เพื่อให้แอปไม่สะดุดและสวยงามขึ้น) -->
+    <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4 hidden animate-in fade-in">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 relative text-center shadow-2xl">
+            <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph-bold ph-warning-circle text-3xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">ยืนยันการดำเนินการ</h3>
+            <p id="confirmDesc" class="text-sm text-slate-500 mb-6"></p>
+            <div class="flex gap-3">
+                <button onclick="document.getElementById('customConfirmModal').classList.add('hidden')" class="flex-1 bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors font-bold py-3.5 rounded-xl">ยกเลิก</button>
+                <button id="btnConfirmAction" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl transition-colors">ยืนยัน</button>
+            </div>
         </div>
     </div>
 
@@ -356,7 +372,7 @@
                     <button onclick="openPawnAction('INTEREST')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors"><i class="ph-bold ph-coins text-xl"></i> ต่อดอกเบี้ย</button>
                     <button onclick="openPawnAction('REDEEM')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors"><i class="ph-bold ph-hand-coins text-xl"></i> ไถ่ถอน</button>
                 </div>
-                <button onclick="if(confirm('ตัดหลุดจำนำ? พระองค์นี้จะถูกเปลี่ยนสถานะเป็น พร้อมเช่า ทันที โดยใช้เงินต้นเป็นราคาทุน')) executePawnForfeit()" class="w-full bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 font-bold py-2.5 rounded-xl transition-colors text-sm"><i class="ph-bold ph-warning-circle"></i> ปล่อยหลุดจำนำ (นำเข้าตู้)</button>
+                <button onclick="showCustomConfirm('ตัดหลุดจำนำ? พระองค์นี้จะถูกเปลี่ยนสถานะเป็น พร้อมเช่า ทันที โดยใช้เงินต้นเป็นราคาทุน', () => executePawnForfeit())" class="w-full bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 font-bold py-2.5 rounded-xl transition-colors text-sm"><i class="ph-bold ph-warning-circle"></i> ปล่อยหลุดจำนำ (นำเข้าตู้)</button>
             </div>
         </div>
     </div>
@@ -624,6 +640,17 @@
             showCustomAlert("ระบบตรวจพบข้อผิดพลาด!", msg, "error"); 
         }
 
+        /* ฟังก์ชันใหม่ที่เพิ่มเข้ามาเพื่อหลีกเลี่ยงการใช้ confirm() ตามกฎของระบบครับ */
+        function showCustomConfirm(msg, onConfirmCallback) {
+            document.getElementById('confirmDesc').innerText = msg;
+            const btn = document.getElementById('btnConfirmAction');
+            btn.onclick = function() {
+                document.getElementById('customConfirmModal').classList.add('hidden');
+                onConfirmCallback();
+            };
+            document.getElementById('customConfirmModal').classList.remove('hidden');
+        }
+
         function initDatabaseListeners() {
             getColRef("transactions").onSnapshot(snap => { allTransactions = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'ledger') renderAll(); }, err => showRadarError(`ดึงข้อมูลบัญชีล้มเหลว: ${err.message}`));
             getColRef("amulet_stock").onSnapshot(snap => { allStock = snap.docs.map(doc => ({id: doc.id, ...doc.data()})); if(currentActiveTab === 'stock') renderStock(); if(currentActiveTab === 'pawn') renderPawn(); checkSystemAlerts(); }, err => showRadarError(`ดึงข้อมูลตู้พระล้มเหลว: ${err.message}`));
@@ -721,7 +748,7 @@
                 const names = {'SELL':'ปล่อยเช่า','BUY':'เช่าเข้า','COURSE':'ค่าอบรม','INSTALLMENT':'ค่างวด/มัดจำ','PAWN_OUT':'จ่ายรับจำนำ','PAWN_INTEREST':'รับดอกเบี้ยจำนำ','PAWN_REDEEM':'รับไถ่ถอนจำนำ','OTHER_INCOME':'รับอื่นๆ','OTHER_EXPENSE':'จ่ายอื่นๆ'};
                 cont.innerHTML = list.map(tx => {
                     const inc = ['SELL','OTHER_INCOME','COURSE', 'INSTALLMENT', 'PAWN_INTEREST', 'PAWN_REDEEM'].includes(tx.category);
-                    return `<div class="bg-white/95 p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between ${inc?'border-l-4 border-emerald-500':'border-l-4 border-rose-500'}"><div><h4 class="font-bold text-slate-800 text-sm md:text-base">${tx.description}</h4><div class="flex items-center gap-2 mt-1 text-[11px] md:text-xs"><span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${names[tx.category]||tx.category}</span><span class="text-slate-400">${tx.wallet==='CASH'?'เงินสด':'โอน'}</span>${isOwner && tx.category === 'SELL' && tx.cost > 0 ? `<span class="text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">ทุน ${format(tx.cost)}</span>` : ''}</div></div><div class="text-right shrink-0"><p class="font-bold text-base md:text-xl ${inc?'text-emerald-600':'text-slate-800'}">${inc?'+':'-'}${format(tx.amount)}</p>${isOwner ? `<button onclick="if(confirm('ลบรายการบัญชีนี้?')) getColRef('transactions').doc('${tx.id}').delete()" class="text-slate-300 hover:text-red-500 pt-1"><i class="ph-bold ph-trash text-base"></i></button>`:''}</div></div>`;
+                    return `<div class="bg-white/95 p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between ${inc?'border-l-4 border-emerald-500':'border-l-4 border-rose-500'}"><div><h4 class="font-bold text-slate-800 text-sm md:text-base">${tx.description}</h4><div class="flex items-center gap-2 mt-1 text-[11px] md:text-xs"><span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded">${names[tx.category]||tx.category}</span><span class="text-slate-400">${tx.wallet==='CASH'?'เงินสด':'โอน'}</span>${isOwner && tx.category === 'SELL' && tx.cost > 0 ? `<span class="text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">ทุน ${format(tx.cost)}</span>` : ''}</div></div><div class="text-right shrink-0"><p class="font-bold text-base md:text-xl ${inc?'text-emerald-600':'text-slate-800'}">${inc?'+':'-'}${format(tx.amount)}</p>${isOwner ? `<button onclick="showCustomConfirm('ลบรายการบัญชีนี้?', () => getColRef('transactions').doc('${tx.id}').delete())" class="text-slate-300 hover:text-red-500 pt-1"><i class="ph-bold ph-trash text-base"></i></button>`:''}</div></div>`;
                 }).join('');
             } catch (err) { console.error("Render Ledger Error:", err); }
         }
@@ -781,7 +808,7 @@
                 let badge = `<div class="absolute top-3 right-3 bg-purple-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">จำนำอยู่</div>`; let dueClass = "text-slate-600";
                 if(isOverdue) { badge = `<div class="absolute top-3 right-3 bg-rose-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md animate-pulse">เลยกำหนด!</div>`; dueClass = "text-rose-600 font-bold"; }
                 else if(isWarning) { badge = `<div class="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">ใกล้ครบกำหนด</div>`; dueClass = "text-amber-600 font-bold"; }
-                return `<div class="bg-white rounded-2xl p-4 shadow-sm border ${isOverdue ? 'border-rose-300 bg-rose-50/30' : 'border-purple-100'} relative cursor-pointer hover:shadow-md transition-all" onclick="openManagePawnModal('${p.id}')">${badge}<div class="flex gap-3 items-center mb-3 pb-3 border-b border-slate-100"><img src="${img}" class="w-16 h-16 object-cover rounded-xl border border-slate-200 shrink-0"><div class="min-w-0"><span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full mb-1 inline-block">${p.pawnTicket||'N/A'}</span><h4 class="font-bold text-slate-800 text-sm truncate">${p.name||'ไม่ระบุชื่อพระ'}</h4><p class="text-xs text-slate-500 truncate"><i class="ph-fill ph-user"></i> ${p.customerName||'-'}</p></div></div><div class="grid grid-cols-2 gap-2 text-xs mb-2"><div class="bg-slate-50 p-2 rounded-lg text-center"><p class="text-slate-400 mb-0.5">เงินต้น</p><p class="font-bold text-slate-700 text-sm">${Number(p.pawnPrincipal||0).toLocaleString('th-TH')} ฿</p></div><div class="bg-slate-50 p-2 rounded-lg text-center"><p class="text-slate-400 mb-0.5">ครบกำหนด</p><p class="${dueClass}">${p.dueDate||'--/--/--'}</p></div></div></div>`;
+                return `<div class="bg-white rounded-2xl p-4 shadow-sm border ${isOverdue ? 'border-rose-300 bg-rose-50/30' : 'border-purple-100'} relative cursor-pointer hover:shadow-md transition-all" onclick="openManagePawnModal('${p.id}')">${badge}<div class="flex gap-3 items-center mb-3 pb-3 border-b border-slate-100"><img src="${img}" class="w-16 h-16 object-cover rounded-xl border border-slate-200 shrink-0"><div class="min-w-0"><span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full mb-1 inline-block">${p.pawnTicket||'N/A'}</span><h4 class="font-bold text-slate-800 text-sm truncate">${p.name||'ไม่ระบุชื่อพระ'}</h4><p class="text-xs text-slate-500 truncate"><i class="ph-fill ph-user"></i> ${p.customerName||'-'}</p></div></div><div class="grid grid-cols-3 gap-1.5 mb-2"><div class="bg-slate-50 p-2 rounded-lg text-center"><p class="text-[10px] text-slate-400 mb-0.5">เงินต้น</p><p class="font-bold text-slate-700 text-xs">${Number(p.pawnPrincipal||0).toLocaleString('th-TH')} ฿</p></div><div class="bg-amber-50 p-2 rounded-lg text-center border border-amber-100/50"><p class="text-[10px] text-amber-600 mb-0.5">ดอก/งวด</p><p class="font-bold text-amber-700 text-xs">${Number(p.interestRate||0).toLocaleString('th-TH')} ฿</p></div><div class="bg-slate-50 p-2 rounded-lg text-center"><p class="text-[10px] text-slate-400 mb-0.5">ครบกำหนด</p><p class="${dueClass} text-xs">${p.dueDate||'--/--/--'}</p></div></div></div>`;
             }).join('');
         }
 
@@ -872,7 +899,7 @@
                     else if (stat === 'RESERVED') { actionBtn = `<button onclick="openAmuletLedgerModal('${s.id}')" class="w-full mt-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold py-2.5 rounded-xl text-sm transition-all shadow-sm"><i class="ph-bold ph-folder-open"></i> แฟ้มประวัติ / รับค่างวด</button>`; }
                     else if (stat === 'SOLD') { actionBtn = `<div class="flex gap-2 mt-3 pt-3 border-t border-slate-100"><button onclick="openImageViewer('${s.id}')" class="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 font-bold py-2 rounded-xl text-xs transition-all shadow-sm"><i class="ph-bold ph-magnifying-glass"></i> ดูข้อมูล</button>${isOwner ? `<button onclick="openBuyBackModal('${s.id}', '${safeName}')" class="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold py-2 rounded-xl text-xs transition-all shadow-sm"><i class="ph-bold ph-arrows-left-right"></i> รับเช่าคืน</button>` : ''}</div>`; }
 
-                    return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border ${stat === 'SOLD' ? 'border-slate-200 opacity-80' : 'border-amber-200/50'} relative flex flex-col">${statusBadge} ${imgHtml}<div class="flex items-center gap-2 mb-2"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px]">${s.code||'ไม่มีรหัส'}</span><span class="text-[10px] text-slate-500 truncate">${s.category||'ทั่วไป'}</span></div><h4 class="font-bold text-slate-800 mb-3 text-sm line-clamp-2">${s.name||'ไม่มีชื่อ'}</h4><div class="mt-auto grid grid-cols-2 gap-2 text-xs">${priceSection}</div>${actionBtn}${isOwner && stat !== 'SOLD' ? `<div class="flex gap-2 mt-3 pt-3 border-t border-slate-100"><button onclick="openEditStockModal('${s.id}', '${s.code||''}', '${safeName}', '${s.category||''}', ${costNum}, ${priceNum}, '${s.imageUrl||''}')" class="flex-1 bg-slate-100 text-slate-600 font-bold py-2 rounded-xl text-[10px]"><i class="ph-bold ph-pencil-simple"></i> แก้ไข</button><button onclick="if(confirm('ลบสต็อกองค์นี้?')) getColRef('amulet_stock').doc('${s.id}').delete()" class="flex-1 bg-rose-50 text-rose-600 font-bold py-2 rounded-xl text-[10px]"><i class="ph-bold ph-trash"></i> ลบ</button></div>` : ''}</div>`;
+                    return `<div class="bg-white/95 rounded-2xl p-4 shadow-sm border ${stat === 'SOLD' ? 'border-slate-200 opacity-80' : 'border-amber-200/50'} relative flex flex-col">${statusBadge} ${imgHtml}<div class="flex items-center gap-2 mb-2"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px]">${s.code||'ไม่มีรหัส'}</span><span class="text-[10px] text-slate-500 truncate">${s.category||'ทั่วไป'}</span></div><h4 class="font-bold text-slate-800 mb-3 text-sm line-clamp-2">${s.name||'ไม่มีชื่อ'}</h4><div class="mt-auto grid grid-cols-2 gap-2 text-xs">${priceSection}</div>${actionBtn}${isOwner && stat !== 'SOLD' ? `<div class="flex gap-2 mt-3 pt-3 border-t border-slate-100"><button onclick="openEditStockModal('${s.id}', '${s.code||''}', '${safeName}', '${s.category||''}', ${costNum}, ${priceNum}, '${s.imageUrl||''}')" class="flex-1 bg-slate-100 text-slate-600 font-bold py-2 rounded-xl text-[10px]"><i class="ph-bold ph-pencil-simple"></i> แก้ไข</button><button onclick="showCustomConfirm('ลบสต็อกองค์นี้?', () => getColRef('amulet_stock').doc('${s.id}').delete())" class="flex-1 bg-rose-50 text-rose-600 font-bold py-2 rounded-xl text-[10px]"><i class="ph-bold ph-trash"></i> ลบ</button></div>` : ''}</div>`;
                 }).join('');
             } catch (err) { console.error("Render Stock Error:", err); }
         }
@@ -1165,7 +1192,7 @@
                         </div>
                         <div class="flex flex-col gap-2 items-end shrink-0 pl-2">
                             ${c.status==='PENDING' ? `<button onclick="openPayCourseModal('${c.id}', '${c.queueNo}', '${c.customerName}', '${safeCourseName}')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-1.5 px-3 md:py-2 md:px-4 rounded-lg text-xs shadow-sm transition-colors flex items-center gap-1"><i class="ph-bold ph-money"></i> รับเงิน</button>` : ''}
-                            ${isOwner ? `<button onclick="if(confirm('ยืนยันที่จะลบรายการจองของ ${c.customerName} ออกจากระบบ?')) getColRef('course_orders').doc('${c.id}').delete()" class="text-slate-300 hover:text-red-500 text-xs p-1 transition-colors"><i class="ph-bold ph-trash text-base"></i></button>` : ''}
+                            ${isOwner ? `<button onclick="showCustomConfirm('ยืนยันที่จะลบรายการจองของ ${c.customerName} ออกจากระบบ?', () => getColRef('course_orders').doc('${c.id}').delete())" class="text-slate-300 hover:text-red-500 text-xs p-1 transition-colors"><i class="ph-bold ph-trash text-base"></i></button>` : ''}
                         </div>
                     </div>
                 `}).join('');
