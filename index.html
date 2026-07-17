@@ -222,7 +222,6 @@
         </div>
     </nav>
 
-    <!-- Modal พื้นฐานทั้งหมด -->
     <div id="pinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-6 relative">
             <button onclick="closePinModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
@@ -242,21 +241,6 @@
             <button onclick="closeNotificationModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full z-10"><i class="ph ph-x"></i></button>
             <h3 class="text-xl font-bold heading-font text-slate-800 mb-4 flex items-center gap-2"><i class="ph-bold ph-bell-ringing text-amber-500"></i> ศูนย์การแจ้งเตือน</h3>
             <div id="notificationList" class="flex-1 overflow-y-auto space-y-3 bg-slate-50 p-2 rounded-2xl border border-slate-100"></div>
-        </div>
-    </div>
-
-    <!-- CUSTOM CONFIRM MODAL -->
-    <div id="customConfirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4 hidden animate-in fade-in">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-6 relative text-center shadow-2xl">
-            <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="ph-bold ph-warning-circle text-3xl"></i>
-            </div>
-            <h3 class="text-lg font-bold text-slate-800 mb-2">ยืนยันการดำเนินการ</h3>
-            <p id="confirmDesc" class="text-sm text-slate-500 mb-6"></p>
-            <div class="flex gap-3">
-                <button onclick="document.getElementById('customConfirmModal').classList.add('hidden')" class="flex-1 bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors font-bold py-3.5 rounded-xl">ยกเลิก</button>
-                <button id="btnConfirmAction" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3.5 rounded-xl transition-colors">ยืนยัน</button>
-            </div>
         </div>
     </div>
 
@@ -297,7 +281,6 @@
         </div>
     </div>
 
-    <!-- MODAL: ADD STOCK (อัปเดตเพิ่มช่องข้อมูลลูกค้า) -->
     <div id="addStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeAddStockModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
@@ -313,7 +296,6 @@
                     <div><label class="block font-bold text-slate-500 mb-1.5">ราคาทุน</label><input type="number" id="stockCost" required min="0" value="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-rose-600"></div>
                     <div><label class="block font-bold text-slate-500 mb-1.5">ราคาเปิดเช่า</label><input type="number" id="stockPrice" required min="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-emerald-600"></div>
                 </div>
-                <!-- ส่วนที่เพิ่มใหม่: ข้อมูลลูกค้า (ถ้ามี) -->
                 <div class="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                     <div><label class="block font-bold text-slate-500 mb-1.5">ชื่อลูกค้า (ถ้ามี)</label><input type="text" id="stockCustomerName" placeholder="ระบุชื่อลูกค้าเดิม" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500"></div>
                     <div><label class="block font-bold text-slate-500 mb-1.5">เบอร์โทรติดต่อ</label><input type="tel" id="stockCustomerPhone" placeholder="08X-XXX-XXXX" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500"></div>
@@ -365,9 +347,10 @@
                 <h3 id="mpName" class="text-lg font-bold text-slate-800">ชื่อพระ</h3>
                 <p id="mpCustomer" class="text-sm text-slate-500 mt-1"><i class="ph-fill ph-user"></i> ลูกค้า • <i class="ph-fill ph-phone"></i> เบอร์</p>
             </div>
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <div class="bg-slate-50 p-3 rounded-xl text-center border border-slate-100"><p class="text-xs text-slate-400 mb-1">เงินต้น</p><p id="mpPrincipal" class="font-bold text-slate-700 text-lg">0</p></div>
-                <div class="bg-rose-50 p-3 rounded-xl text-center border border-rose-100"><p class="text-xs text-rose-400 mb-1">วันกำหนดชำระ</p><p id="mpDueDate" class="font-bold text-rose-600">--/--/----</p></div>
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <div class="bg-slate-50 p-2 rounded-xl text-center border border-slate-100"><p class="text-[10px] text-slate-400 mb-1">เงินต้น</p><p id="mpPrincipal" class="font-bold text-slate-700 text-sm">0</p></div>
+                <div class="bg-amber-50 p-2 rounded-xl text-center border border-amber-100/50"><p class="text-[10px] text-amber-600 mb-1">ดอกเบี้ย/รอบ</p><p id="mpInterest" class="font-bold text-amber-700 text-sm">0</p></div>
+                <div class="bg-rose-50 p-2 rounded-xl text-center border border-rose-100"><p class="text-[10px] text-rose-400 mb-1">ครบกำหนด</p><p id="mpDueDate" class="font-bold text-rose-600 text-sm">--/--/----</p></div>
             </div>
             <div class="flex-1 overflow-y-auto mb-4 border border-slate-100 rounded-xl bg-slate-50 p-3">
                 <h4 class="text-xs font-bold text-slate-500 mb-2 flex items-center gap-1"><i class="ph-bold ph-clock-counter-clockwise"></i> ประวัติการต่อดอก</h4>
@@ -406,7 +389,6 @@
         </div>
     </div>
 
-    <!-- MODAL: EDIT STOCK -->
     <div id="editStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeEditStockModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
@@ -808,19 +790,23 @@
                 let badge = `<div class="absolute top-3 right-3 bg-purple-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">จำนำอยู่</div>`; let dueClass = "text-slate-600";
                 if(isOverdue) { badge = `<div class="absolute top-3 right-3 bg-rose-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md animate-pulse">เลยกำหนด!</div>`; dueClass = "text-rose-600 font-bold"; }
                 else if(isWarning) { badge = `<div class="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">ใกล้ครบกำหนด</div>`; dueClass = "text-amber-600 font-bold"; }
-                return `<div class="bg-white rounded-2xl p-4 shadow-sm border ${isOverdue ? 'border-rose-300 bg-rose-50/30' : 'border-purple-100'} relative cursor-pointer hover:shadow-md transition-all" onclick="openManagePawnModal('${p.id}')">${badge}<div class="flex gap-3 items-center mb-3 pb-3 border-b border-slate-100"><img src="${img}" class="w-16 h-16 object-cover rounded-xl border border-slate-200 shrink-0"><div class="min-w-0"><span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full mb-1 inline-block">${p.pawnTicket||'N/A'}</span><h4 class="font-bold text-slate-800 text-sm truncate">${p.name||'ไม่ระบุชื่อพระ'}</h4><p class="text-xs text-slate-500 truncate"><i class="ph-fill ph-user"></i> ${p.customerName||'-'}</p></div></div><div class="grid grid-cols-3 gap-1.5 mb-2"><div class="bg-slate-50 p-2 rounded-lg text-center"><p class="text-[10px] text-slate-400 mb-0.5">เงินต้น</p><p class="font-bold text-slate-700 text-xs">${Number(p.pawnPrincipal||0).toLocaleString('th-TH')} ฿</p></div><div class="bg-amber-50 p-2 rounded-lg text-center border border-amber-100/50"><p class="text-[10px] text-amber-600 mb-0.5">ดอก/งวด</p><p class="font-bold text-amber-700 text-xs">${Number(p.interestRate||0).toLocaleString('th-TH')} ฿</p></div><div class="bg-slate-50 p-2 rounded-lg text-center"><p class="text-[10px] text-slate-400 mb-0.5">ครบกำหนด</p><p class="${dueClass} text-xs">${p.dueDate||'--/--/--'}</p></div></div></div>`;
+                return `<div class="bg-white rounded-2xl p-4 shadow-sm border ${isOverdue ? 'border-rose-300 bg-rose-50/30' : 'border-purple-100'} relative cursor-pointer hover:shadow-md transition-all" onclick="openManagePawnModal('${p.id}')">${badge}<div class="flex gap-3 items-center mb-3 pb-3 border-b border-slate-100"><img src="${img}" class="w-16 h-16 object-cover rounded-xl border border-slate-200 shrink-0"><div class="min-w-0"><span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full mb-1 inline-block">${p.pawnTicket||'N/A'}</span><h4 class="font-bold text-slate-800 text-sm truncate">${p.name||'ไม่ระบุชื่อพระ'}</h4><p class="text-xs text-slate-500 truncate"><i class="ph-fill ph-user"></i> ${p.customerName||'-'}</p></div></div><div class="grid grid-cols-2 gap-2 text-xs mb-2"><div class="bg-slate-50 p-2 rounded-lg text-center"><p class="text-slate-400 mb-0.5">เงินต้น</p><p class="font-bold text-slate-700 text-sm">${Number(p.pawnPrincipal||0).toLocaleString('th-TH')} ฿</p></div><div class="bg-slate-50 p-2 rounded-lg text-center"><p class="text-slate-400 mb-0.5">ครบกำหนด</p><p class="${dueClass}">${p.dueDate||'--/--/--'}</p></div></div></div>`;
             }).join('');
         }
 
+        // --- เพิ่มเติม: โชว์ดอกเบี้ยใน Modal ของหน้ารายละเอียดจำนำ ---
         function openManagePawnModal(id) {
             const p = allStock.find(x => x.id === id); if(!p) return; currentManagePawn = p;
             document.getElementById('mpTicket').innerText = p.pawnTicket; document.getElementById('mpName').innerText = p.name; document.getElementById('mpCustomer').innerHTML = `<i class="ph-fill ph-user"></i> ${p.customerName||'-'} • <i class="ph-fill ph-phone"></i> ${p.customerPhone||'-'}`; document.getElementById('mpPrincipal').innerText = Number(p.pawnPrincipal||0).toLocaleString('th-TH') + ' ฿';
-            const today = new Date(selectedDate).getTime(); const dueTime = new Date(p.dueDate).getTime(); document.getElementById('mpDueDate').className = dueTime < today ? "font-bold text-rose-600" : "font-bold text-slate-700"; document.getElementById('mpDueDate').innerText = p.dueDate;
+            // อัปเดตช่องดอกเบี้ยที่เพิ่มเข้ามาใหม่
+            document.getElementById('mpInterest').innerText = Number(p.interestRate||0).toLocaleString('th-TH') + ' ฿';
+            const today = new Date(selectedDate).getTime(); const dueTime = new Date(p.dueDate).getTime(); document.getElementById('mpDueDate').className = dueTime < today ? "font-bold text-rose-600 text-sm" : "font-bold text-slate-700 text-sm"; document.getElementById('mpDueDate').innerText = p.dueDate;
             const hList = document.getElementById('mpHistoryList');
             if(p.pawnHistory && p.pawnHistory.length > 0) { hList.innerHTML = p.pawnHistory.slice().reverse().map(h => `<div class="flex justify-between items-center bg-white p-2 rounded-lg border border-slate-100"><span>${h.date}</span><span class="font-bold text-amber-600">+${Number(h.amount).toLocaleString()} ฿</span></div>`).join(''); } 
             else { hList.innerHTML = `<p class="text-slate-400 text-center py-2 text-xs">ยังไม่มีประวัติ</p>`; }
             document.getElementById('managePawnModal').classList.remove('hidden');
         }
+        
         function closeManagePawnModal() { document.getElementById('managePawnModal').classList.add('hidden'); currentManagePawn = null; }
 
         function openPawnAction(type) {
@@ -908,6 +894,7 @@
         function openAddStockModal() { document.getElementById('addStockModal').classList.remove('hidden'); }
         function closeAddStockModal() { document.getElementById('addStockModal').classList.add('hidden'); document.getElementById('stockForm').reset(); }
 
+        // --- แก้ไข: เพิ่มรับค่า Customer ในตอนสร้างสต็อก ---
         async function handleManualStockSubmit(e) {
             e.preventDefault(); const btn = document.getElementById('btnSubmitStock'); btn.disabled = true; btn.innerText = "กำลังอัปโหลด...";
             try {
@@ -933,18 +920,20 @@
             } catch (err) { showCustomAlert("ข้อผิดพลาด", err.message, "error"); } finally { btn.disabled = false; btn.innerText = "บันทึกเข้าตู้พระ"; }
         }
 
+        // --- แก้ไข: ดึงข้อมูล Customer มาโชว์ใน Edit Modal ---
         function openEditStockModal(id, code, name, category, cost, price, imageUrl, customerName, customerPhone) {
             document.getElementById('editStockId').value = id; document.getElementById('editStockOldImage').value = imageUrl || ''; document.getElementById('editStockOldPrice').value = price; 
             document.getElementById('editStockCode').value = code; document.getElementById('editStockName').value = name; document.getElementById('editStockCategory').value = category; document.getElementById('editStockCost').value = cost; document.getElementById('editStockPrice').value = price;
             
-            // ดึงข้อมูลลูกค้าเก่ามาแสดง
-            document.getElementById('editCustomerName').value = customerName || ''; document.getElementById('editCustomerPhone').value = customerPhone || '';
+            document.getElementById('editCustomerName').value = customerName || ''; 
+            document.getElementById('editCustomerPhone').value = customerPhone || '';
 
             if (isOwner) { document.getElementById('editStockPrice').disabled = false; document.getElementById('priceEditBadge').classList.remove('hidden'); document.getElementById('editStockPrice').classList.remove('bg-slate-50', 'cursor-not-allowed'); } else { document.getElementById('editStockPrice').disabled = true; document.getElementById('priceEditBadge').classList.add('hidden'); document.getElementById('editStockPrice').classList.add('bg-slate-50', 'cursor-not-allowed'); }
             document.getElementById('editStockModal').classList.remove('hidden');
         }
         function closeEditStockModal() { document.getElementById('editStockModal').classList.add('hidden'); }
 
+        // --- แก้ไข: อัปเดตข้อมูล Customer ใน Edit Modal ---
         async function handleEditStockSubmit(e) {
             e.preventDefault(); const btn = document.getElementById('btnSubmitEditStock'); btn.disabled = true; btn.innerText = "กำลังบันทึก...";
             try {
@@ -955,7 +944,14 @@
                 const editCustName = document.getElementById('editCustomerName').value;
                 const editCustPhone = document.getElementById('editCustomerPhone').value;
 
-                let updateData = { name: document.getElementById('editStockName').value, category: document.getElementById('editStockCategory').value, imageUrl: imgUrl, price: newPrice, customerName: editCustName, customerPhone: editCustPhone };
+                let updateData = { 
+                    name: document.getElementById('editStockName').value, 
+                    category: document.getElementById('editStockCategory').value, 
+                    imageUrl: imgUrl, 
+                    price: newPrice,
+                    customerName: editCustName,
+                    customerPhone: editCustPhone 
+                };
                 if (oldPrice !== newPrice) { updateData.priceHistory = firebase.firestore.FieldValue.arrayUnion({ date: selectedDate, time: new Date().toLocaleTimeString('th-TH'), oldPrice: oldPrice, newPrice: newPrice }); }
                 await getColRef("amulet_stock").doc(id).update(updateData); closeEditStockModal(); showCustomAlert("สำเร็จ", "อัปเดตข้อมูลพระเครื่องเรียบร้อย", "success");
             } catch (err) { showCustomAlert("ข้อผิดพลาด", err.message, "error"); } finally { btn.disabled = false; btn.innerText = "บันทึกการแก้ไข"; }
@@ -1136,13 +1132,12 @@
         function handleDirSubmit(e) { e.preventDefault(); const id = document.getElementById('dirEditId').value; const data = { category: document.getElementById('dirCategory').value, name: document.getElementById('dirName').value }; if(id) getColRef("amulet_directory").doc(id).update(data).then(closeAddDirModal); else getColRef("amulet_directory").add(data).then(closeAddDirModal); }
 
         // ==========================================
-        // COURSE SYSTEM V7.3 (อัปเกรดระบบจัดกลุ่มคอร์ส)
+        // COURSE SYSTEM V7.3
         // ==========================================
         function renderCourses() { 
             const q = (document.getElementById('courseSearch').value || "").toLowerCase(); 
             let tQty=0, pQty=0, paidQty=0; 
             
-            // 1. ค้นหาและกรองข้อมูล
             const filtered = allCourses.filter(c => { 
                 const m = (c.customerName||"").toLowerCase().includes(q) || 
                           (c.phone||"").toLowerCase().includes(q) ||
@@ -1155,7 +1150,6 @@
                 return m; 
             }); 
             
-            // อัปเดตตัวเลขสรุปรวมด้านบน
             document.getElementById('courseTotalQty').innerText = `${tQty} ที่`; 
             document.getElementById('coursePendingQty').innerText = `${pQty} ที่`; 
             document.getElementById('coursePaidQty').innerText = `${paidQty} ที่`; 
@@ -1166,7 +1160,6 @@
                 return;
             }
 
-            // 2. จัดกลุ่มข้อมูลตาม "ชื่อคอร์ส"
             const groups = {};
             filtered.forEach(c => {
                 const key = c.courseName || "คอร์สทั่วไป (ไม่ได้ระบุชื่อ)";
@@ -1177,12 +1170,10 @@
                 groups[key].totalSeats += c.qty;
             });
 
-            // 3. สร้าง HTML แยกกล่องตามคอร์ส
             cont.innerHTML = Object.keys(groups).map(courseName => {
                 const g = groups[courseName];
                 const displayDate = g.date ? `<i class="ph-bold ph-calendar-blank"></i> วันที่อบรม: ${g.date}` : '';
                 
-                // หัวกล่องคอร์ส
                 let html = `
                 <div class="bg-blue-50/50 border border-blue-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
@@ -1200,7 +1191,6 @@
                     <div class="space-y-3 pr-4">
                 `;
 
-                // รายชื่อคนในคอร์ส
                 html += g.items.map(c => {
                     const safeCourseName = (c.courseName||'').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     return `
@@ -1227,7 +1217,6 @@
         }
 
         function openAddCourseModal() { 
-            // ตั้งค่าวันที่จัดอบรมเริ่มต้นให้เป็นวันนี้
             document.getElementById('courseEventDateInput').value = selectedDate;
             document.getElementById('addCourseModal').classList.remove('hidden'); 
         } 
@@ -1245,7 +1234,6 @@
             const cNum = allCourses.filter(c=>c.date===selectedDate).length+1; 
             const qNo = `C-${String(cNum).padStart(3,'0')}`; 
             
-            // ดึงค่า ชื่อคอร์ส และ วันที่จัดอบรม
             const cName = document.getElementById('courseNameInput').value;
             const cEventDate = document.getElementById('courseEventDateInput').value;
 
@@ -1271,7 +1259,6 @@
 
         function openPayCourseModal(id, qNo, name, courseName) { 
             document.getElementById('payCourseId').value = id; 
-            // เอาชื่อคอร์ส ไปใส่ในคำอธิบายบัญชีด้วย
             const descName = courseName ? `ค่าคอร์ส: ${courseName} [${qNo}] (${name})` : `ค่าคอร์ส [${qNo}] (${name})`;
             document.getElementById('payCourseTitle').value = descName; 
             
@@ -1287,8 +1274,8 @@
 
         function selectCourseWallet(t) { 
             currentCourseWallet=t; 
-            document.getElementById('btnCoursePayTransfer').className = t==='TRANSFER'?"py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5":"py-3 rounded-xl border-2 border-slate-200 text-slate-500 font-bold flex justify-center gap-1.5"; 
-            document.getElementById('btnCoursePayCash').className = t==='CASH'?"py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5":"py-3 rounded-xl border-2 border-slate-200 text-slate-500 font-bold flex justify-center gap-1.5"; 
+            document.getElementById('btnCoursePayTransfer').className = t==='TRANSFER'?"py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5":"py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; 
+            document.getElementById('btnCoursePayCash').className = t==='CASH'?"py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5":"py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; 
         }
 
         function handleCoursePaymentSubmit(e) { 
