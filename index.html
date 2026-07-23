@@ -297,7 +297,7 @@
         </div>
     </div>
 
-    <!-- MODAL: ADD STOCK (อัปเดตเพิ่มช่องข้อมูลลูกค้า) -->
+    <!-- MODAL: ADD STOCK -->
     <div id="addStockModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden animate-in fade-in">
         <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeAddStockModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full"><i class="ph ph-x"></i></button>
@@ -313,7 +313,6 @@
                     <div><label class="block font-bold text-slate-500 mb-1.5">ราคาทุน</label><input type="number" id="stockCost" required min="0" value="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-rose-600"></div>
                     <div><label class="block font-bold text-slate-500 mb-1.5">ราคาเปิดเช่า</label><input type="number" id="stockPrice" required min="0" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-emerald-600"></div>
                 </div>
-                <!-- ส่วนที่เพิ่มใหม่: ข้อมูลลูกค้า (ถ้ามี) -->
                 <div class="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                     <div><label class="block font-bold text-slate-500 mb-1.5">ชื่อลูกค้า (ถ้ามี)</label><input type="text" id="stockCustomerName" placeholder="ระบุชื่อลูกค้าเดิม" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500"></div>
                     <div><label class="block font-bold text-slate-500 mb-1.5">เบอร์โทรติดต่อ</label><input type="tel" id="stockCustomerPhone" placeholder="08X-XXX-XXXX" class="w-full border border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500"></div>
@@ -357,6 +356,7 @@
         </div>
     </div>
 
+    <!-- MANAGE PAWN MODAL -->
     <div id="managePawnModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4 hidden animate-in zoom-in-95">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 relative shadow-2xl flex flex-col max-h-[90vh]">
             <button onclick="closeManagePawnModal()" class="absolute top-4 right-4 text-slate-400 bg-slate-100 p-2 rounded-full z-10"><i class="ph ph-x"></i></button>
@@ -365,12 +365,13 @@
                 <h3 id="mpName" class="text-lg font-bold text-slate-800">ชื่อพระ</h3>
                 <p id="mpCustomer" class="text-sm text-slate-500 mt-1"><i class="ph-fill ph-user"></i> ลูกค้า • <i class="ph-fill ph-phone"></i> เบอร์</p>
             </div>
-            <!-- ส่วนที่ปรับปรุง: กล่อง 3 ช่องแสดงเงินต้น, ดอกเบี้ย/รอบ, กำหนดชำระ -->
+            
             <div class="grid grid-cols-3 gap-3 mb-4">
                 <div class="bg-slate-50 p-3 rounded-xl text-center border border-slate-100"><p class="text-xs text-slate-400 mb-1">เงินต้น</p><p id="mpPrincipal" class="font-bold text-slate-700 text-sm">0</p></div>
                 <div class="bg-amber-50 p-3 rounded-xl text-center border border-amber-100/50"><p class="text-xs text-amber-600 mb-1">ดอก/งวด</p><p id="mpInterest" class="font-bold text-amber-700 text-sm">0</p></div>
                 <div class="bg-rose-50 p-3 rounded-xl text-center border border-rose-100"><p class="text-xs text-rose-400 mb-1">วันกำหนดชำระ</p><p id="mpDueDate" class="font-bold text-rose-600 text-sm">--/--/----</p></div>
             </div>
+
             <div class="flex-1 overflow-y-auto mb-4 border border-slate-100 rounded-xl bg-slate-50 p-3">
                 <h4 class="text-xs font-bold text-slate-500 mb-2 flex items-center gap-1"><i class="ph-bold ph-clock-counter-clockwise"></i> ประวัติการต่อดอก</h4>
                 <div id="mpHistoryList" class="space-y-2 text-sm"></div>
@@ -677,7 +678,7 @@
         let currentPawnWallet = 'TRANSFER', currentPaWallet = 'TRANSFER';
         let currentManagePawn = null;
         let systemAlerts = []; 
-        let currentCourseGroups = {}; // ตัวแปรสำหรับเก็บรายชื่อคอร์สเพื่อแสดงในตาราง
+        let currentCourseGroups = {}; 
 
         window.onload = function() {
             document.getElementById('appDatePicker').value = selectedDate;
@@ -931,7 +932,7 @@
                     else if(stat === 'SOLD') statusBadge = `<div class="absolute top-3 right-3 bg-slate-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md">ปิดแล้ว</div>`;
 
                     let priceSection = "";
-                    if (stat === 'SOLD') { priceSection = `<div class="bg-slate-50 p-2 rounded-lg col-span-2 text-center"><p class="text-slate-400 mb-0.5">ปิดขายเมื่อ ${s.soldDate||'-'}</p><p class="font-bold text-slate-700">จบที่ ${sellAmountNum.toLocaleString('th-TH')} ฿</p></div>`; } 
+                    if (stat === 'SOLD') { priceSection = `<div class="bg-slate-50 p-2 rounded-lg col-span-2 text-left"><p class="text-[11px] text-slate-600 mb-1.5 truncate font-medium"><i class="ph-fill ph-user text-slate-400"></i> ${s.customerName||'ไม่ได้ระบุชื่อ'} &nbsp;<i class="ph-fill ph-phone text-slate-400"></i> ${s.customerPhone||'-'}</p><div class="flex justify-between items-center border-t border-slate-200/60 pt-1.5 mt-1"><p class="text-slate-400 text-[10px]">ปิดขาย ${s.soldDate||'-'}</p><p class="font-bold text-slate-700">จบที่ ${sellAmountNum.toLocaleString('th-TH')} ฿</p></div></div>`; } 
                     else if (stat === 'RESERVED') { priceSection = `<div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาตกลง</p><p class="font-bold text-slate-700">${agreedNum.toLocaleString('th-TH')} ฿</p></div><div class="bg-rose-50 p-2 rounded-lg"><p class="text-rose-400 mb-0.5">ยอดเหลือ</p><p class="font-bold text-rose-600">${remainNum.toLocaleString('th-TH')} ฿</p></div>`; } 
                     else { priceSection = `<div class="bg-slate-50 p-2 rounded-lg relative"><p class="text-slate-400 mb-0.5">เปิดเช่า ${hasHistory ? '<i class="ph-fill ph-clock-counter-clockwise text-amber-500"></i>' : ''}</p><p class="font-bold text-emerald-600">${priceNum.toLocaleString('th-TH')} ฿</p></div>${isOwner ? `<div class="bg-rose-50 p-2 rounded-lg"><p class="text-rose-400 mb-0.5">ราคาทุน</p><p class="font-bold text-rose-600">${costNum.toLocaleString('th-TH')} ฿</p></div>` : `<div class="bg-slate-50 p-2 rounded-lg"><p class="text-slate-400 mb-0.5">ราคาทุน</p><p class="font-bold text-slate-400">*** ฿</p></div>`}`; }
 
@@ -1333,8 +1334,8 @@
 
         function selectCourseWallet(t) { 
             currentCourseWallet=t; 
-            document.getElementById('btnCoursePayTransfer').className = t==='TRANSFER'?"py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5":"py-3 rounded-xl border-2 border-slate-200 text-slate-500 font-bold flex justify-center gap-1.5"; 
-            document.getElementById('btnCoursePayCash').className = t==='CASH'?"py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5":"py-3 rounded-xl border-2 border-slate-200 text-slate-500 font-bold flex justify-center gap-1.5"; 
+            document.getElementById('btnCoursePayTransfer').className = t==='TRANSFER'?"py-3 rounded-xl border-2 border-blue-500 text-blue-700 bg-blue-50 font-bold flex justify-center gap-1.5":"py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; 
+            document.getElementById('btnCoursePayCash').className = t==='CASH'?"py-3 rounded-xl border-2 border-emerald-500 text-emerald-700 bg-emerald-50 font-bold flex justify-center gap-1.5":"py-3 rounded-xl border-2 border-slate-200 text-slate-500 bg-white font-bold flex justify-center gap-1.5"; 
         }
 
         function handleCoursePaymentSubmit(e) { 
